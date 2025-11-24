@@ -4,13 +4,7 @@ A sign language learning app.
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+This project aims to design and develop a mobile application for learning sign language 
+using gamified, interactive activities that help users learn sign language through various features. 
+By merging learning design principles and gamification, the project intends to shape sign language learning 
+into a productive and enjoyable practice, despite the person’s background or prior experience.
