@@ -15,9 +15,9 @@ class _MainScreenState extends State<MainScreen> {
   int _index = 0;
 
   final _titles = [
-    'Home Page',
-    'Learn Page',
-    'Account Page',
+    'Home',
+    'Learn',
+    'Account',
   ];
 
   final List<Widget> _screens = <Widget>[
@@ -37,7 +37,10 @@ class _MainScreenState extends State<MainScreen> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(_titles.elementAt(_index)),
+        title: Text(
+          _titles.elementAt(_index),
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
       ),
       body: Center(
           child: _screens.elementAt(_index)
@@ -61,7 +64,7 @@ class _MainScreenState extends State<MainScreen> {
           ),
         ],
         currentIndex: _index,
-        selectedItemColor: Colors.amber[800],
+        selectedItemColor: Colors.purple,
         onTap: _onTap,
       ),
     );

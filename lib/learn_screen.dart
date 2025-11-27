@@ -10,6 +10,11 @@ class LearnScreen extends StatefulWidget {
 class _LearnScreenState extends State<LearnScreen> {
   @override
   Widget build(BuildContext context) {
-    return Center(child: Text("Learn screen"));
+    return Scaffold(
+        body: Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: Center(child: Text("Learn screen"))
+        )
+    );
   }
 }

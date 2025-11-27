@@ -10,6 +10,11 @@ class AccountScreen extends StatefulWidget {
 class _AccountScreenState extends State<AccountScreen> {
   @override
   Widget build(BuildContext context) {
-    return Center(child: Text("Account screen"));
+    return Scaffold(
+        body: Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: Center(child: Text("Account screen"))
+        )
+    );
   }
 }
