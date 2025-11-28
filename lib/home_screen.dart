@@ -29,7 +29,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 const SizedBox(height: 30.0),
                 Container(
                     padding: const EdgeInsets.all(8.0),
-                    decoration: BoxDecoration(border: Border.all()),
+                    decoration: BoxDecoration(
+                        color: Colors.purple.shade100,
+                        border: Border.all()
+                    ),
                     alignment: Alignment.center,
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -47,12 +50,16 @@ class _HomeScreenState extends State<HomeScreen> {
                               Container(
                                 padding: const EdgeInsets.all(16.0),
                                 decoration: BoxDecoration(
+                                  color: Colors.white,
                                   shape: BoxShape.circle,
                                   border: Border.all(width: 2.0),
                                 ),
                                 child: Text(
                                   "22",
-                                  style: TextStyle(fontSize: 18.0),
+                                  style: TextStyle(
+                                    fontSize: 18.0,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
                               )
                             ],
@@ -71,12 +78,16 @@ class _HomeScreenState extends State<HomeScreen> {
                             Container(
                               padding: const EdgeInsets.all(16.0),
                               decoration: BoxDecoration(
+                                color: Colors.white,
                                 shape: BoxShape.circle,
                                 border: Border.all(width: 2.0),
                               ),
                               child: Text(
                                 "50",
-                                style: TextStyle(fontSize: 18.0),
+                                style: TextStyle(
+                                  fontSize: 18.0,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                             )
                           ],
@@ -95,12 +106,16 @@ class _HomeScreenState extends State<HomeScreen> {
                             Container(
                               padding: const EdgeInsets.all(16.0),
                               decoration: BoxDecoration(
+                                color: Colors.white,
                                 shape: BoxShape.circle,
                                 border: Border.all(width: 2.0),
                               ),
                               child: Text(
                                 "1000",
-                                style: TextStyle(fontSize: 18.0),
+                                style: TextStyle(
+                                  fontSize: 18.0,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                             )
                           ],
@@ -111,25 +126,41 @@ class _HomeScreenState extends State<HomeScreen> {
                 const SizedBox(height: 30.0),
                 Container(
                   padding: const EdgeInsets.all(3.0),
-                  decoration: BoxDecoration(border: Border.all()),
+                  decoration: BoxDecoration(
+                      color: Colors.purple.shade100,
+                      border: Border.all()
+                  ),
                   alignment: Alignment.center,
                   child: TextButton(
                       onPressed: () => Navigator.of(context)
                           .push(MaterialPageRoute(builder: (context) => const LearnScreen())),
-                      child: const Text(
-                        "Continue Learning... ->",
-                        style: TextStyle(
-                          fontSize: 22.0,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black,
-                        ),
+                      child: Row(
+                        //mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          const Text(
+                            "Continue Learning... ",
+                            style: TextStyle(
+                              fontSize: 22.0,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                            ),
+                          ),
+                          Icon(
+                            Icons.arrow_circle_right_outlined,
+                            size: 30.0,
+                            color: Colors.black,
+                          )
+                        ],
                       ),
                     ),
                 ),
                 const SizedBox(height: 30.0),
                 Container(
                   padding: const EdgeInsets.all(8.0),
-                  decoration: BoxDecoration(border: Border.all()),
+                  decoration: BoxDecoration(
+                    color: Colors.purple.shade100,
+                    border: Border.all(),
+                  ),
                   alignment: Alignment.center,
                   child: Text(
                     "Leaderboard",
