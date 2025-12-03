@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sign_language_app/material_screen.dart';
 
 class LearnScreen extends StatefulWidget {
   const LearnScreen({super.key, required this.changeIndex});
@@ -52,7 +53,29 @@ class _LearnScreenState extends State<LearnScreen> {
                               ),
                               alignment: Alignment.center,
                               child: TextButton(
-                                onPressed: () => widget.changeIndex(1),
+                                onPressed: () => showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return AlertDialog(
+                                      title: const Text('Are you sure you want to start this lesson?'),
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () {
+                                            Navigator.pop(context);
+                                              Navigator.push(context,
+                                                  MaterialPageRoute(builder: (
+                                                      context) => const MaterialScreen()));
+                                          }, child: const Text('Yes')
+                                        ),
+                                        TextButton(
+                                          onPressed: () {
+                                            Navigator.pop(context);
+                                          }, child: const Text('No'),
+                                        ),
+                                      ],
+                                    );
+                                  }
+                                ),
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
@@ -109,7 +132,29 @@ class _LearnScreenState extends State<LearnScreen> {
                             decoration: BoxDecoration(border: Border.all(width: 2.0)),
                             alignment: Alignment.center,
                             child: TextButton(
-                              onPressed: () => widget.changeIndex(1),
+                              onPressed: () => showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return AlertDialog(
+                                      title: const Text('Are you sure you want to start this lesson?'),
+                                      actions: [
+                                        TextButton(
+                                            onPressed: () {
+                                              Navigator.pop(context);
+                                              Navigator.push(context,
+                                                  MaterialPageRoute(builder: (
+                                                      context) => const MaterialScreen()));
+                                            }, child: const Text('Yes')
+                                        ),
+                                        TextButton(
+                                          onPressed: () {
+                                            Navigator.pop(context);
+                                          }, child: const Text('No'),
+                                        ),
+                                      ],
+                                    );
+                                  }
+                              ),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
@@ -166,7 +211,29 @@ class _LearnScreenState extends State<LearnScreen> {
                             decoration: BoxDecoration(border: Border.all(width: 2.0)),
                             alignment: Alignment.center,
                             child: TextButton(
-                              onPressed: () => widget.changeIndex(1),
+                              onPressed: () => showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return AlertDialog(
+                                      title: const Text('Are you sure you want to start this lesson?'),
+                                      actions: [
+                                        TextButton(
+                                            onPressed: () {
+                                              Navigator.pop(context);
+                                              Navigator.push(context,
+                                                  MaterialPageRoute(builder: (
+                                                      context) => const MaterialScreen()));
+                                            }, child: const Text('Yes')
+                                        ),
+                                        TextButton(
+                                          onPressed: () {
+                                            Navigator.pop(context);
+                                          }, child: const Text('No'),
+                                        ),
+                                      ],
+                                    );
+                                  }
+                              ),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
