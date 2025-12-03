@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
 class LearnScreen extends StatefulWidget {
-  const LearnScreen({super.key});
+  const LearnScreen({super.key, required this.changeIndex});
+
+  final Function(int) changeIndex;
 
   @override
   State<LearnScreen> createState() => _LearnScreenState();
@@ -50,8 +52,7 @@ class _LearnScreenState extends State<LearnScreen> {
                               ),
                               alignment: Alignment.center,
                               child: TextButton(
-                                onPressed: () => Navigator.of(context)
-                                    .push(MaterialPageRoute(builder: (context) => const LearnScreen())),
+                                onPressed: () => widget.changeIndex(1),
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
@@ -108,8 +109,7 @@ class _LearnScreenState extends State<LearnScreen> {
                             decoration: BoxDecoration(border: Border.all(width: 2.0)),
                             alignment: Alignment.center,
                             child: TextButton(
-                              onPressed: () => Navigator.of(context)
-                                  .push(MaterialPageRoute(builder: (context) => const LearnScreen())),
+                              onPressed: () => widget.changeIndex(1),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
@@ -166,8 +166,7 @@ class _LearnScreenState extends State<LearnScreen> {
                             decoration: BoxDecoration(border: Border.all(width: 2.0)),
                             alignment: Alignment.center,
                             child: TextButton(
-                              onPressed: () => Navigator.of(context)
-                                  .push(MaterialPageRoute(builder: (context) => const LearnScreen())),
+                              onPressed: () => widget.changeIndex(1),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [

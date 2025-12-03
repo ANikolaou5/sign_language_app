@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:sign_language_app/learn_screen.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  const HomeScreen({super.key, required this.changeIndex});
+
+  final Function(int) changeIndex;
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -132,8 +133,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   alignment: Alignment.center,
                   child: TextButton(
-                      onPressed: () => Navigator.of(context)
-                          .push(MaterialPageRoute(builder: (context) => const LearnScreen())),
+                    onPressed: () => widget.changeIndex(1),
                       child: Row(
                         //mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [

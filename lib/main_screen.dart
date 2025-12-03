@@ -20,13 +20,26 @@ class _MainScreenState extends State<MainScreen> {
     'Account',
   ];
 
-  final List<Widget> _screens = <Widget>[
-    const HomeScreen(),
-    const LearnScreen(),
-    const AccountScreen(),
-  ];
+  late List<Widget> _screens;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _screens = [
+      HomeScreen(changeIndex: changeIndex),
+      LearnScreen(changeIndex: changeIndex),
+      AccountScreen(changeIndex: changeIndex),
+    ];
+  }
 
   void _onTap(int index) {
+    setState(() {
+      _index = index;
+    });
+  }
+
+  void changeIndex(int index) {
     setState(() {
       _index = index;
     });

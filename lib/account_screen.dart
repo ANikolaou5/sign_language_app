@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
 class AccountScreen extends StatefulWidget {
-  const AccountScreen({super.key});
+  const AccountScreen({super.key, required this.changeIndex});
+
+  final Function(int) changeIndex;
 
   @override
   State<AccountScreen> createState() => _AccountScreenState();
