@@ -1,4 +1,6 @@
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AccountScreen extends StatefulWidget {
   const AccountScreen({super.key, required this.changeIndex});
@@ -13,24 +15,169 @@ class _AccountScreenState extends State<AccountScreen> {
   // Flutter.dev. (2025). Handle changes to a text field. [online]
   // Available at: https://docs.flutter.dev/cookbook/forms/text-field-changes
   // [Accessed 28 Nov. 2025].
-  /*late TextEditingController usernameTextController;
+  late TextEditingController usernameTextController;
   late TextEditingController emailTextController;
   late TextEditingController nameTextController;
   late TextEditingController surnameTextController;
-  late TextEditingController passwordTextController;*/
+  late TextEditingController passwordTextController;
+
+  final DatabaseReference usersRef = FirebaseDatabase.instance.ref().child('users');
+
+  String? errorMessage;
+  String? name;
+  String? surname;
+  String? username;
+  String? password;
 
   bool visible = false;
   bool login = false;
+  bool loading = false;
 
-  /*@override
+  Future<void> _signin() async {
+    setState(() => loading = true);
+
+    String inputName = nameTextController.text.trim();
+    String inputSurname = surnameTextController.text.trim();
+    String inputUsername = usernameTextController.text.trim();
+    String inputPassword = passwordTextController.text.trim();
+
+    // Forcing user to fill all fields.
+    if (inputName.isEmpty || inputSurname.isEmpty || inputUsername.isEmpty || inputPassword.isEmpty) {
+      setState(() {
+        errorMessage = "All fields required!";
+        loading = false;
+      });
+      return;
+    }
+
+    final DatabaseReference userRef = usersRef.child(inputUsername);
+    final DataSnapshot snapshot = await userRef.get();
+
+    // Check if username exists.
+    if (snapshot.exists) {
+      setState(() {
+        errorMessage = "Username already exists!";
+        loading = false;
+      });
+      return;
+    }
+
+    // Saving user in database.
+    await userRef.set({
+      'name': inputName,
+      'surname': inputSurname,
+      'username': inputUsername,
+      'password': inputPassword,
+    });
+
+
+    // Saving user info to local storage.
+    await _saveUserLocalStorage(inputName, inputSurname, inputUsername, inputPassword);
+
+    setState(() {
+      name = inputName;
+      surname = inputSurname;
+      username = inputUsername;
+      password = inputPassword;
+      errorMessage = null;
+      loading = false;
+    });
+  }
+
+  Future<void> _login() async {
+    setState(() => loading = true);
+
+    String inputUsername = usernameTextController.text.trim();
+    String inputPassword = passwordTextController.text.trim();
+
+    // Forcing user to fill all fields.
+    if (inputUsername.isEmpty || inputPassword.isEmpty) {
+      setState(() {
+        errorMessage = "Enter username and password!";
+        loading = false;
+      });
+      return;
+    }
+
+    final DatabaseReference userRef = usersRef.child(inputUsername);
+    final DataSnapshot snapshot = await userRef.get();
+
+    // Check if credentials are correct.
+    if (!snapshot.exists || snapshot.child('password').value.toString() != inputPassword) {
+      setState(() {
+        errorMessage = "Invalid username or password!";
+        loading = false;
+      });
+      return;
+    }
+
+    // Loading name and surname from database.
+    String dbName = snapshot.child('name').value.toString();
+    String dbSurname = snapshot.child('surname').value.toString();
+
+    // Saving user info to local storage.
+    await _saveUserLocalStorage(dbName, dbSurname, inputUsername, inputPassword);
+
+    setState(() {
+      name = dbName;
+      surname = dbSurname;
+      username = inputUsername;
+      password = inputPassword;
+      errorMessage = null;
+      loading = false;
+    });
+  }
+
+  // Function for logging out.
+  Future<void> _logout() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    // Removing user credentials.
+    await prefs.remove('name');
+    await prefs.remove('surname');
+    await prefs.remove('username');
+    await prefs.remove('password');
+
+    setState(() {
+      name = null;
+      surname = null;
+      username = null;
+      password = null;
+    });
+  }
+
+  // Function to load user info from local storage, when already logged in.
+  Future<void> _loadUserLocalStorage() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      name = prefs.getString('name');
+      surname = prefs.getString('surname');
+      username = prefs.getString('username');
+      password = prefs.getString('password');
+    });
+  }
+
+  // Function to save user info to local storage.
+  Future<void> _saveUserLocalStorage(String nameInput, String surnameInput, String usernameInput, String passwordInput) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('name', nameInput);
+    await prefs.setString('surname', surnameInput);
+    await prefs.setString('username', usernameInput);
+    await prefs.setString('password', passwordInput);
+  }
+
+  @override
   void initState() {
     super.initState();
+
     usernameTextController = TextEditingController();
     emailTextController = TextEditingController();
     nameTextController = TextEditingController();
     surnameTextController = TextEditingController();
     passwordTextController = TextEditingController();
-  }*/
+
+    _loadUserLocalStorage();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -52,7 +199,7 @@ class _AccountScreenState extends State<AccountScreen> {
                   )],
                 ),
                 alignment: Alignment.center,
-                child: Column(
+                child: username == null ? Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       const SizedBox(height: 20.0),
@@ -69,7 +216,7 @@ class _AccountScreenState extends State<AccountScreen> {
                       ),
                       const SizedBox(height: 40),
                       TextField(
-                          // controller: usernameTextController,
+                          controller: usernameTextController,
                           decoration: const InputDecoration(
                               labelText: 'Username',
                               border: OutlineInputBorder()
@@ -78,7 +225,7 @@ class _AccountScreenState extends State<AccountScreen> {
                       const SizedBox(height: 10),
                       if (!login)...[
                         TextField(
-                            // controller: emailTextController,
+                            controller: emailTextController,
                             decoration: const InputDecoration(
                                 labelText: 'Email',
                                 border: OutlineInputBorder()
@@ -86,7 +233,7 @@ class _AccountScreenState extends State<AccountScreen> {
                         ),
                         const SizedBox(height: 10),
                         TextField(
-                            // controller: nameTextController,
+                            controller: nameTextController,
                             decoration: const InputDecoration(
                                 labelText: 'Name',
                                 border: OutlineInputBorder()
@@ -94,7 +241,7 @@ class _AccountScreenState extends State<AccountScreen> {
                         ),
                         const SizedBox(height: 10),
                         TextField(
-                            // controller: surnameTextController,
+                            controller: surnameTextController,
                             decoration: const InputDecoration(
                                 labelText: 'Surname',
                                 border: OutlineInputBorder()
@@ -103,7 +250,7 @@ class _AccountScreenState extends State<AccountScreen> {
                         const SizedBox(height: 10),
                       ],
                       TextField(
-                        // controller: passwordTextController,
+                        controller: passwordTextController,
                         decoration: InputDecoration(
                           labelText: 'Password',
                           border: const OutlineInputBorder(),
@@ -118,39 +265,157 @@ class _AccountScreenState extends State<AccountScreen> {
                         ),
                         obscureText: !visible,
                       ),
+                      const SizedBox(height: 10),
+                      if (errorMessage != null) Text(errorMessage!, style: const TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
                       const SizedBox(height: 40),
-                      ElevatedButton(
-                          onPressed: () {},
-                          child: Text(
-                              login ? 'Log in' : 'Register',
-                              style: const TextStyle(
-                                fontSize: 18.0,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black,
-                              )
-                          )
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                      loading ? const Center(child: CircularProgressIndicator()) : Column(
                         children: [
-                          Text(
-                              login ? "Don't have an account?" : "Already have an account?",
-                              style: const TextStyle(fontSize: 16.0)
+                          ElevatedButton(
+                              onPressed: login ? _login : _signin,
+                              child: Text(
+                                  login ? 'Log in' : 'Sign in',
+                                  style: const TextStyle(
+                                    fontSize: 18.0,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black,
+                                  )
+                              )
                           ),
-                          TextButton(
-                            onPressed: () => setState(() => login = !login),
-                            child: Text(
-                                login ? "Register now" : "Log in",
-                                style: const TextStyle(
-                                    fontSize: 16.0,
-                                    decoration: TextDecoration.underline,
-                                    decorationThickness: 1.5
-                                )
-                            ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                  login ? "Don't have an account?" : "Already have an account?",
+                                  style: const TextStyle(fontSize: 16.0)
+                              ),
+                              TextButton(
+                                onPressed: () => setState(() => login = !login),
+                                child: Text(
+                                    login ? "Sign in" : "Log in",
+                                    style: const TextStyle(
+                                        fontSize: 16.0,
+                                        decoration: TextDecoration.underline,
+                                        decorationThickness: 1.5
+                                    )
+                                ),
+                              ),
+                            ],
                           ),
                         ],
                       ),
                     ]
+                ) : Column (
+                  children: [
+                    const SizedBox(height: 20),
+                    Center(
+                      child: CircleAvatar(
+                        radius: 60.0,
+                        backgroundColor: Colors.deepPurple.shade300,
+                        child: Icon(
+                          Icons.person,
+                          size: 80.0,
+                          color: Colors.black,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Username: ',
+                          style: TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold
+                          ),
+                        ),
+                        Text(
+                          username!,
+                          style: const TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Full Name: ',
+                          style: TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold
+                          ),
+                        ),
+                        Text(
+                            '$name $surname',
+                            style: const TextStyle(
+                                fontSize: 22,
+                                fontWeight: FontWeight.bold
+                            )
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+                    Center(
+                        child: ElevatedButton(
+                          onPressed: () {
+                            showDialog(context: context, builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: Row(
+                                  children: [
+                                    const SizedBox(width: 10),
+                                    Icon(
+                                        Icons.warning,
+                                        color: Colors.red.shade800,
+                                        size: 50
+                                    ),
+                                    const SizedBox(width: 20),
+                                    const Text(
+                                      "Log out",
+                                      style: TextStyle(fontWeight: FontWeight.bold),
+                                    )
+                                  ],
+                                ),
+                                content: const Text(
+                                  "Are you sure you want to log out?",
+                                  style: TextStyle(
+                                    fontSize: 18.0,
+                                  ),
+                                ),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        _logout();
+                                      });
+
+                                      Navigator.pop(context);
+                                    }, child: const Text('Yes')),
+                                  TextButton(
+                                    onPressed: () { Navigator.pop(context); },
+                                    child: const Text('No'),
+                                  ),
+                                ],
+                              );
+                            });
+                          },
+                          child: const Text(
+                              'Log out',
+                              style: TextStyle(
+                                fontSize: 18.0,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black,
+                              )
+                          ),
+                        )
+                    ),
+                    const SizedBox(height: 20),
+                  ],
                 ),
               ),
             )

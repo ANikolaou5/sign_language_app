@@ -68,7 +68,6 @@ class _MaterialScreenState extends State<MaterialScreen> {
             ],
           ),
         ),
-        //floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
         floatingActionButton: ElevatedButton(
           onPressed: () {},
           child: Text(
