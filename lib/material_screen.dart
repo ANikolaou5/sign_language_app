@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
 class MaterialScreen extends StatefulWidget {
-  const MaterialScreen({super.key});
+  const MaterialScreen({super.key, required this.lesson});
+
+  final Map<String, dynamic> lesson;
 
   @override
   State<MaterialScreen> createState() => _MaterialScreenState();
@@ -43,12 +45,31 @@ class _MaterialScreenState extends State<MaterialScreen> {
       child: Scaffold(
         appBar: AppBar(
           backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-          title: Text('Lesson'),
+          title: Text(
+            "Lesson ${widget.lesson['lessonNum']}",
+            style: const TextStyle(fontWeight: FontWeight.bold),
+          ),
         ),
         body: Padding(
           padding: const EdgeInsets.all(10.0),
           child: Column(
             children: [
+              const SizedBox(height: 30.0),
+              Container(
+                padding: const EdgeInsets.all(8.0),
+                decoration: BoxDecoration(
+                  color: Colors.purple.shade100,
+                  border: Border.all(),
+                ),
+                alignment: Alignment.center,
+                child: Text(
+                  "${widget.lesson['name']}",
+                  style: TextStyle(
+                    fontSize: 22.0,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
               const SizedBox(height: 30.0),
               Container(
                 padding: const EdgeInsets.all(8.0),

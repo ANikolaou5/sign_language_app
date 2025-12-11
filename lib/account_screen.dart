@@ -26,6 +26,7 @@ class _AccountScreenState extends State<AccountScreen> {
   String? errorMessage;
   String? name;
   String? surname;
+  String? email;
   String? username;
   String? password;
 
@@ -38,11 +39,12 @@ class _AccountScreenState extends State<AccountScreen> {
 
     String inputName = nameTextController.text.trim();
     String inputSurname = surnameTextController.text.trim();
+    String inputEmail = emailTextController.text.trim();
     String inputUsername = usernameTextController.text.trim();
     String inputPassword = passwordTextController.text.trim();
 
     // Forcing user to fill all fields.
-    if (inputName.isEmpty || inputSurname.isEmpty || inputUsername.isEmpty || inputPassword.isEmpty) {
+    if (inputName.isEmpty || inputSurname.isEmpty || inputEmail.isEmpty || inputUsername.isEmpty || inputPassword.isEmpty) {
       setState(() {
         errorMessage = "All fields required!";
         loading = false;
@@ -64,19 +66,28 @@ class _AccountScreenState extends State<AccountScreen> {
 
     // Saving user in database.
     await userRef.set({
-      'name': inputName,
-      'surname': inputSurname,
-      'username': inputUsername,
-      'password': inputPassword,
+      'accountDetails' : {
+        'name': inputName,
+        'surname': inputSurname,
+        'email': inputEmail,
+        'username': inputUsername,
+        'password': inputPassword,
+      },
+      'learningDetails' : {
+        'streakNum' : 0,
+        'streakNumGoal' : 0,
+        'score' : 0,
+        'completedLessons' : 0,
+      }
     });
 
-
     // Saving user info to local storage.
-    await _saveUserLocalStorage(inputName, inputSurname, inputUsername, inputPassword);
+    await _saveUserLocalStorage(inputName, inputSurname, inputEmail, inputUsername, inputPassword);
 
     setState(() {
       name = inputName;
       surname = inputSurname;
+      email = inputEmail;
       username = inputUsername;
       password = inputPassword;
       errorMessage = null;
@@ -103,7 +114,7 @@ class _AccountScreenState extends State<AccountScreen> {
     final DataSnapshot snapshot = await userRef.get();
 
     // Check if credentials are correct.
-    if (!snapshot.exists || snapshot.child('password').value.toString() != inputPassword) {
+    if (!snapshot.exists || snapshot.child('accountDetails/password').value.toString() != inputPassword) {
       setState(() {
         errorMessage = "Invalid username or password!";
         loading = false;
@@ -111,16 +122,18 @@ class _AccountScreenState extends State<AccountScreen> {
       return;
     }
 
-    // Loading name and surname from database.
-    String dbName = snapshot.child('name').value.toString();
-    String dbSurname = snapshot.child('surname').value.toString();
+    // Loading name, surname & email from database.
+    String dbName = snapshot.child('accountDetails/name').value.toString();
+    String dbSurname = snapshot.child('accountDetails/surname').value.toString();
+    String dbEmail = snapshot.child('accountDetails/email').value.toString();
 
     // Saving user info to local storage.
-    await _saveUserLocalStorage(dbName, dbSurname, inputUsername, inputPassword);
+    await _saveUserLocalStorage(dbName, dbSurname, dbEmail, inputUsername, inputPassword);
 
     setState(() {
       name = dbName;
       surname = dbSurname;
+      email = dbEmail;
       username = inputUsername;
       password = inputPassword;
       errorMessage = null;
@@ -135,12 +148,14 @@ class _AccountScreenState extends State<AccountScreen> {
     // Removing user credentials.
     await prefs.remove('name');
     await prefs.remove('surname');
+    await prefs.remove('email');
     await prefs.remove('username');
     await prefs.remove('password');
 
     setState(() {
       name = null;
       surname = null;
+      email = null;
       username = null;
       password = null;
     });
@@ -152,16 +167,18 @@ class _AccountScreenState extends State<AccountScreen> {
     setState(() {
       name = prefs.getString('name');
       surname = prefs.getString('surname');
+      email = prefs.getString('email');
       username = prefs.getString('username');
       password = prefs.getString('password');
     });
   }
 
   // Function to save user info to local storage.
-  Future<void> _saveUserLocalStorage(String nameInput, String surnameInput, String usernameInput, String passwordInput) async {
+  Future<void> _saveUserLocalStorage(String nameInput, String surnameInput, String emailInput, String usernameInput, String passwordInput) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('name', nameInput);
     await prefs.setString('surname', surnameInput);
+    await prefs.setString('email', emailInput);
     await prefs.setString('username', usernameInput);
     await prefs.setString('password', passwordInput);
   }
@@ -357,6 +374,27 @@ class _AccountScreenState extends State<AccountScreen> {
                                 fontSize: 22,
                                 fontWeight: FontWeight.bold
                             )
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Email: ',
+                          style: TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold
+                          ),
+                        ),
+                        Text(
+                          email!,
+                          style: const TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold
+                          ),
                         ),
                       ],
                     ),

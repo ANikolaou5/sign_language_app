@@ -1,4 +1,6 @@
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key, required this.changeIndex});
@@ -10,6 +12,86 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  late TextEditingController streakGoalTextController;
+
+  String? username;
+  String dbStreakNum = '0';
+  String? dbStreakNumGoal = '0';
+  String? dbScore = '0';
+  String? dbCompletedLessons = '0';
+  final DatabaseReference usersRef = FirebaseDatabase.instance.ref().child('users');
+
+  // Function to load username from local storage, when already logged in.
+  Future<void> _loadUserLocalStorage() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      username = prefs.getString('username') ?? '';
+    });
+  }
+
+  Future<void> _updateStreakNum() async {
+    final DatabaseReference userRef = usersRef.child(username!).child('learningDetails');
+    String inputStreakGoal = streakGoalTextController.text.trim();
+
+    await userRef.update({
+      'streakNumGoal': inputStreakGoal,
+    });
+
+    setState(() {
+      dbStreakNumGoal = inputStreakGoal;
+    });
+
+    Navigator.pop(context);
+  }
+
+  // Function to load the learning details of the user from the Realtime database.
+  Future<void> _loadLearningDetails() async {
+    final DatabaseReference userRef = usersRef.child(username!);
+    final DataSnapshot snapshot = await userRef.get();
+
+    dbStreakNum = snapshot.child('learningDetails/streakNum').value.toString();
+    dbStreakNumGoal = snapshot.child('learningDetails/streakNumGoal').value.toString();
+    dbScore = snapshot.child('learningDetails/score').value.toString();
+    dbCompletedLessons = snapshot.child('learningDetails/completedLessons').value.toString();
+
+    if (dbStreakNum == dbStreakNumGoal) {
+      Future.delayed(Duration.zero, () {
+        showDialog(
+          context: context,
+          builder: (context) =>
+              AlertDialog(
+                title: Text('Streak Goal'),
+                content: TextField(
+                  controller: streakGoalTextController,
+                  autofocus: true,
+                  decoration: InputDecoration(
+                      hintText: 'Update your streak goal..'),
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () async {
+                      await _updateStreakNum();
+                    },
+                    child: Text('Save'),
+                  )
+                ],
+              ),
+        );
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    streakGoalTextController = TextEditingController();
+
+    _loadUserLocalStorage().then((_) {
+      _loadLearningDetails().then((_) {
+        setState(() {});
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +103,7 @@ class _HomeScreenState extends State<HomeScreen> {
               children: [
                 const SizedBox(height: 15.0),
                 Text(
-                  "Welcome!",
+                  (username != '') ? "Welcome, $username!" : "Welcome!",
                   style: const TextStyle(
                       fontSize: 26.0,
                       fontWeight: FontWeight.bold
@@ -56,7 +138,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   border: Border.all(width: 2.0),
                                 ),
                                 child: Text(
-                                  "22",
+                                  dbStreakNum,
                                   style: TextStyle(
                                     fontSize: 18.0,
                                     fontWeight: FontWeight.bold,
@@ -84,7 +166,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 border: Border.all(width: 2.0),
                               ),
                               child: Text(
-                                "50",
+                                dbStreakNumGoal!,
                                 style: TextStyle(
                                   fontSize: 18.0,
                                   fontWeight: FontWeight.bold,
@@ -112,7 +194,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 border: Border.all(width: 2.0),
                               ),
                               child: Text(
-                                "1000",
+                                dbScore!,
                                 style: TextStyle(
                                   fontSize: 18.0,
                                   fontWeight: FontWeight.bold,
