@@ -14,6 +14,7 @@ class LearnScreen extends StatefulWidget {
 
 class _LearnScreenState extends State<LearnScreen> {
   String? username;
+  int completedLessons = 0;
   Map<String, dynamic> lessons = {};
 
   // Function to load username from local storage, when already logged in.
@@ -21,6 +22,18 @@ class _LearnScreenState extends State<LearnScreen> {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
       username = prefs.getString('username') ?? '';
+    });
+  }
+
+  Future<void> _loadLearningDetails() async {
+    final DatabaseReference usersRef = FirebaseDatabase.instance.ref().child('users');
+    final DatabaseReference userRef = usersRef.child(username!);
+    final DataSnapshot snapshot = await userRef.get();
+
+    int dbCompletedLessons = snapshot.child('learningDetails/completedLessons').value as int;
+
+    setState(() {
+      completedLessons = dbCompletedLessons;
     });
   }
 
@@ -66,6 +79,8 @@ class _LearnScreenState extends State<LearnScreen> {
           },
         );
       }
+
+      _loadLearningDetails();
     });
   }
 
@@ -116,37 +131,42 @@ class _LearnScreenState extends State<LearnScreen> {
                           physics: NeverScrollableScrollPhysics(),
                           children: lessonsList.map((lesson) {
                             int lessonNum = lesson['lessonNum'] ?? 0;
+
                             return Center(
                               child: Container(
                                   padding: const EdgeInsets.all(3.0),
                                   decoration: BoxDecoration(
+                                      color: (lessonNum <= completedLessons) ? Colors.green.shade300 : Colors.white,
                                       border: Border.all(width: 2.0)
                                   ),
                                   alignment: Alignment.center,
                                   child: TextButton(
-                                    onPressed: () => showDialog(
-                                      context: context,
-                                      builder: (BuildContext context) {
-                                        return AlertDialog(
-                                          title: const Text('Are you sure you want to start this lesson?'),
-                                          actions: [
-                                            TextButton(
-                                              onPressed: () {
-                                                Navigator.pop(context);
+                                    onPressed: lessonNum == completedLessons + 1 ? () {
+                                      showDialog(
+                                        context: context,
+                                        builder: (BuildContext context) {
+                                          return AlertDialog(
+                                            title: const Text('Are you sure you want to start this lesson?'),
+                                            actions: [
+                                              TextButton(
+                                                onPressed: () {
+                                                  Navigator.pop(context);
                                                   Navigator.push(context,
-                                                      MaterialPageRoute(builder: (
-                                                          context) => MaterialScreen(lesson: lesson)));
-                                              }, child: const Text('Yes')
-                                            ),
-                                            TextButton(
-                                              onPressed: () {
-                                                Navigator.pop(context);
-                                              }, child: const Text('No'),
-                                            ),
-                                          ],
-                                        );
-                                      }
-                                    ),
+                                                    MaterialPageRoute(builder: (
+                                                        context) => MaterialScreen(lesson: lesson, username: username ?? '')));
+                                                }, child: const Text('Yes')
+                                              ),
+                                              TextButton(
+                                                onPressed: () {
+                                                  Navigator.pop(context);
+                                                }, child: const Text('No'),
+                                              ),
+                                            ],
+                                          );
+                                        }
+                                      );
+                                    }
+                                    : null,
                                     child: Column(
                                       crossAxisAlignment: CrossAxisAlignment.center,
                                       children: [

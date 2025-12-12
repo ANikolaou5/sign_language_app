@@ -2,9 +2,10 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 
 class MaterialScreen extends StatefulWidget {
-  const MaterialScreen({super.key, required this.lesson});
+  const MaterialScreen({super.key, required this.lesson, required this.username});
 
   final Map<String, dynamic> lesson;
+  final String username;
 
   @override
   State<MaterialScreen> createState() => _MaterialScreenState();
@@ -30,12 +31,30 @@ class _MaterialScreenState extends State<MaterialScreen> {
     setState(() {});
   }
 
-  void _next() {
+  void _next() async {
     if (index < readingTutorials.length - 1) {
       setState(() {
         index++;
       });
     } else {
+      final DatabaseReference usersRef = FirebaseDatabase.instance.ref().child('users');
+      final DatabaseReference userRef = usersRef.child(widget.username);
+      final DataSnapshot snapshot = await userRef.get();
+
+      int dbStreakNum = snapshot.child('learningDetails/streakNum').value as int;
+      int dbStreakNumGoal = snapshot.child('learningDetails/streakNumGoal').value as int;
+      int dbScore = snapshot.child('learningDetails/score').value as int;
+      int dbCompletedLessons = snapshot.child('learningDetails/completedLessons').value as int;
+
+      await userRef.update({
+        'learningDetails' : {
+          'streakNum' : dbStreakNum,
+          'streakNumGoal' : dbStreakNumGoal,
+          'score' : dbScore,
+          'completedLessons' : dbCompletedLessons + 1,
+        }
+      });
+
       Navigator.pop(context);
     }
   }
