@@ -1,3 +1,4 @@
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 
 class MaterialScreen extends StatefulWidget {
@@ -10,6 +11,50 @@ class MaterialScreen extends StatefulWidget {
 }
 
 class _MaterialScreenState extends State<MaterialScreen> {
+  List<Map<String, dynamic>> readingTutorials = [];
+  int index = 0;
+
+  Future<void> _loadReadingTutorials() async {
+    final ref = FirebaseDatabase.instance.ref();
+    final snapshot = await ref.child('readingTutorials').get();
+
+    final data = Map<String, dynamic>.from(snapshot.value as Map);
+
+    readingTutorials = data.values
+        .map((value) => Map<String, dynamic>.from(value))
+        .where((readingTutorial) => readingTutorial['lessonNum'] == widget.lesson['lessonNum'])
+        .toList();
+
+    readingTutorials.sort((a, b) => (a['readingTutorial'] as int).compareTo(b['readingTutorial'] as int));
+
+    setState(() {});
+  }
+
+  void _next() {
+    if (index < readingTutorials.length - 1) {
+      setState(() {
+        index++;
+      });
+    } else {
+      Navigator.pop(context);
+    }
+  }
+
+  void _previous() {
+    if (index > 0) {
+      setState(() {
+        index--;
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    _loadReadingTutorials();
+  }
+
   @override
   Widget build(BuildContext context) {
     // GaneshTamang (2024). Flutter PopScope for android back button to leave app showing black screen instead of going to home screen of android. [online] GitHub.
@@ -52,7 +97,7 @@ class _MaterialScreenState extends State<MaterialScreen> {
         ),
         body: Padding(
           padding: const EdgeInsets.all(10.0),
-          child: Column(
+          child: readingTutorials.isEmpty ? const Center(child: CircularProgressIndicator()) : Column(
             children: [
               const SizedBox(height: 30.0),
               Container(
@@ -63,7 +108,7 @@ class _MaterialScreenState extends State<MaterialScreen> {
                 ),
                 alignment: Alignment.center,
                 child: Text(
-                  "${widget.lesson['name']}",
+                  widget.lesson['name'],
                   style: TextStyle(
                     fontSize: 22.0,
                     fontWeight: FontWeight.bold,
@@ -79,25 +124,47 @@ class _MaterialScreenState extends State<MaterialScreen> {
                 ),
                 alignment: Alignment.center,
                 child: Text(
-                  "Lets start learning:",
+                  readingTutorials[index]['tutorialText'],
                   style: TextStyle(
                     fontSize: 22.0,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
               ),
+              const SizedBox(height: 30.0),
+              Image.asset(
+                readingTutorials[index]['tutorialImage'],
+                width: double.infinity,
+                height: 400,
+                fit: BoxFit.contain,
+              ),
             ],
           ),
         ),
-        floatingActionButton: ElevatedButton(
-          onPressed: () {},
-          child: Text(
-            'Continue...',
-            style: TextStyle(
-              fontSize: 20.0,
-              color: Colors.black
-            )
-          ),
+        floatingActionButton: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            ElevatedButton(
+              onPressed: _previous,
+              child: Text(
+                  'Previous',
+                  style: TextStyle(
+                      fontSize: 20.0,
+                      color: Colors.black
+                  )
+              ),
+            ),
+            ElevatedButton(
+              onPressed: _next,
+              child: Text(
+                'Next',
+                style: TextStyle(
+                  fontSize: 20.0,
+                  color: Colors.black
+                )
+              ),
+            ),
+          ],
         ),
       ),
     );

@@ -49,33 +49,33 @@ class _HomeScreenState extends State<HomeScreen> {
     final DatabaseReference userRef = usersRef.child(username!);
     final DataSnapshot snapshot = await userRef.get();
 
-    dbStreakNum = snapshot.child('learningDetails/streakNum').value.toString();
-    dbStreakNumGoal = snapshot.child('learningDetails/streakNumGoal').value.toString();
-    dbScore = snapshot.child('learningDetails/score').value.toString();
-    dbCompletedLessons = snapshot.child('learningDetails/completedLessons').value.toString();
+    dbStreakNum = (snapshot.child('learningDetails/streakNum').value ?? 0).toString();
+    dbStreakNumGoal = (snapshot.child('learningDetails/streakNumGoal').value ?? 0).toString();
+    dbScore = (snapshot.child('learningDetails/score').value ?? 0).toString();
+    dbCompletedLessons = (snapshot.child('learningDetails/completedLessons').value ?? 0).toString();
 
-    if (dbStreakNum == dbStreakNumGoal) {
+    if (dbStreakNum == dbStreakNumGoal && username != '') {
       Future.delayed(Duration.zero, () {
         showDialog(
           context: context,
           builder: (context) =>
-              AlertDialog(
-                title: Text('Streak Goal'),
-                content: TextField(
-                  controller: streakGoalTextController,
-                  autofocus: true,
-                  decoration: InputDecoration(
-                      hintText: 'Update your streak goal..'),
-                ),
-                actions: [
-                  TextButton(
-                    onPressed: () async {
-                      await _updateStreakNum();
-                    },
-                    child: Text('Save'),
-                  )
-                ],
+            AlertDialog(
+              title: Text('Streak Goal'),
+              content: TextField(
+                controller: streakGoalTextController,
+                autofocus: true,
+                decoration: InputDecoration(
+                    hintText: 'Update your streak goal..'),
               ),
+              actions: [
+                TextButton(
+                  onPressed: () async {
+                    await _updateStreakNum();
+                  },
+                  child: Text('Save'),
+                )
+              ],
+            ),
         );
       });
     }
