@@ -149,11 +149,13 @@ class _LearnScreenState extends State<LearnScreen> {
                                             title: const Text('Are you sure you want to start this lesson?'),
                                             actions: [
                                               TextButton(
-                                                onPressed: () {
+                                                onPressed: () async {
                                                   Navigator.pop(context);
-                                                  Navigator.push(context,
+                                                  await Navigator.push(
+                                                    context,
                                                     MaterialPageRoute(builder: (
                                                         context) => MaterialScreen(lesson: lesson, username: username ?? '')));
+                                                  await _loadLearningDetails();
                                                 }, child: const Text('Yes')
                                               ),
                                               TextButton(
@@ -170,6 +172,19 @@ class _LearnScreenState extends State<LearnScreen> {
                                     child: Column(
                                       crossAxisAlignment: CrossAxisAlignment.center,
                                       children: [
+                                        if (lessonNum > completedLessons + 1) ...[
+                                          Icon(
+                                            Icons.lock,
+                                            size: 30.0,
+                                            color: Colors.black,
+                                          ),
+                                        ] else if (lessonNum <= completedLessons) ...[
+                                          Icon(
+                                            Icons.check_circle,
+                                            size: 30.0,
+                                            color: Colors.black,
+                                          ),
+                                        ],
                                         Text(
                                           "Lesson",
                                           style: TextStyle(
