@@ -20,6 +20,7 @@ class _HomeScreenState extends State<HomeScreen> {
   String? dbScore = '0';
   String? dbCompletedLessons = '0';
   final DatabaseReference usersRef = FirebaseDatabase.instance.ref().child('users');
+  List<Map<String, dynamic>> users = [];
 
   // Function to load username from local storage, when already logged in.
   Future<void> _loadUserLocalStorage() async {
@@ -81,6 +82,22 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  // Function to load all users from the Realtime database.
+  Future<void> _loadUsers() async {
+    final snapshot = await usersRef.get();
+
+    final data = Map<String, dynamic>.from(snapshot.value as Map);
+
+    users = data.values
+        .map((value) => Map<String, dynamic>.from(value))
+        .toList();
+
+    users.sort((b, a) => (a['learningDetails']['score'] as int).compareTo(b['learningDetails']['score'] as int));
+    users = users.take(3).toList();
+
+    setState(() {});
+  }
+
   @override
   void initState() {
     super.initState();
@@ -88,6 +105,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
     _loadUserLocalStorage().then((_) {
       _loadLearningDetails().then((_) {
+        _loadUsers();
         setState(() {});
       });
     });
@@ -244,12 +262,47 @@ class _HomeScreenState extends State<HomeScreen> {
                     border: Border.all(),
                   ),
                   alignment: Alignment.center,
-                  child: Text(
-                    "Leaderboard",
-                    style: TextStyle(
-                      fontSize: 22.0,
-                      fontWeight: FontWeight.bold,
-                    ),
+                  child: Column(
+                    children: [
+                      Text(
+                        "Leaderboard",
+                        style: TextStyle(
+                          fontSize: 22.0,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 10.0),
+                      Column(
+                        children: users.map((user) {
+                          String name = user['accountDetails']['username'];
+                          int score = user['learningDetails']['score'];
+
+                          return Column(
+                            children: [
+                              const SizedBox(height: 10.0),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  Text(
+                                    name,
+                                    style: TextStyle(
+                                      fontSize: 18.0,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  Text(score.toString(),
+                                    style: TextStyle(
+                                      fontSize: 18.0,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          );
+                        }).toList(),
+                      )
+                    ],
                   ),
                 )
               ]
