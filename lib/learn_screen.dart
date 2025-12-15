@@ -141,12 +141,12 @@ class _LearnScreenState extends State<LearnScreen> {
                                   ),
                                   alignment: Alignment.center,
                                   child: TextButton(
-                                    onPressed: lessonNum == completedLessons + 1 ? () {
+                                    onPressed: lessonNum <= completedLessons + 1 ? () {
                                       showDialog(
                                         context: context,
                                         builder: (BuildContext context) {
                                           return AlertDialog(
-                                            title: const Text('Are you sure you want to start this lesson?'),
+                                            title: (lessonNum <= completedLessons) ? Text('Review lesson') : Text('Start lesson'),
                                             actions: [
                                               TextButton(
                                                 onPressed: () async {
@@ -156,12 +156,23 @@ class _LearnScreenState extends State<LearnScreen> {
                                                     MaterialPageRoute(builder: (
                                                         context) => MaterialScreen(lesson: lesson, username: username ?? '')));
                                                   await _loadLearningDetails();
-                                                }, child: const Text('Yes')
-                                              ),
-                                              TextButton(
-                                                onPressed: () {
-                                                  Navigator.pop(context);
-                                                }, child: const Text('No'),
+                                                }, child: Row(
+                                                  children: [
+                                                    Text(
+                                                      (lessonNum <= completedLessons) ? "Review " : "Start ",
+                                                      style: TextStyle(
+                                                        fontSize: 22.0,
+                                                        fontWeight: FontWeight.bold,
+                                                        color: Colors.black,
+                                                      ),
+                                                    ),
+                                                    Icon(
+                                                      Icons.arrow_circle_right_outlined,
+                                                      size: 30.0,
+                                                      color: Colors.black,
+                                                    )
+                                                  ],
+                                                ),
                                               ),
                                             ],
                                           );

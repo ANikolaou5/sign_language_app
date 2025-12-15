@@ -122,14 +122,16 @@ class _MaterialScreenState extends State<MaterialScreen> {
             .child('learningDetails/completedLessons')
             .value as int;
 
-        await userRef.update({
-          'learningDetails': {
-            'streakNum': dbStreakNum,
-            'streakNumGoal': dbStreakNumGoal,
-            'score': dbScore + 10,
-            'completedLessons': dbCompletedLessons + 1,
-          }
-        });
+        if (widget.lesson['lessonNum'] > dbCompletedLessons) {
+          await userRef.update({
+            'learningDetails': {
+              'streakNum': dbStreakNum,
+              'streakNumGoal': dbStreakNumGoal,
+              'score': dbScore + 10,
+              'completedLessons': dbCompletedLessons + 1,
+            }
+          });
+        }
 
         Navigator.pop(context);
       }
