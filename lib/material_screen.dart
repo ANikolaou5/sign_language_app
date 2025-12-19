@@ -12,11 +12,37 @@ class MaterialScreen extends StatefulWidget {
 }
 
 class _MaterialScreenState extends State<MaterialScreen> {
-  late TextEditingController answerTextController;
+  // Stack Overflow. (n.d.). How to generate a list of all alphabets (UpperCase) in dart? [online]
+  // Available at: https://stackoverflow.com/questions/67897675/how-to-generate-a-list-of-all-alphabets-uppercase-in-dart
+  // [Accessed 19 Dec. 2025].
+  final List<String> images = [
+    ...List.generate(26, (i) => 'assets/images/${String.fromCharCode(65 + i)}.png'),
+    ...List.generate(10, (i) => 'assets/images/${i + 1}.png'),
+  ];
+
   List<Map<String, dynamic>> readingTutorials = [];
-  List<Map<String, dynamic>> questions = [];
+  List<Map<String, dynamic>> multipleChoiceQuestions = [];
+  List<Map<String, dynamic>> signToTextQuestions = [];
+  List<String> possibleAnswers = [];
+  String? answer;
+  int? answerIndex;
   int index = 0;
   bool tutorial = true;
+
+  void _createPossibleAnswers() {
+    final correctImage = multipleChoiceQuestions[index]['answer'] as String;
+
+    final wrongImages = images
+        .where((img) => img != correctImage)
+        .toList()
+      ..shuffle();
+
+    possibleAnswers = [
+      correctImage,
+      wrongImages[0],
+      wrongImages[1],
+    ]..shuffle();
+  }
 
   Future<void> _loadReadingTutorials() async {
     final ref = FirebaseDatabase.instance.ref();
@@ -40,12 +66,19 @@ class _MaterialScreenState extends State<MaterialScreen> {
 
     final data = Map<String, dynamic>.from(snapshot.value as Map);
 
-    questions = data.values
+    multipleChoiceQuestions = data.values
         .map((value) => Map<String, dynamic>.from(value))
-        .where((question) => question['lessonNum'] == widget.lesson['lessonNum'])
+        .where((question) => (question['type'] == "multipleChoice" && question['lessonNum'] == widget.lesson['lessonNum']))
         .toList();
 
-    questions.sort((a, b) => (a['questionNum'] as int).compareTo(b['questionNum'] as int));
+    multipleChoiceQuestions.sort((a, b) => (a['questionNum'] as int).compareTo(b['questionNum'] as int));
+
+    signToTextQuestions = data.values
+        .map((value) => Map<String, dynamic>.from(value))
+        .where((question) => (question['type'] == "text" && question['lessonNum'] == widget.lesson['lessonNum']))
+        .toList();
+
+    signToTextQuestions.sort((a, b) => (a['questionNum'] as int).compareTo(b['questionNum'] as int));
 
     setState(() {});
   }
@@ -54,20 +87,22 @@ class _MaterialScreenState extends State<MaterialScreen> {
     if (tutorial) {
       setState(() {
         tutorial = false;
-        answerTextController.clear();
+        _createPossibleAnswers();
       });
+      return;
     } else {
-      final inputAnswer = answerTextController.text.trim().toUpperCase();
-      final correctAnswer = questions[index]['answer'].toString();
+      final correctAnswer = multipleChoiceQuestions[index]['answer'];
 
-      if (inputAnswer == '') {
+      if (answerIndex == null) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('You should type an answer!')),
+          const SnackBar(content: Text('You should select an answer!')),
         );
         return;
       }
 
-      if (inputAnswer != correctAnswer) {
+      answer = possibleAnswers[answerIndex!];
+
+      if (answer != correctAnswer) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
@@ -142,13 +177,11 @@ class _MaterialScreenState extends State<MaterialScreen> {
     if (!tutorial) {
       setState(() {
         tutorial = true;
-        answerTextController.clear();
       });
     } else if (index > 0) {
       setState(() {
         tutorial = false;
         index--;
-        answerTextController.clear();
       });
     }
   }
@@ -157,7 +190,6 @@ class _MaterialScreenState extends State<MaterialScreen> {
   void initState() {
     super.initState();
 
-    answerTextController = TextEditingController();
     _loadReadingTutorials();
     _loadQuestions();
   }
@@ -208,7 +240,7 @@ class _MaterialScreenState extends State<MaterialScreen> {
             scrollDirection: Axis.vertical,
             child: Column(
               children: [
-                const SizedBox(height: 30.0),
+                const SizedBox(height: 15.0),
                 Container(
                   padding: const EdgeInsets.all(8.0),
                   decoration: BoxDecoration(
@@ -224,7 +256,7 @@ class _MaterialScreenState extends State<MaterialScreen> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 30.0),
+                const SizedBox(height: 15.0),
                 Container(
                   padding: const EdgeInsets.all(8.0),
                   decoration: BoxDecoration(
@@ -233,29 +265,83 @@ class _MaterialScreenState extends State<MaterialScreen> {
                   ),
                   alignment: Alignment.center,
                   child: Text(
-                    tutorial ? readingTutorials[index]['tutorialText'] : questions[index]['question'],
+                    tutorial ? readingTutorials[index]['tutorialText'] : multipleChoiceQuestions[index]['question'],
                     style: TextStyle(
                       fontSize: 22.0,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                 ),
-                const SizedBox(height: 30.0),
-                Image.asset(
-                  tutorial ? readingTutorials[index]['tutorialImage'] : questions[index]['questionContent'],
-                  width: double.infinity,
-                  height: 400,
-                  fit: BoxFit.contain,
-                ),
-                if(!tutorial) ...[
-                  const SizedBox(height: 30.0),
-                  TextField(
-                    controller: answerTextController,
-                      autofocus: true,
-                    decoration: const InputDecoration(
-                        labelText: 'Type...',
-                        border: OutlineInputBorder()
-                    )
+                if(tutorial) ...[
+                  const SizedBox(height: 15.0),
+                  Image.asset(
+                    readingTutorials[index]['tutorialImage'],
+                    width: double.infinity,
+                    height: 400,
+                    fit: BoxFit.contain,
+                  ),
+                ] else ...[
+                  const SizedBox(height: 15.0),
+                  Container(
+                    padding: const EdgeInsets.all(8.0),
+                    decoration: BoxDecoration(
+                      color: Colors.purple.shade100,
+                      border: Border.all(),
+                    ),
+                    alignment: Alignment.center,
+                    child: Text(
+                      multipleChoiceQuestions[index]['questionContent'],
+                      style: TextStyle(
+                        fontSize: 22.0,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 15.0),
+                  Column(
+                    children: List.generate(3, (index) {
+                      final selected = answerIndex == index;
+
+                      return Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: InkWell(
+                          onTap: () {
+                            setState(() {
+                              answerIndex = index;
+                            });
+                          },
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                '${index + 1}.',
+                                style: TextStyle(
+                                  fontSize: 22.0,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(width: 15.0),
+                              Container(
+                                decoration: BoxDecoration(
+                                  border: Border.all(
+                                    color: selected ? Colors.green : Colors.grey,
+                                    width: 2.0,
+                                  ),
+                                  borderRadius: BorderRadius.circular(12.0),
+                                ),
+                                padding: const EdgeInsets.all(8.0),
+                                child: Image.asset(
+                                  possibleAnswers[index],
+                                  height: 130.0,
+                                  width: 130.0,
+                                  fit: BoxFit.contain,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    }),
                   ),
                 ],
               ],
