@@ -23,14 +23,92 @@ class _MaterialScreenState extends State<MaterialScreen> {
   List<Map<String, dynamic>> readingTutorials = [];
   List<Map<String, dynamic>> multipleChoiceQuestions = [];
   List<Map<String, dynamic>> signToTextQuestions = [];
+  List<Map<String, dynamic>> matchQuestions = [];
+  Map<String, String> userMatch = {};
   List<String> possibleAnswers = [];
+
+  late TextEditingController answerTextController;
   String? answer;
+  String? matchImg;
+  String? matchTxt;
+
   int? answerIndex;
-  int index = 0;
+  int tutorialIndex = 0;
+  int signToText = 0;
+  int matchIndex = 0;
+
   bool tutorial = true;
+  bool quiz = false;
+
+  void _createMatchQuestions() {
+    final shuffledImages = List<String>.from(images)..shuffle();
+
+    matchQuestions.clear();
+
+    for (int i = 0; i < 3; i++) {
+      final matchImages = shuffledImages.skip(i * 3).take(3).toList();
+
+      final correctPairs = matchImages.map((img) {
+        return {
+          'image': img,
+          'text': img.split('/').last.replaceAll('.png', ''),
+        };
+      }).toList();
+
+      final shuffledPairs = List<Map<String, String>>.from(correctPairs)..shuffle();
+
+      matchQuestions.add({
+        'correctPairs': correctPairs,
+        'shuffledPairs': shuffledPairs,
+      });
+    }
+  }
+
+  void _checkUserMatch() {
+    if (matchImg == null || matchTxt == null) return;
+
+    final correctText = matchImg!.split('/').last.replaceAll('.png', '').toUpperCase();
+
+    if (correctText == matchTxt) {
+      setState(() {
+        userMatch[matchImg!] = matchTxt!;
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Correct answer!',
+            style: TextStyle(
+              color: Colors.black,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          backgroundColor: Colors.green.shade400,
+          duration: Duration(seconds: 1),
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Incorrect answer. Try again!',
+            style: TextStyle(
+              color: Colors.black,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          backgroundColor: Colors.red.shade400,
+          duration: Duration(seconds: 1),
+        ),
+      );
+    }
+
+    matchImg = null;
+    matchTxt = null;
+  }
 
   void _createPossibleAnswers() {
-    final correctImage = multipleChoiceQuestions[index]['answer'] as String;
+    final correctImage = multipleChoiceQuestions[tutorialIndex]['answer'] as String;
 
     final wrongImages = images
         .where((img) => img != correctImage)
@@ -42,6 +120,8 @@ class _MaterialScreenState extends State<MaterialScreen> {
       wrongImages[0],
       wrongImages[1],
     ]..shuffle();
+
+    answerIndex = null;
   }
 
   Future<void> _loadReadingTutorials() async {
@@ -90,53 +170,25 @@ class _MaterialScreenState extends State<MaterialScreen> {
         _createPossibleAnswers();
       });
       return;
-    } else {
-      final correctAnswer = multipleChoiceQuestions[index]['answer'];
+    }
 
-      if (answerIndex == null) {
+    if (quiz && signToText >= signToTextQuestions.length - 1 && matchQuestions.isNotEmpty) {
+      if (userMatch.length < 3) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('You should select an answer!')),
-        );
-        return;
-      }
-
-      answer = possibleAnswers[answerIndex!];
-
-      if (answer != correctAnswer) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'Incorrect answer. Try again!',
-              style: TextStyle(
-                color: Colors.black,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            backgroundColor: Colors.red.shade400,
+          const SnackBar(
+            content: Text('You should match all images and text!'),
+            duration: Duration(seconds: 1),
           ),
         );
         return;
       }
-      else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'Correct answer!',
-              style: TextStyle(
-                color: Colors.black,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            backgroundColor: Colors.green.shade400,
-          ),
-        );
-      }
 
-      if (index < readingTutorials.length - 1) {
+      if (matchIndex < matchQuestions.length - 1) {
         setState(() {
-          tutorial = true;
-          index++;
+          matchIndex++;
+          userMatch.clear();
         });
+        return;
       } else {
         final DatabaseReference usersRef = FirebaseDatabase.instance
             .ref()
@@ -170,6 +222,119 @@ class _MaterialScreenState extends State<MaterialScreen> {
 
         Navigator.pop(context);
       }
+    } else if (quiz && signToTextQuestions.isNotEmpty && signToText < signToTextQuestions.length) {
+      final inputAnswer = answerTextController.text.trim().toUpperCase();
+      final correctAnswer = signToTextQuestions[signToText]['answer'].toString();
+
+      if (inputAnswer == '') {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('You should type an answer!'),
+            duration: Duration(seconds: 1),
+          ),
+        );
+        return;
+      }
+
+      if (inputAnswer != correctAnswer) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Incorrect answer. Try again!',
+              style: TextStyle(
+                color: Colors.black,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            backgroundColor: Colors.red.shade400,
+            duration: Duration(seconds: 1),
+          ),
+        );
+        return;
+      }
+      else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Correct answer!',
+              style: TextStyle(
+                color: Colors.black,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            backgroundColor: Colors.green.shade400,
+            duration: Duration(seconds: 1),
+          ),
+        );
+      }
+
+      if (signToText < signToTextQuestions.length - 1) {
+        setState(() {
+          signToText++;
+          answerTextController.clear();
+        });
+
+        return;
+      }
+    } else {
+      final correctAnswer = multipleChoiceQuestions[tutorialIndex]['answer'];
+
+      if (answerIndex == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('You should select an answer!'),
+            duration: Duration(seconds: 1),
+          ),
+        );
+        return;
+      }
+
+      answer = possibleAnswers[answerIndex!];
+
+      if (answer != correctAnswer) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Incorrect answer. Try again!',
+              style: TextStyle(
+                color: Colors.black,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            backgroundColor: Colors.red.shade400,
+            duration: Duration(seconds: 1),
+          ),
+        );
+        return;
+      }
+      else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Correct answer!',
+              style: TextStyle(
+                color: Colors.black,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            backgroundColor: Colors.green.shade400,
+            duration: Duration(seconds: 1),
+          ),
+        );
+      }
+
+      if (tutorialIndex < readingTutorials.length - 1) {
+        setState(() {
+          tutorial = true;
+          tutorialIndex++;
+        });
+      } else if (tutorialIndex >= readingTutorials.length - 1 && quiz == false) {
+        setState(() {
+          quiz = true;
+        });
+
+        return;
+      }
     }
   }
 
@@ -178,10 +343,10 @@ class _MaterialScreenState extends State<MaterialScreen> {
       setState(() {
         tutorial = true;
       });
-    } else if (index > 0) {
+    } else if (tutorialIndex > 0) {
       setState(() {
         tutorial = false;
-        index--;
+        tutorialIndex--;
       });
     }
   }
@@ -190,8 +355,10 @@ class _MaterialScreenState extends State<MaterialScreen> {
   void initState() {
     super.initState();
 
+    answerTextController = TextEditingController();
     _loadReadingTutorials();
     _loadQuestions();
+    _createMatchQuestions();
   }
 
   @override
@@ -238,7 +405,164 @@ class _MaterialScreenState extends State<MaterialScreen> {
           padding: const EdgeInsets.all(10.0),
           child: readingTutorials.isEmpty ? const Center(child: CircularProgressIndicator()) : SingleChildScrollView(
             scrollDirection: Axis.vertical,
-            child: Column(
+            child: quiz ? signToText >= signToTextQuestions.length - 1 ? Column(
+              children: [
+                const SizedBox(height: 15.0),
+                Container(
+                    padding: const EdgeInsets.all(8.0),
+                    decoration: BoxDecoration(
+                      color: Colors.purple.shade100,
+                      border: Border.all(),
+                    ),
+                    alignment: Alignment.center,
+                    child: Text(
+                      'Time for a quiz!',
+                      style: TextStyle(
+                        fontSize: 22.0,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    )
+                ),
+                const SizedBox(height: 15.0),
+                Container(
+                  padding: const EdgeInsets.all(8.0),
+                  decoration: BoxDecoration(
+                    color: Colors.purple.shade100,
+                    border: Border.all(),
+                  ),
+                  alignment: Alignment.center,
+                  child: Text(
+                    'Match the images to their meaning:',
+                    style: const TextStyle(
+                      fontSize: 22.0,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 30.0),
+                Column(
+                  children: List.generate(matchQuestions[matchIndex]['shuffledPairs'].length, (index) {
+                      final img = matchQuestions[matchIndex]['correctPairs'][index]['image'];
+                      final txt = matchQuestions[matchIndex]['shuffledPairs'][index]['text'];
+
+                      return Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            InkWell(
+                              onTap: () {
+                                setState(() {
+                                  matchImg = img;
+                                  _checkUserMatch();
+                                });
+                              },
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  border: Border.all(
+                                    color: userMatch[img] != null ? Colors.green : Colors.grey,
+                                    width: 2.0,
+                                  ),
+                                  borderRadius: BorderRadius.circular(12.0),
+                                ),
+                                child: Image.asset(
+                                  img,
+                                  width: 130,
+                                  height: 130,
+                                  fit: BoxFit.contain,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 30.0),
+                            InkWell(
+                              onTap: () {
+                                setState(() {
+                                  matchTxt = txt;
+                                  _checkUserMatch();
+                                });
+                              },
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  border: Border.all(
+                                    color: userMatch.containsValue(txt) ? Colors.green : Colors.grey,
+                                    width: 2.0,
+                                  ),
+                                  borderRadius: BorderRadius.circular(12.0),
+                                  color: Colors.purple.shade50,
+                                ),
+                                padding: const EdgeInsets.all(10.0),
+                                child: Text(
+                                  txt,
+                                  style: const TextStyle(
+                                    fontSize: 22.0,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ],
+            )
+            : Column(
+              children: [
+                const SizedBox(height: 15.0),
+                Container(
+                    padding: const EdgeInsets.all(8.0),
+                    decoration: BoxDecoration(
+                      color: Colors.purple.shade100,
+                      border: Border.all(),
+                    ),
+                    alignment: Alignment.center,
+                    child: Text(
+                      'Time for a quiz!',
+                      style: TextStyle(
+                        fontSize: 22.0,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    )
+                ),
+                const SizedBox(height: 15.0),
+                Container(
+                  padding: const EdgeInsets.all(8.0),
+                  decoration: BoxDecoration(
+                    color: Colors.purple.shade100,
+                    border: Border.all(),
+                  ),
+                  alignment: Alignment.center,
+                  child: Text(
+                    signToTextQuestions[signToText]['question'],
+                    style: TextStyle(
+                      fontSize: 22.0,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 30.0),
+                Image.asset(
+                  signToTextQuestions[signToText]['questionContent'],
+                  width: double.infinity,
+                  height: 400,
+                  fit: BoxFit.contain,
+                ),
+                if(!tutorial) ...[
+                  const SizedBox(height: 30.0),
+                  TextField(
+                      controller: answerTextController,
+                      //autofocus: true,
+                      decoration: const InputDecoration(
+                          labelText: 'Type...',
+                          border: OutlineInputBorder()
+                      )
+                  ),
+                ],
+              ],
+            )
+            : Column(
               children: [
                 const SizedBox(height: 15.0),
                 Container(
@@ -265,7 +589,7 @@ class _MaterialScreenState extends State<MaterialScreen> {
                   ),
                   alignment: Alignment.center,
                   child: Text(
-                    tutorial ? readingTutorials[index]['tutorialText'] : multipleChoiceQuestions[index]['question'],
+                    tutorial ? readingTutorials[tutorialIndex]['tutorialText'] : multipleChoiceQuestions[tutorialIndex]['question'],
                     style: TextStyle(
                       fontSize: 22.0,
                       fontWeight: FontWeight.bold,
@@ -275,7 +599,7 @@ class _MaterialScreenState extends State<MaterialScreen> {
                 if(tutorial) ...[
                   const SizedBox(height: 15.0),
                   Image.asset(
-                    readingTutorials[index]['tutorialImage'],
+                    readingTutorials[tutorialIndex]['tutorialImage'],
                     width: double.infinity,
                     height: 400,
                     fit: BoxFit.contain,
@@ -290,7 +614,7 @@ class _MaterialScreenState extends State<MaterialScreen> {
                     ),
                     alignment: Alignment.center,
                     child: Text(
-                      multipleChoiceQuestions[index]['questionContent'],
+                      multipleChoiceQuestions[tutorialIndex]['questionContent'],
                       style: TextStyle(
                         fontSize: 22.0,
                         fontWeight: FontWeight.bold,
@@ -349,18 +673,20 @@ class _MaterialScreenState extends State<MaterialScreen> {
           ),
         ),
         floatingActionButton: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          mainAxisAlignment: !quiz ? MainAxisAlignment.spaceEvenly : MainAxisAlignment.end,
           children: [
-            ElevatedButton(
-              onPressed: _previous,
-              child: Text(
+            if (!quiz) ...[
+              ElevatedButton(
+                onPressed: _previous,
+                child: Text(
                   'Previous',
                   style: TextStyle(
                       fontSize: 20.0,
                       color: Colors.black
                   )
+                ),
               ),
-            ),
+            ],
             ElevatedButton(
               onPressed: _next,
               child: Text(
