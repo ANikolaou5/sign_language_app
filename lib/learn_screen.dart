@@ -195,6 +195,12 @@ class _LearnScreenState extends State<LearnScreen> {
                                             size: 30.0,
                                             color: Colors.black,
                                           ),
+                                        ] else ...[
+                                          Icon(
+                                            Icons.play_circle,
+                                            size: 30.0,
+                                            color: Colors.black,
+                                          ),
                                         ],
                                         Text(
                                           "Lesson",

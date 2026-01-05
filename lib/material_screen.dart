@@ -41,12 +41,25 @@ class _MaterialScreenState extends State<MaterialScreen> {
   bool quiz = false;
 
   void _createMatchQuestions() {
-    final shuffledImages = List<String>.from(images)..shuffle();
+    final lessonNum = widget.lesson['lessonNum'];
+
+    int signs = 0;
+
+    if (lessonNum == 1) { signs = 5; }
+    else if (lessonNum == 2) { signs = 10; }
+    else if (lessonNum == 3) { signs = 15; }
+    else if (lessonNum == 4) { signs = 20; }
+    else if (lessonNum == 5) { signs = 26; }
+    else if (lessonNum == 6) { signs = 31; }
+    else if (lessonNum == 7) { signs = 36; }
+
+    final imgs = images.take(signs).toList();
 
     matchQuestions.clear();
 
     for (int i = 0; i < 3; i++) {
-      final matchImages = shuffledImages.skip(i * 3).take(3).toList();
+      final shuffledImages = List<String>.from(imgs)..shuffle();
+      final matchImages = shuffledImages.take(3).toList();
 
       final correctPairs = matchImages.map((img) {
         return {
@@ -222,7 +235,7 @@ class _MaterialScreenState extends State<MaterialScreen> {
 
         Navigator.pop(context);
       }
-    } else if (quiz && signToTextQuestions.isNotEmpty && signToText < signToTextQuestions.length) {
+    } else if (quiz && signToText < signToTextQuestions.length && signToTextQuestions.isNotEmpty) {
       final inputAnswer = answerTextController.text.trim().toUpperCase();
       final correctAnswer = signToTextQuestions[signToText]['answer'].toString();
 
@@ -506,6 +519,34 @@ class _MaterialScreenState extends State<MaterialScreen> {
                     },
                   ),
                 ),
+                const SizedBox(height: 20.0),
+                Row(
+                  mainAxisAlignment: !quiz ? MainAxisAlignment.spaceBetween : MainAxisAlignment.end,
+                  children: [
+                    if (!quiz) ...[
+                      ElevatedButton(
+                        onPressed: _previous,
+                        child: const Text(
+                          'Previous',
+                          style: TextStyle(
+                              fontSize: 20.0,
+                              color: Colors.black
+                          ),
+                        ),
+                      ),
+                    ],
+                    ElevatedButton(
+                      onPressed: _next,
+                      child: const Text(
+                        'Next',
+                        style: TextStyle(
+                            fontSize: 20.0,
+                            color: Colors.black
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ],
             )
             : Column(
@@ -560,6 +601,34 @@ class _MaterialScreenState extends State<MaterialScreen> {
                       )
                   ),
                 ],
+                const SizedBox(height: 20.0),
+                Row(
+                  mainAxisAlignment: !quiz ? MainAxisAlignment.spaceBetween : MainAxisAlignment.end,
+                  children: [
+                    if (!quiz) ...[
+                      ElevatedButton(
+                        onPressed: _previous,
+                        child: const Text(
+                          'Previous',
+                          style: TextStyle(
+                              fontSize: 20.0,
+                              color: Colors.black
+                          ),
+                        ),
+                      ),
+                    ],
+                    ElevatedButton(
+                      onPressed: _next,
+                      child: const Text(
+                        'Next',
+                        style: TextStyle(
+                            fontSize: 20.0,
+                            color: Colors.black
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ],
             )
             : Column(
@@ -668,36 +737,37 @@ class _MaterialScreenState extends State<MaterialScreen> {
                     }),
                   ),
                 ],
+                const SizedBox(height: 20.0),
+                Row(
+                  mainAxisAlignment: !quiz ? MainAxisAlignment.spaceBetween : MainAxisAlignment.end,
+                  children: [
+                    if (!quiz) ...[
+                      ElevatedButton(
+                        onPressed: _previous,
+                        child: const Text(
+                          'Previous',
+                          style: TextStyle(
+                              fontSize: 20.0,
+                              color: Colors.black
+                          ),
+                        ),
+                      ),
+                    ],
+                    ElevatedButton(
+                      onPressed: _next,
+                      child: const Text(
+                        'Next',
+                        style: TextStyle(
+                            fontSize: 20.0,
+                            color: Colors.black
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ],
             ),
           ),
-        ),
-        floatingActionButton: Row(
-          mainAxisAlignment: !quiz ? MainAxisAlignment.spaceEvenly : MainAxisAlignment.end,
-          children: [
-            if (!quiz) ...[
-              ElevatedButton(
-                onPressed: _previous,
-                child: Text(
-                  'Previous',
-                  style: TextStyle(
-                      fontSize: 20.0,
-                      color: Colors.black
-                  )
-                ),
-              ),
-            ],
-            ElevatedButton(
-              onPressed: _next,
-              child: Text(
-                'Next',
-                style: TextStyle(
-                  fontSize: 20.0,
-                  color: Colors.black
-                )
-              ),
-            ),
-          ],
         ),
       ),
     );
