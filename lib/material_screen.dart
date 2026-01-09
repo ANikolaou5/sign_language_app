@@ -185,7 +185,7 @@ class _MaterialScreenState extends State<MaterialScreen> {
       return;
     }
 
-    if (quiz && signToText >= signToTextQuestions.length - 1 && matchQuestions.isNotEmpty) {
+    if (quiz && signToText >= signToTextQuestions.length && matchQuestions.isNotEmpty) {
       if (userMatch.length < 3) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -281,14 +281,12 @@ class _MaterialScreenState extends State<MaterialScreen> {
         );
       }
 
-      if (signToText < signToTextQuestions.length - 1) {
-        setState(() {
-          signToText++;
-          answerTextController.clear();
-        });
+      setState(() {
+        signToText++;
+        answerTextController.clear();
+      });
 
-        return;
-      }
+      return;
     } else {
       final correctAnswer = multipleChoiceQuestions[tutorialIndex]['answer'];
 
@@ -361,6 +359,13 @@ class _MaterialScreenState extends State<MaterialScreen> {
         tutorial = false;
         tutorialIndex--;
       });
+    } else if (tutorialIndex <= 0) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('There is no previous content!'),
+          duration: Duration(seconds: 1),
+        ),
+      );
     }
   }
 
@@ -418,7 +423,7 @@ class _MaterialScreenState extends State<MaterialScreen> {
           padding: const EdgeInsets.all(10.0),
           child: readingTutorials.isEmpty ? const Center(child: CircularProgressIndicator()) : SingleChildScrollView(
             scrollDirection: Axis.vertical,
-            child: quiz ? signToText >= signToTextQuestions.length - 1 ? Column(
+            child: quiz ? signToText >= signToTextQuestions.length ? Column(
               children: [
                 const SizedBox(height: 15.0),
                 Container(
