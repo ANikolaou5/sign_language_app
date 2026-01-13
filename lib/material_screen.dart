@@ -229,18 +229,10 @@ class _MaterialScreenState extends State<MaterialScreen> {
         final DatabaseReference userRef = usersRef.child(widget.username);
         final DataSnapshot snapshot = await userRef.get();
 
-        int dbStreakNum = snapshot
-            .child('learningDetails/streakNum')
-            .value as int;
-        int dbStreakNumGoal = snapshot
-            .child('learningDetails/streakNumGoal')
-            .value as int;
-        int dbScore = snapshot
-            .child('learningDetails/score')
-            .value as int;
-        int dbCompletedLessons = snapshot
-            .child('learningDetails/completedLessons')
-            .value as int;
+        int dbStreakNum = snapshot.child('learningDetails/streakNum').value as int;
+        int dbStreakNumGoal = snapshot.child('learningDetails/streakNumGoal').value as int;
+        int dbScore = snapshot.child('learningDetails/score').value as int;
+        int dbCompletedLessons = snapshot.child('learningDetails/completedLessons').value as int;
 
         if (widget.lesson['lessonNum'] > dbCompletedLessons) {
           await userRef.update({
