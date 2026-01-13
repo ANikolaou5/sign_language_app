@@ -133,94 +133,94 @@ class _LearnScreenState extends State<LearnScreen> {
                             int lessonNum = lesson['lessonNum'] ?? 0;
 
                             return Center(
-                              child: Container(
-                                  padding: const EdgeInsets.all(3.0),
-                                  decoration: BoxDecoration(
-                                      color: (lessonNum <= completedLessons) ? Colors.green.shade300 : Colors.white,
-                                      border: Border.all(width: 2.0)
-                                  ),
-                                  alignment: Alignment.center,
-                                  child: TextButton(
-                                    onPressed: lessonNum <= completedLessons + 1 ? () {
-                                      showDialog(
-                                        context: context,
-                                        builder: (BuildContext context) {
-                                          return AlertDialog(
-                                            title: (lessonNum <= completedLessons) ? Text('Review lesson') : Text('Start lesson'),
-                                            actions: [
-                                              TextButton(
-                                                onPressed: () async {
-                                                  Navigator.pop(context);
-                                                  await Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(builder: (
-                                                        context) => MaterialScreen(lesson: lesson, username: username ?? '')));
-                                                  await _loadLearningDetails();
-                                                }, child: Row(
-                                                  children: [
-                                                    Text(
-                                                      (lessonNum <= completedLessons) ? "Review " : "Start ",
-                                                      style: TextStyle(
-                                                        fontSize: 22.0,
-                                                        fontWeight: FontWeight.bold,
-                                                        color: Colors.black,
-                                                      ),
-                                                    ),
-                                                    Icon(
-                                                      Icons.arrow_circle_right_outlined,
-                                                      size: 30.0,
-                                                      color: Colors.black,
-                                                    )
-                                                  ],
+                              child: InkWell(
+                                onTap: lessonNum <= completedLessons + 1 ? () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return AlertDialog(
+                                        title: (lessonNum <= completedLessons) ? Text('Review lesson') : Text('Start lesson'),
+                                        actions: [
+                                          TextButton(
+                                            onPressed: () async {
+                                              Navigator.pop(context);
+                                              await Navigator.push(
+                                                context,
+                                                MaterialPageRoute(builder: (
+                                                    context) => MaterialScreen(lesson: lesson, username: username ?? '')));
+                                              await _loadLearningDetails();
+                                            }, child: Row(
+                                              children: [
+                                                Text(
+                                                  (lessonNum <= completedLessons) ? "Review " : "Start ",
+                                                  style: TextStyle(
+                                                    fontSize: 22.0,
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Colors.black,
+                                                  ),
                                                 ),
-                                              ),
-                                            ],
-                                          );
-                                        }
-                                      );
-                                    }
-                                    : null,
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.center,
-                                      children: [
-                                        if (lessonNum > completedLessons + 1) ...[
-                                          Icon(
-                                            Icons.lock,
-                                            size: 30.0,
-                                            color: Colors.black,
-                                          ),
-                                        ] else if (lessonNum <= completedLessons) ...[
-                                          Icon(
-                                            Icons.check_circle,
-                                            size: 30.0,
-                                            color: Colors.black,
-                                          ),
-                                        ] else ...[
-                                          Icon(
-                                            Icons.play_circle,
-                                            size: 30.0,
-                                            color: Colors.black,
+                                                Icon(
+                                                  Icons.arrow_circle_right_outlined,
+                                                  size: 30.0,
+                                                  color: Colors.black,
+                                                )
+                                              ],
+                                            ),
                                           ),
                                         ],
-                                        Text(
-                                          "Lesson",
-                                          style: TextStyle(
-                                            fontSize: 22.0,
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.black,
-                                          ),
+                                      );
+                                    }
+                                  );
+                                }
+                                : null,
+                                child: Container(
+                                  padding: const EdgeInsets.all(8.0),
+                                  decoration: BoxDecoration(
+                                    color: (lessonNum <= completedLessons) ? Colors.green.shade300 : Colors.white,
+                                    border: Border.all(width: 2.0),
+                                  ),
+                                  alignment: Alignment.center,
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    children: [
+                                      if (lessonNum > completedLessons + 1) ...[
+                                        Icon(
+                                          Icons.lock,
+                                          size: 30.0,
+                                          color: Colors.black,
                                         ),
-                                        Text(
-                                          "$lessonNum",
-                                          style: TextStyle(
-                                            fontSize: 22.0,
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.black,
-                                          ),
+                                      ] else if (lessonNum <= completedLessons) ...[
+                                        Icon(
+                                          Icons.check_circle,
+                                          size: 30.0,
+                                          color: Colors.black,
+                                        ),
+                                      ] else ...[
+                                        Icon(
+                                          Icons.play_circle,
+                                          size: 30.0,
+                                          color: Colors.black,
                                         ),
                                       ],
-                                    ),
+                                      Text(
+                                        "Lesson",
+                                        style: TextStyle(
+                                          fontSize: 22.0,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                      Text(
+                                        "$lessonNum",
+                                        style: TextStyle(
+                                          fontSize: 22.0,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                    ],
                                   ),
+                                ),
                               ),
                             );
                           }).toList(),

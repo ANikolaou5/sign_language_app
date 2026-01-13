@@ -34,7 +34,7 @@ class _AccountScreenState extends State<AccountScreen> {
   bool login = false;
   bool loading = false;
 
-  Future<void> _signin() async {
+  Future<void> _register() async {
     setState(() => loading = true);
 
     String inputName = nameTextController.text.trim();
@@ -288,9 +288,9 @@ class _AccountScreenState extends State<AccountScreen> {
                       loading ? const Center(child: CircularProgressIndicator()) : Column(
                         children: [
                           ElevatedButton(
-                              onPressed: login ? _login : _signin,
+                              onPressed: login ? _login : _register,
                               child: Text(
-                                  login ? 'Log in' : 'Sign in',
+                                  login ? 'Log in' : 'Register',
                                   style: const TextStyle(
                                     fontSize: 18.0,
                                     fontWeight: FontWeight.bold,
@@ -308,7 +308,7 @@ class _AccountScreenState extends State<AccountScreen> {
                               TextButton(
                                 onPressed: () => setState(() => login = !login),
                                 child: Text(
-                                    login ? "Sign in" : "Log in",
+                                    login ? "Register" : "Log in",
                                     style: const TextStyle(
                                         fontSize: 16.0,
                                         decoration: TextDecoration.underline,
