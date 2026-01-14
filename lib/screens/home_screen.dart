@@ -2,6 +2,8 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../classes/user_class.dart';
+
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key, required this.changeIndex});
 
@@ -13,49 +15,60 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   late TextEditingController streakGoalTextController;
-
-  String? username;
-  String dbStreakNum = '0';
-  String? dbStreakNumGoal = '0';
-  String? dbScore = '0';
-  String? dbCompletedLessons = '0';
   final DatabaseReference usersRef = FirebaseDatabase.instance.ref().child('users');
-  List<Map<String, dynamic>> users = [];
+  User? user;
+  List<User> users = [];
 
   // Function to load username from local storage, when already logged in.
   Future<void> _loadUserLocalStorage() async {
     final prefs = await SharedPreferences.getInstance();
-    setState(() {
-      username = prefs.getString('username') ?? '';
-    });
+    final username = prefs.getString('username') ?? '';
+
+    if (username != '') {
+      final snapshot = await usersRef.child(username).get();
+
+      if (snapshot.exists) {
+        final data =
+        Map<String, dynamic>.from(snapshot.value as Map);
+        setState(() {
+          user = User.fromFirebase(username, data);
+        });
+      }
+    }
   }
 
   Future<void> _updateStreakNum() async {
-    final DatabaseReference userRef = usersRef.child(username!).child('learningDetails');
+    if (user == null) return;
+
+    final userRef = usersRef.child(user!.username).child('learningDetails');
     String inputStreakGoal = streakGoalTextController.text.trim();
 
     await userRef.update({
-      'streakNumGoal': inputStreakGoal,
+      'streakNumGoal': int.tryParse(inputStreakGoal) ?? 0,
     });
 
     setState(() {
-      dbStreakNumGoal = inputStreakGoal;
+      user = User(
+        username: user!.username,
+        password: user!.password,
+        name: user!.name,
+        surname: user!.surname,
+        email: user!.email,
+        streakNum: user!.streakNum,
+        streakNumGoal: int.tryParse(inputStreakGoal) ?? 0,
+        score: user!.score,
+        completedLessons: user!.completedLessons,
+      );
     });
 
     Navigator.pop(context);
   }
 
   // Function to load the learning details of the user from the Realtime database.
-  Future<void> _loadLearningDetails() async {
-    final DatabaseReference userRef = usersRef.child(username!);
-    final DataSnapshot snapshot = await userRef.get();
+  Future<void> _checkStreakGoal() async {
+    if (user == null) return;
 
-    dbStreakNum = (snapshot.child('learningDetails/streakNum').value ?? 0).toString();
-    dbStreakNumGoal = (snapshot.child('learningDetails/streakNumGoal').value ?? 0).toString();
-    dbScore = (snapshot.child('learningDetails/score').value ?? 0).toString();
-    dbCompletedLessons = (snapshot.child('learningDetails/completedLessons').value ?? 0).toString();
-
-    if (dbStreakNum == dbStreakNumGoal && username != '') {
+    if (user!.streakNum >= user!.streakNumGoal) {
       Future.delayed(Duration.zero, () {
         showDialog(
           context: context,
@@ -85,14 +98,15 @@ class _HomeScreenState extends State<HomeScreen> {
   // Function to load all users from the Realtime database.
   Future<void> _loadUsers() async {
     final snapshot = await usersRef.get();
+    if (!snapshot.exists) return;
 
     final data = Map<String, dynamic>.from(snapshot.value as Map);
 
-    users = data.values
-        .map((value) => Map<String, dynamic>.from(value))
-        .toList();
+    users = data.entries.map((entry) {
+      return User.fromFirebase(entry.key, Map<String, dynamic>.from(entry.value as Map));
+    }).toList();
 
-    users.sort((b, a) => (a['learningDetails']['score'] as int).compareTo(b['learningDetails']['score'] as int));
+    users.sort((b, a) => a.score.compareTo(b.score));
     users = users.take(3).toList();
 
     setState(() {});
@@ -103,11 +117,9 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     streakGoalTextController = TextEditingController();
 
-    _loadUserLocalStorage().then((_) {
-      _loadLearningDetails().then((_) {
-        _loadUsers();
-        setState(() {});
-      });
+    _loadUserLocalStorage().then((_) async {
+      await _checkStreakGoal();
+      await _loadUsers();
     });
   }
 
@@ -121,7 +133,7 @@ class _HomeScreenState extends State<HomeScreen> {
               children: [
                 const SizedBox(height: 15.0),
                 Text(
-                  (username != '') ? "Welcome, $username!" : "Welcome!",
+                  user == null ? "Welcome!" : "Welcome, ${user!.username}",
                   style: const TextStyle(
                       fontSize: 26.0,
                       fontWeight: FontWeight.bold
@@ -131,96 +143,16 @@ class _HomeScreenState extends State<HomeScreen> {
                 Container(
                     padding: const EdgeInsets.all(8.0),
                     decoration: BoxDecoration(
-                        color: Colors.purple.shade100,
-                        border: Border.all()
+                      color: Colors.purple.shade100,
+                      border: Border.all()
                     ),
                     alignment: Alignment.center,
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Text(
-                                "Streak",
-                                style: TextStyle(
-                                  fontSize: 22.0,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              Container(
-                                padding: const EdgeInsets.all(16.0),
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  shape: BoxShape.circle,
-                                  border: Border.all(width: 2.0),
-                                ),
-                                child: Text(
-                                  dbStreakNum,
-                                  style: TextStyle(
-                                    fontSize: 18.0,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              )
-                            ],
-                        ),
-                        const SizedBox(height: 10.0),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Text(
-                              "Streak Goal",
-                              style: TextStyle(
-                                fontSize: 22.0,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            Container(
-                              padding: const EdgeInsets.all(16.0),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                shape: BoxShape.circle,
-                                border: Border.all(width: 2.0),
-                              ),
-                              child: Text(
-                                dbStreakNumGoal!,
-                                style: TextStyle(
-                                  fontSize: 18.0,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            )
-                          ],
-                        ),
-                        const SizedBox(height: 10.0),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Text(
-                              "Score",
-                              style: TextStyle(
-                                fontSize: 22.0,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            Container(
-                              padding: const EdgeInsets.all(16.0),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                shape: BoxShape.circle,
-                                border: Border.all(width: 2.0),
-                              ),
-                              child: Text(
-                                dbScore!,
-                                style: TextStyle(
-                                  fontSize: 18.0,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            )
-                          ],
-                        ),
+                        _circle("Streak", user?.streakNum ?? 0),
+                        _circle("Streak Goal", user?.streakNumGoal ?? 0),
+                        _circle("Score", user?.score ?? 0),
                       ],
                     )
                 ),
@@ -274,9 +206,6 @@ class _HomeScreenState extends State<HomeScreen> {
                       const SizedBox(height: 10.0),
                       Column(
                         children: users.map((user) {
-                          String name = user['accountDetails']['username'];
-                          int score = user['learningDetails']['score'];
-
                           return Column(
                             children: [
                               const SizedBox(height: 10.0),
@@ -285,7 +214,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   children: [
                                     Expanded(
                                       child: Text(
-                                        name,
+                                        user.username,
                                         textAlign: TextAlign.center,
                                         style: const TextStyle(
                                           fontSize: 18.0,
@@ -295,7 +224,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     ),
                                     Expanded(
                                       child: Text(
-                                        score.toString(),
+                                        user.score.toString(),
                                         textAlign: TextAlign.center,
                                         style: const TextStyle(
                                           fontSize: 18.0,
@@ -318,4 +247,34 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
     );
   }
+}
+
+Widget _circle(String label, int value) {
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.center,
+    children: [
+      Text(
+        label,
+        style: const TextStyle(
+          fontSize: 22.0,
+          fontWeight: FontWeight.bold
+        ),
+      ),
+      Container(
+        padding: const EdgeInsets.all(16.0),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          shape: BoxShape.circle,
+          border: Border.all(width: 2.0),
+        ),
+        child: Text(
+          value.toString(),
+          style: const TextStyle(
+            fontSize: 18.0,
+            fontWeight: FontWeight.bold
+          ),
+        ),
+      ),
+    ],
+  );
 }

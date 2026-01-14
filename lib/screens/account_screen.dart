@@ -2,6 +2,8 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../classes/user_class.dart';
+
 class AccountScreen extends StatefulWidget {
   const AccountScreen({super.key, required this.changeIndex});
 
@@ -24,11 +26,7 @@ class _AccountScreenState extends State<AccountScreen> {
   final DatabaseReference usersRef = FirebaseDatabase.instance.ref().child('users');
 
   String? errorMessage;
-  String? name;
-  String? surname;
-  String? email;
-  String? username;
-  String? password;
+  User? user;
 
   bool visible = false;
   bool login = false;
@@ -81,15 +79,23 @@ class _AccountScreenState extends State<AccountScreen> {
       }
     });
 
+    final newUser = User(
+      name: inputName,
+      surname: inputSurname,
+      email: inputEmail,
+      username: inputUsername,
+      password: inputPassword,
+      streakNum: 0,
+      streakNumGoal: 0,
+      score: 0,
+      completedLessons: 0,
+    );
+
     // Saving user info to local storage.
-    await _saveUserLocalStorage(inputName, inputSurname, inputEmail, inputUsername, inputPassword);
+    await _saveUserLocalStorage(newUser);
 
     setState(() {
-      name = inputName;
-      surname = inputSurname;
-      email = inputEmail;
-      username = inputUsername;
-      password = inputPassword;
+      user = newUser;
       errorMessage = null;
       loading = false;
     });
@@ -122,65 +128,72 @@ class _AccountScreenState extends State<AccountScreen> {
       return;
     }
 
-    // Loading name, surname & email from database.
-    String dbName = snapshot.child('accountDetails/name').value.toString();
-    String dbSurname = snapshot.child('accountDetails/surname').value.toString();
-    String dbEmail = snapshot.child('accountDetails/email').value.toString();
+    final snapshotValue = snapshot.value;
 
-    // Saving user info to local storage.
-    await _saveUserLocalStorage(dbName, dbSurname, dbEmail, inputUsername, inputPassword);
+    if (snapshotValue is Map) {
+      final data = Map<String, dynamic>.from(snapshotValue);
+      final dbUser = User.fromFirebase(inputUsername, data);
 
-    setState(() {
-      name = dbName;
-      surname = dbSurname;
-      email = dbEmail;
-      username = inputUsername;
-      password = inputPassword;
-      errorMessage = null;
-      loading = false;
-    });
+      // Saving user info to local storage.
+      await _saveUserLocalStorage(dbUser);
+
+      setState(() {
+        user = dbUser;
+        errorMessage = null;
+        loading = false;
+      });
+    }
   }
 
   // Function for logging out.
   Future<void> _logout() async {
     final prefs = await SharedPreferences.getInstance();
+    await prefs.clear();
 
-    // Removing user credentials.
-    await prefs.remove('name');
+    /* await prefs.remove('name');
     await prefs.remove('surname');
     await prefs.remove('email');
     await prefs.remove('username');
-    await prefs.remove('password');
+    await prefs.remove('password'); */
 
     setState(() {
-      name = null;
-      surname = null;
-      email = null;
-      username = null;
-      password = null;
+      user = null;
     });
   }
 
   // Function to load user info from local storage, when already logged in.
   Future<void> _loadUserLocalStorage() async {
     final prefs = await SharedPreferences.getInstance();
+    final username = prefs.getString('username');
+    if (username == null) return;
+
     setState(() {
-      name = prefs.getString('name');
-      surname = prefs.getString('surname');
-      email = prefs.getString('email');
-      username = prefs.getString('username');
-      password = prefs.getString('password');
+      user = User(
+        username: username,
+        password: prefs.getString('password'),
+        name: prefs.getString('name'),
+        surname: prefs.getString('surname'),
+        email: prefs.getString('email'),
+        streakNum: prefs.getInt('streakNum') ?? 0,
+        streakNumGoal: prefs.getInt('streakNumGoal') ?? 0,
+        score: prefs.getInt('score') ?? 0,
+        completedLessons: prefs.getInt('completedLessons') ?? 0,
+      );
     });
   }
 
   // Function to save user info to local storage.
-  Future<void> _saveUserLocalStorage(String nameInput, String surnameInput, String emailInput, String usernameInput, String passwordInput) async {
+  Future<void> _saveUserLocalStorage(User user) async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('name', nameInput);
-    await prefs.setString('surname', surnameInput);
-    await prefs.setString('email', emailInput);
-    await prefs.setString('username', usernameInput);
-    await prefs.setString('password', passwordInput);
+
+    await prefs.setString('username', user.username);
+    if (user.name != null) await prefs.setString('name', user.name!);
+    if (user.surname != null) await prefs.setString('surname', user.surname!);
+    if (user.email != null) await prefs.setString('email', user.email!);
+    await prefs.setInt('streakNum', user.streakNum);
+    await prefs.setInt('streakNumGoal', user.streakNumGoal);
+    await prefs.setInt('score', user.score);
+    await prefs.setInt('completedLessons', user.completedLessons);
   }
 
   @override
@@ -216,7 +229,7 @@ class _AccountScreenState extends State<AccountScreen> {
                   )],
                 ),
                 alignment: Alignment.center,
-                child: username == null ? Column(
+                child: user == null ? Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       const SizedBox(height: 20.0),
@@ -348,7 +361,7 @@ class _AccountScreenState extends State<AccountScreen> {
                           ),
                         ),
                         Text(
-                          username!,
+                          user!.username,
                           style: const TextStyle(
                               fontSize: 22,
                               fontWeight: FontWeight.bold
@@ -369,7 +382,7 @@ class _AccountScreenState extends State<AccountScreen> {
                           ),
                         ),
                         Text(
-                            '$name $surname',
+                            '${user!.name} ${user!.surname}',
                             style: const TextStyle(
                                 fontSize: 22,
                                 fontWeight: FontWeight.bold
@@ -390,7 +403,7 @@ class _AccountScreenState extends State<AccountScreen> {
                           ),
                         ),
                         Text(
-                          email!,
+                          user!.email!,
                           style: const TextStyle(
                               fontSize: 22,
                               fontWeight: FontWeight.bold

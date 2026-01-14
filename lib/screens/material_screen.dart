@@ -1,10 +1,15 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 
+import '../classes/lesson_class.dart';
+import '../classes/multiple_choice_question_class.dart';
+import '../classes/reading_tutorial_class.dart';
+import '../classes/sign_to_text_question_class.dart';
+
 class MaterialScreen extends StatefulWidget {
   const MaterialScreen({super.key, required this.lesson, required this.username});
 
-  final Map<String, dynamic> lesson;
+  final Lesson lesson;
   final String username;
 
   @override
@@ -20,17 +25,17 @@ class _MaterialScreenState extends State<MaterialScreen> {
     ...List.generate(10, (i) => 'assets/images/${i + 1}.png'),
   ];
 
-  List<Map<String, dynamic>> readingTutorials = [];
-  List<Map<String, dynamic>> multipleChoiceQuestions = [];
-  List<Map<String, dynamic>> signToTextQuestions = [];
+  List<ReadingTutorial> readingTutorials = [];
+  List<MultipleChoiceQuestion> multipleChoiceQuestions = [];
+  List<SignToTextQuestion> signToTextQuestions = [];
+
   List<Map<String, dynamic>> matchQuestions = [];
-  Map<String, String> userMatch = {};
   List<String> possibleAnswers = [];
   List<String> options = [];
+  Set<String> matchedImages = {};
+  Set<String> matchedTexts = {};
 
   String? answer;
-  String? matchImg;
-  String? matchTxt;
 
   int? answerIndex;
   int tutorialIndex = 0;
@@ -41,7 +46,7 @@ class _MaterialScreenState extends State<MaterialScreen> {
   bool quiz = false;
 
   void _createOptions() {
-    final lessonNum = widget.lesson['lessonNum'];
+    final lessonNum = widget.lesson.lessonNum;
 
     if (lessonNum == 1) {
       options = ['A','B','C','D','E'];
@@ -61,8 +66,7 @@ class _MaterialScreenState extends State<MaterialScreen> {
   }
 
   void _createMatchQuestions() {
-    final lessonNum = widget.lesson['lessonNum'];
-
+    final lessonNum = widget.lesson.lessonNum;
     int signs = 0;
 
     if (lessonNum == 1) { signs = 5; }
@@ -97,51 +101,8 @@ class _MaterialScreenState extends State<MaterialScreen> {
     }
   }
 
-  void _checkUserMatch() {
-    if (matchImg == null || matchTxt == null) return;
-
-    final correctText = matchImg!.split('/').last.replaceAll('.png', '').toUpperCase();
-
-    if (correctText == matchTxt) {
-      setState(() {
-        userMatch[matchImg!] = matchTxt!;
-      });
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Correct answer!',
-            style: TextStyle(
-              color: Colors.black,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          backgroundColor: Colors.green.shade400,
-          duration: Duration(seconds: 1),
-        ),
-      );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Incorrect answer. Try again!',
-            style: TextStyle(
-              color: Colors.black,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          backgroundColor: Colors.red.shade400,
-          duration: Duration(seconds: 1),
-        ),
-      );
-    }
-
-    matchImg = null;
-    matchTxt = null;
-  }
-
   void _createPossibleAnswers() {
-    final correctImage = multipleChoiceQuestions[tutorialIndex]['answer'] as String;
+    final correctImage = multipleChoiceQuestions[tutorialIndex].answer;
 
     final wrongImages = images
         .where((img) => img != correctImage)
@@ -160,38 +121,39 @@ class _MaterialScreenState extends State<MaterialScreen> {
   Future<void> _loadReadingTutorials() async {
     final ref = FirebaseDatabase.instance.ref();
     final snapshot = await ref.child('readingTutorials').get();
+    if (!snapshot.exists || snapshot.value == null) return;
 
     final data = Map<String, dynamic>.from(snapshot.value as Map);
 
     readingTutorials = data.values
-        .map((value) => Map<String, dynamic>.from(value))
-        .where((readingTutorial) => readingTutorial['lessonNum'] == widget.lesson['lessonNum'])
+        .map((value) => ReadingTutorial.fromMap(Map<String, dynamic>.from(value as Map)))
+        .where((tut) => tut.lessonNum == widget.lesson.lessonNum)
         .toList();
 
-    readingTutorials.sort((a, b) => (a['readingTutorial'] as int).compareTo(b['readingTutorial'] as int));
-
+    readingTutorials.sort((a, b) => a.readingTutorial.compareTo(b.readingTutorial));
     setState(() {});
   }
 
   Future<void> _loadQuestions() async {
     final ref = FirebaseDatabase.instance.ref();
     final snapshot = await ref.child('questions').get();
+    if (!snapshot.exists || snapshot.value == null) return;
 
     final data = Map<String, dynamic>.from(snapshot.value as Map);
 
     multipleChoiceQuestions = data.values
-        .map((value) => Map<String, dynamic>.from(value))
-        .where((question) => (question['type'] == "multipleChoice" && question['lessonNum'] == widget.lesson['lessonNum']))
+        .map((value) => MultipleChoiceQuestion.fromMap(Map<String, dynamic>.from(value as Map)))
+        .where((q) => q.lessonNum == widget.lesson.lessonNum && q.questionType == 'multipleChoice')
         .toList();
 
-    multipleChoiceQuestions.sort((a, b) => (a['questionNum'] as int).compareTo(b['questionNum'] as int));
+    multipleChoiceQuestions.sort((a, b) => a.questionNum.compareTo(b.questionNum));
 
     signToTextQuestions = data.values
-        .map((value) => Map<String, dynamic>.from(value))
-        .where((question) => (question['type'] == "text" && question['lessonNum'] == widget.lesson['lessonNum']))
+        .map((value) => SignToTextQuestion.fromMap(Map<String, dynamic>.from(value as Map)))
+        .where((q) => q.lessonNum == widget.lesson.lessonNum && q.questionType == 'text')
         .toList();
 
-    signToTextQuestions.sort((a, b) => (a['questionNum'] as int).compareTo(b['questionNum'] as int));
+    signToTextQuestions.sort((a, b) => a.questionNum.compareTo(b.questionNum));
 
     setState(() {});
   }
@@ -206,7 +168,7 @@ class _MaterialScreenState extends State<MaterialScreen> {
     }
 
     if (quiz && signToText >= signToTextQuestions.length && matchQuestions.isNotEmpty) {
-      if (userMatch.length < 3) {
+      if (matchedImages.length < 3) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('You should match all images and text!'),
@@ -219,7 +181,8 @@ class _MaterialScreenState extends State<MaterialScreen> {
       if (matchIndex < matchQuestions.length - 1) {
         setState(() {
           matchIndex++;
-          userMatch.clear();
+          matchedImages.clear();
+          matchedTexts.clear();
         });
         return;
       } else {
@@ -234,7 +197,7 @@ class _MaterialScreenState extends State<MaterialScreen> {
         int dbScore = snapshot.child('learningDetails/score').value as int;
         int dbCompletedLessons = snapshot.child('learningDetails/completedLessons').value as int;
 
-        if (widget.lesson['lessonNum'] > dbCompletedLessons) {
+        if (widget.lesson.lessonNum > dbCompletedLessons) {
           await userRef.update({
             'learningDetails': {
               'streakNum': dbStreakNum,
@@ -259,7 +222,7 @@ class _MaterialScreenState extends State<MaterialScreen> {
       }
 
       final inputAnswer = options[answerIndex!];
-      final correctAnswer = signToTextQuestions[signToText]['answer'].toString();
+      final correctAnswer = signToTextQuestions[signToText].answer;
 
       if (inputAnswer != correctAnswer) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -280,8 +243,7 @@ class _MaterialScreenState extends State<MaterialScreen> {
           answerIndex = null;
         });
         return;
-      }
-      else {
+      } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
@@ -304,8 +266,6 @@ class _MaterialScreenState extends State<MaterialScreen> {
 
       return;
     } else {
-      final correctAnswer = multipleChoiceQuestions[tutorialIndex]['answer'];
-
       if (answerIndex == null) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -316,6 +276,7 @@ class _MaterialScreenState extends State<MaterialScreen> {
         return;
       }
 
+      final correctAnswer = multipleChoiceQuestions[tutorialIndex].answer;
       answer = possibleAnswers[answerIndex!];
 
       if (answer != correctAnswer) {
@@ -338,8 +299,7 @@ class _MaterialScreenState extends State<MaterialScreen> {
         });
 
         return;
-      }
-      else {
+      } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
@@ -381,7 +341,7 @@ class _MaterialScreenState extends State<MaterialScreen> {
         tutorial = false;
         tutorialIndex--;
       });
-    } else if (tutorialIndex <= 0) {
+    } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('There is no previous content!'),
@@ -437,7 +397,7 @@ class _MaterialScreenState extends State<MaterialScreen> {
         appBar: AppBar(
           backgroundColor: Theme.of(context).colorScheme.inversePrimary,
           title: Text(
-            "Lesson ${widget.lesson['lessonNum']}",
+            "Lesson ${widget.lesson.lessonNum}",
             style: const TextStyle(fontWeight: FontWeight.bold),
           ),
         ),
@@ -472,7 +432,7 @@ class _MaterialScreenState extends State<MaterialScreen> {
                   ),
                   alignment: Alignment.center,
                   child: Text(
-                    'Tap each image and select its correct meaning to match them:',
+                    'Drag each image onto its correct meaning:',
                     style: const TextStyle(
                       fontSize: 22.0,
                       fontWeight: FontWeight.bold,
@@ -490,53 +450,102 @@ class _MaterialScreenState extends State<MaterialScreen> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            InkWell(
-                              onTap: () {
-                                setState(() {
-                                  matchImg = img;
-                                  _checkUserMatch();
-                                });
-                              },
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  border: Border.all(
-                                    color: userMatch[img] != null ? Colors.green : (matchImg == img ? Colors.green : Colors.grey),
-                                    width: matchImg == img || userMatch[img] != null ? 3.0 : 2.0,
+                            Expanded(
+                              child: matchedImages.contains(img) ? const SizedBox(height: 120.0) : Draggable<Map<String, String>>(
+                                data: {
+                                  'image': img,
+                                  'text': txt,
+                                },
+                                feedback: Opacity(
+                                  opacity: 0.7,
+                                  child: Image.asset(
+                                    img,
+                                    width: 120,
                                   ),
-                                  borderRadius: BorderRadius.circular(12.0),
                                 ),
-                                child: Image.asset(
-                                  img,
-                                  width: 130,
-                                  height: 130,
-                                  fit: BoxFit.contain,
+                                child: Card(
+                                  elevation: 4.0,
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
+                                  child: Image.asset(
+                                    img,
+                                    width: 120,
+                                    height: 120,
+                                  ),
                                 ),
                               ),
                             ),
                             const SizedBox(width: 30.0),
-                            InkWell(
-                              onTap: () {
-                                setState(() {
-                                  matchTxt = txt;
-                                  _checkUserMatch();
-                                });
-                              },
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  border: Border.all(
-                                    color: userMatch.containsValue(txt) ? Colors.green : (matchTxt == txt ? Colors.green : Colors.grey),
-                                    width: matchTxt == txt || userMatch.containsValue(txt) ? 3.0 : 2.0,
-                                  ),
-                                  borderRadius: BorderRadius.circular(12.0),
-                                ),
-                                padding: const EdgeInsets.all(10.0),
-                                child: Text(
-                                  txt,
-                                  style: const TextStyle(
-                                    fontSize: 22.0,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
+                            Expanded(
+                              child: matchedTexts.contains(txt) ? const SizedBox(height: 60.0) : DragTarget<Map<String, String>>(
+                                onWillAcceptWithDetails: (_) => true,
+                                onAcceptWithDetails: (details) {
+                                  final correctText = details.data['image']!
+                                      .split('/').last
+                                      .replaceAll('.png', '')
+                                      .toUpperCase();
+
+                                  if (correctText == txt) {
+                                    setState(() {
+                                      matchedImages.add(details.data['image']!);
+                                      matchedTexts.add(txt);
+                                    });
+
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text(
+                                          'Correct answer!',
+                                          style: TextStyle(
+                                            color: Colors.black,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        backgroundColor: Colors.green.shade400,
+                                        duration: Duration(seconds: 1),
+                                      ),
+                                    );
+                                  } else {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text(
+                                          'Incorrect answer. Try again!',
+                                          style: TextStyle(
+                                            color: Colors.black,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        backgroundColor: Colors.red.shade400,
+                                        duration: Duration(seconds: 1),
+                                      ),
+                                    );
+                                  }
+                                },
+                                builder: (context, candidateData, rejectedData) {
+                                  bool isHovering = candidateData.isNotEmpty;
+                                  return AnimatedContainer(
+                                    duration: const Duration(milliseconds: 200),
+                                    height: 80.0,
+                                    alignment: Alignment.center,
+                                    decoration: BoxDecoration(
+                                      color: isHovering ? Colors.indigo.shade200 : Colors.white,
+                                      borderRadius: BorderRadius.circular(12.0),
+                                      border: Border.all(
+                                        color: isHovering ? Colors.indigo : Colors.grey.shade400,
+                                        width: 2.5,
+                                      ),
+                                      boxShadow: [
+                                        if (!isHovering)
+                                          BoxShadow(color: Colors.grey.shade300, spreadRadius: 1.0, blurRadius: 3.0),
+                                      ],
+                                    ),
+                                    child: Text(
+                                      txt,
+                                      style: const TextStyle(
+                                        fontSize: 22.0,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  );
+                                },
                               ),
                             ),
                           ],
@@ -602,7 +611,7 @@ class _MaterialScreenState extends State<MaterialScreen> {
                   ),
                   alignment: Alignment.center,
                   child: Text(
-                    signToTextQuestions[signToText]['question'],
+                    signToTextQuestions[signToText].question,
                     style: TextStyle(
                       fontSize: 22.0,
                       fontWeight: FontWeight.bold,
@@ -611,7 +620,7 @@ class _MaterialScreenState extends State<MaterialScreen> {
                 ),
                 const SizedBox(height: 30.0),
                 Image.asset(
-                  signToTextQuestions[signToText]['questionContent'],
+                  signToTextQuestions[signToText].questionContent,
                   width: double.infinity,
                   height: 400,
                   fit: BoxFit.contain,
@@ -695,7 +704,7 @@ class _MaterialScreenState extends State<MaterialScreen> {
                   ),
                   alignment: Alignment.center,
                   child: Text(
-                    widget.lesson['name'],
+                    widget.lesson.name,
                     style: TextStyle(
                       fontSize: 22.0,
                       fontWeight: FontWeight.bold,
@@ -711,7 +720,7 @@ class _MaterialScreenState extends State<MaterialScreen> {
                   ),
                   alignment: Alignment.center,
                   child: Text(
-                    tutorial ? readingTutorials[tutorialIndex]['tutorialText'] : multipleChoiceQuestions[tutorialIndex]['question'],
+                    tutorial ? readingTutorials[tutorialIndex].tutorialText : multipleChoiceQuestions[tutorialIndex].question,
                     style: TextStyle(
                       fontSize: 22.0,
                       fontWeight: FontWeight.bold,
@@ -721,7 +730,7 @@ class _MaterialScreenState extends State<MaterialScreen> {
                 if(tutorial) ...[
                   const SizedBox(height: 15.0),
                   Image.asset(
-                    readingTutorials[tutorialIndex]['tutorialImage'],
+                    readingTutorials[tutorialIndex].tutorialImage,
                     width: double.infinity,
                     height: 400,
                     fit: BoxFit.contain,
@@ -738,7 +747,7 @@ class _MaterialScreenState extends State<MaterialScreen> {
                     ),
                     alignment: Alignment.center,
                     child: Text(
-                      multipleChoiceQuestions[tutorialIndex]['questionContent'],
+                      multipleChoiceQuestions[tutorialIndex].questionContent,
                       style: TextStyle(
                         fontSize: 25.0,
                         fontWeight: FontWeight.bold,

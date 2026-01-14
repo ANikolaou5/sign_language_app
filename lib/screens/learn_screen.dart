@@ -1,7 +1,9 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:sign_language_app/material_screen.dart';
+import 'package:sign_language_app/screens/material_screen.dart';
+
+import '../classes/lesson_class.dart';
 
 class LearnScreen extends StatefulWidget {
   const LearnScreen({super.key, required this.changeIndex});
@@ -15,7 +17,7 @@ class LearnScreen extends StatefulWidget {
 class _LearnScreenState extends State<LearnScreen> {
   String? username;
   int completedLessons = 0;
-  Map<String, dynamic> lessons = {};
+  Map<int, List<Lesson>> levelLessons = {};
 
   // Function to load username from local storage, when already logged in.
   Future<void> _loadUserLocalStorage() async {
@@ -26,6 +28,8 @@ class _LearnScreenState extends State<LearnScreen> {
   }
 
   Future<void> _loadLearningDetails() async {
+    if (username == null || username!.isEmpty) return;
+
     final DatabaseReference usersRef = FirebaseDatabase.instance.ref().child('users');
     final DatabaseReference userRef = usersRef.child(username!);
     final DataSnapshot snapshot = await userRef.get();
@@ -40,47 +44,59 @@ class _LearnScreenState extends State<LearnScreen> {
   Future<void> _loadLessons() async {
     final ref = FirebaseDatabase.instance.ref();
     final snapshot = await ref.child('lessons').get();
+    if (!snapshot.exists) return;
 
-    lessons = (snapshot.value as Map<dynamic, dynamic>)
-        .map((key, value) => MapEntry(key.toString(), value));
+    final data = Map<String, dynamic>.from(snapshot.value as Map);
+    Map<int, List<Lesson>> levels = {};
 
-    setState(() {});
+    for (var level in data.entries) {
+      final levelMap = Map<String, dynamic>.from(level.value as Map);
+      final levelNum = levelMap['levelNum'] as int? ?? 0;
+
+      final lessons = levelMap.entries
+          .where((e) => e.key.startsWith('lesson'))
+          .map((e) => Lesson.fromMap(Map<String, dynamic>.from(e.value as Map)))
+          .toList();
+
+      lessons.sort((a, b) => a.lessonNum.compareTo(b.lessonNum));
+
+      levels[levelNum] = lessons;
+    }
+
+    setState(() {
+      levelLessons = levels;
+    });
   }
 
   @override
   void initState() {
     super.initState();
 
-    _loadUserLocalStorage().then((_) {
-      _loadLessons().then((_) {
-        setState(() {});
-      });
-
-      if (username == '') {
+    _loadUserLocalStorage().then((_) async {
+      if (username == null || username!.isEmpty) {
         showDialog(
           context: context,
           barrierDismissible: false,
-          builder: (context) {
-            return AlertDialog(
-              title: const Text('Login required!'),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                    widget.changeIndex(2);
-                  },
-                  child: const Text(
-                    'Log in / Sign in',
-                    style: TextStyle(fontSize: 18.0),
-                  ),
+          builder: (context) => AlertDialog(
+            title: const Text('Login required!'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  widget.changeIndex(2);
+                },
+                child: const Text(
+                  'Log in / Sign in',
+                  style: TextStyle(fontSize: 18.0),
                 ),
-              ],
-            );
-          },
+              ),
+            ],
+          ),
         );
+      } else {
+        await _loadLessons();
+        await _loadLearningDetails();
       }
-
-      _loadLearningDetails();
     });
   }
 
@@ -92,17 +108,9 @@ class _LearnScreenState extends State<LearnScreen> {
             child: SingleChildScrollView(
               scrollDirection: Axis.vertical,
               child: Column(
-                children: lessons.entries.map((levels) {
-                  Map<String, dynamic> level = (levels.value as Map<dynamic, dynamic>)
-                      .map((key, value) => MapEntry(key.toString(), value));
-
-                  List<Map<String, dynamic>> lessonsList = level.entries
-                      .where((e) => e.key.startsWith('lesson'))
-                      .map((e) => (e.value as Map<dynamic, dynamic>)
-                      .map((key, value) => MapEntry(key.toString(), value)))
-                      .toList();
-
-                  lessonsList.sort((a, b) => (a['lessonNum'] as int).compareTo(b['lessonNum'] as int));
+                children: levelLessons.entries.map((l) {
+                  final level = l.key;
+                  final lessons = l.value;
 
                   return Column(
                       children: [
@@ -115,7 +123,7 @@ class _LearnScreenState extends State<LearnScreen> {
                           ),
                           alignment: Alignment.center,
                           child: Text(
-                            "Level ${level['levelNum']}",
+                            "Level $level",
                             style: const TextStyle(
                               fontSize: 26.0,
                               fontWeight: FontWeight.bold,
@@ -129,17 +137,15 @@ class _LearnScreenState extends State<LearnScreen> {
                           crossAxisSpacing: 10.0,
                           shrinkWrap: true,
                           physics: NeverScrollableScrollPhysics(),
-                          children: lessonsList.map((lesson) {
-                            int lessonNum = lesson['lessonNum'] ?? 0;
-
+                          children: lessons.map((lesson) {
                             return Center(
                               child: InkWell(
-                                onTap: lessonNum <= completedLessons + 1 ? () {
+                                onTap: lesson.lessonNum <= completedLessons + 1 ? () {
                                   showDialog(
                                     context: context,
                                     builder: (BuildContext context) {
                                       return AlertDialog(
-                                        title: (lessonNum <= completedLessons) ? Text('Review lesson') : Text('Start lesson'),
+                                        title: (lesson.lessonNum <= completedLessons) ? Text('Review lesson') : Text('Start lesson'),
                                         actions: [
                                           TextButton(
                                             onPressed: () async {
@@ -152,7 +158,7 @@ class _LearnScreenState extends State<LearnScreen> {
                                             }, child: Row(
                                               children: [
                                                 Text(
-                                                  (lessonNum <= completedLessons) ? "Review " : "Start ",
+                                                  (lesson.lessonNum <= completedLessons) ? "Review " : "Start ",
                                                   style: TextStyle(
                                                     fontSize: 22.0,
                                                     fontWeight: FontWeight.bold,
@@ -176,20 +182,20 @@ class _LearnScreenState extends State<LearnScreen> {
                                 child: Container(
                                   padding: const EdgeInsets.all(8.0),
                                   decoration: BoxDecoration(
-                                    color: (lessonNum <= completedLessons) ? Colors.green.shade300 : Colors.white,
+                                    color: (lesson.lessonNum <= completedLessons) ? Colors.green.shade300 : Colors.white,
                                     border: Border.all(width: 2.0),
                                   ),
                                   alignment: Alignment.center,
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.center,
                                     children: [
-                                      if (lessonNum > completedLessons + 1) ...[
+                                      if (lesson.lessonNum > completedLessons + 1) ...[
                                         Icon(
                                           Icons.lock,
                                           size: 30.0,
                                           color: Colors.black,
                                         ),
-                                      ] else if (lessonNum <= completedLessons) ...[
+                                      ] else if (lesson.lessonNum <= completedLessons) ...[
                                         Icon(
                                           Icons.check_circle,
                                           size: 30.0,
@@ -211,7 +217,7 @@ class _LearnScreenState extends State<LearnScreen> {
                                         ),
                                       ),
                                       Text(
-                                        "$lessonNum",
+                                        "${lesson.lessonNum}",
                                         style: TextStyle(
                                           fontSize: 22.0,
                                           fontWeight: FontWeight.bold,
