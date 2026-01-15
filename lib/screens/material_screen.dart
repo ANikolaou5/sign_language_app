@@ -2,9 +2,8 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 
 import '../classes/lesson_class.dart';
-import '../classes/multiple_choice_question_class.dart';
+import '../classes/question_class.dart';
 import '../classes/reading_tutorial_class.dart';
-import '../classes/sign_to_text_question_class.dart';
 
 class MaterialScreen extends StatefulWidget {
   const MaterialScreen({super.key, required this.lesson, required this.username});
@@ -26,8 +25,8 @@ class _MaterialScreenState extends State<MaterialScreen> {
   ];
 
   List<ReadingTutorial> readingTutorials = [];
-  List<MultipleChoiceQuestion> multipleChoiceQuestions = [];
-  List<SignToTextQuestion> signToTextQuestions = [];
+  List<Question> multipleChoiceQuestions = [];
+  List<Question> signToTextQuestions = [];
 
   List<Map<String, dynamic>> matchQuestions = [];
   List<String> possibleAnswers = [];
@@ -78,7 +77,6 @@ class _MaterialScreenState extends State<MaterialScreen> {
     else if (lessonNum == 7) { signs = 36; }
 
     final imgs = images.take(signs).toList();
-
     matchQuestions.clear();
 
     for (int i = 0; i < 3; i++) {
@@ -141,21 +139,20 @@ class _MaterialScreenState extends State<MaterialScreen> {
 
     final data = Map<String, dynamic>.from(snapshot.value as Map);
 
-    multipleChoiceQuestions = data.values
-        .map((value) => MultipleChoiceQuestion.fromMap(Map<String, dynamic>.from(value as Map)))
-        .where((q) => q.lessonNum == widget.lesson.lessonNum && q.questionType == 'multipleChoice')
+    List<Question> allQuestions = data.values
+        .map((value) => Question.fromMap(Map<String, dynamic>.from(value as Map)))
+        .where((q) => q.lessonNum == widget.lesson.lessonNum)
         .toList();
 
-    multipleChoiceQuestions.sort((a, b) => a.questionNum.compareTo(b.questionNum));
+    setState(() {
+      multipleChoiceQuestions = allQuestions
+          .where((q) => q.questionType == QuestionType.multipleChoice)
+          .toList()..sort((a, b) => a.questionNum.compareTo(b.questionNum));
 
-    signToTextQuestions = data.values
-        .map((value) => SignToTextQuestion.fromMap(Map<String, dynamic>.from(value as Map)))
-        .where((q) => q.lessonNum == widget.lesson.lessonNum && q.questionType == 'text')
-        .toList();
-
-    signToTextQuestions.sort((a, b) => a.questionNum.compareTo(b.questionNum));
-
-    setState(() {});
+      signToTextQuestions = allQuestions
+          .where((q) => q.questionType == QuestionType.text)
+          .toList()..sort((a, b) => a.questionNum.compareTo(b.questionNum));
+    });
   }
 
   void _next() async {
