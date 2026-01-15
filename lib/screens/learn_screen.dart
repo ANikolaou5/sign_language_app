@@ -28,17 +28,23 @@ class _LearnScreenState extends State<LearnScreen> {
   }
 
   Future<void> _loadLearningDetails() async {
-    if (username == null || username!.isEmpty) return;
+    if (username != null && username!.isNotEmpty) {
+      final DatabaseReference usersRef = FirebaseDatabase.instance.ref().child('users');
+      final DatabaseReference userRef = usersRef.child(username!);
+      final DataSnapshot snapshot = await userRef.get();
 
-    final DatabaseReference usersRef = FirebaseDatabase.instance.ref().child('users');
-    final DatabaseReference userRef = usersRef.child(username!);
-    final DataSnapshot snapshot = await userRef.get();
+      int dbCompletedLessons = snapshot.child('learningDetails/completedLessons').value as int;
 
-    int dbCompletedLessons = snapshot.child('learningDetails/completedLessons').value as int;
-
-    setState(() {
-      completedLessons = dbCompletedLessons;
-    });
+      setState(() {
+        completedLessons = dbCompletedLessons;
+      });
+      return;
+    } else {
+      final prefs = await SharedPreferences.getInstance();
+      setState(() {
+        completedLessons = prefs.getInt('guestCompletedLessons') ?? 0;
+      });
+    }
   }
 
   Future<void> _loadLessons() async {
@@ -68,35 +74,59 @@ class _LearnScreenState extends State<LearnScreen> {
     });
   }
 
+  Future<void> _loginPrompt() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    if (username == null || username!.isEmpty) {
+      bool showPrompt = prefs.getBool('showPrompt') ?? false;
+
+      if (!showPrompt) {
+        showDialog(
+          context: context,
+          barrierDismissible: true,
+          builder: (context) =>
+              AlertDialog(
+                title: const Text('Log in for the full experience!'),
+                content: const Text(
+                  'If you log in or register, you can earn points and appear on the leaderboard!',
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () async {
+                      await prefs.setBool('showPrompt', true);
+                      Navigator.pop(context);
+                      widget.changeIndex(2);
+                    },
+                    child: const Text(
+                      'Log in / Register',
+                      style: TextStyle(fontSize: 18.0),
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: () async {
+                      await prefs.setBool('showPrompt', true);
+                      Navigator.pop(context);
+                    },
+                    child: const Text(
+                      'Continue as Guest',
+                      style: TextStyle(fontSize: 18.0),
+                    ),
+                  ),
+                ],
+              ),
+        );
+      }
+    }
+  }
+
   @override
   void initState() {
     super.initState();
 
     _loadUserLocalStorage().then((_) async {
-      if (username == null || username!.isEmpty) {
-        showDialog(
-          context: context,
-          barrierDismissible: false,
-          builder: (context) => AlertDialog(
-            title: const Text('Login required!'),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                  widget.changeIndex(2);
-                },
-                child: const Text(
-                  'Log in / Sign in',
-                  style: TextStyle(fontSize: 18.0),
-                ),
-              ),
-            ],
-          ),
-        );
-      } else {
-        await _loadLessons();
-        await _loadLearningDetails();
-      }
+      await _loadLessons();
+      await _loadLearningDetails();
+      await  _loginPrompt();
     });
   }
 
