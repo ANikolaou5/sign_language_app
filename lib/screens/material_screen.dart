@@ -1,3 +1,4 @@
+import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -44,9 +45,35 @@ class _MaterialScreenState extends State<MaterialScreen> {
 
   bool tutorial = true;
   bool isQuiz = false;
+  bool quizAnimation = false;
 
-  void _quiz() {
+  void _snackBar(String text, Color backgroundColor) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          text,
+          style: TextStyle(
+            color: Colors.black,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        backgroundColor: backgroundColor,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+        duration: Duration(seconds: 1),
+      ),
+    );
+  }
+
+  void _quiz() async {
     setState(() {
+      quizAnimation = true;
+    });
+
+    await Future.delayed(const Duration(seconds: 4));
+
+    setState(() {
+      quizAnimation = false;
       isQuiz = true;
       quiz = Quiz(
         signToTextQuestions: signToTextQuestions,
@@ -196,6 +223,7 @@ class _MaterialScreenState extends State<MaterialScreen> {
   }
 
   void _next() async {
+    // Check of readingTutorial.
     if (tutorial) {
       setState(() {
         tutorial = false;
@@ -205,63 +233,31 @@ class _MaterialScreenState extends State<MaterialScreen> {
     }
 
     if (isQuiz && quiz != null) {
+      // Check of match question.
       final currentQuestion = quiz!.question;
 
       if (quiz!.isMatch) {
         if (matchedImages.length < 3) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('You should match all images and text!'),
-              duration: Duration(seconds: 1),
-            ),
-          );
+          _snackBar('You should match all images to text!', Colors.grey.shade600);
           return;
         }
       } else {
+        // Check of signToText question.
         if (answerIndex == null) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('You should select an answer!'),
-              duration: Duration(seconds: 1),
-            ),
-          );
+          _snackBar('You should select an answer!', Colors.grey.shade600);
           return;
         }
 
         final question = currentQuestion as Question;
         if (options[answerIndex!] != question.answer) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                'Incorrect answer. Try again!',
-                style: TextStyle(
-                  color: Colors.black,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              backgroundColor: Colors.red.shade400,
-              duration: Duration(seconds: 1),
-            ),
-          );
+          _snackBar('Incorrect answer. Try again!', Colors.red.shade400);
 
           setState(() {
             answerIndex = null;
           });
           return;
         } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                'Correct answer!',
-                style: TextStyle(
-                  color: Colors.black,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              backgroundColor: Colors.green.shade400,
-              duration: Duration(seconds: 1),
-            ),
-          );
+          _snackBar('Correct answer!', Colors.green.shade400);
         }
       }
 
@@ -320,51 +316,23 @@ class _MaterialScreenState extends State<MaterialScreen> {
       return;
     }
 
+    // Check of multipleChoice question.
     if (answerIndex == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('You should select an answer!'),
-          duration: Duration(seconds: 1),
-        ),
-      );
+      _snackBar('You should select an answer!', Colors.grey.shade600);
       return;
     }
 
     final correctAnswer = multipleChoiceQuestions[tutorialIndex].answer;
 
     if (possibleAnswers[answerIndex!] != correctAnswer) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Incorrect answer. Try again!',
-            style: TextStyle(
-              color: Colors.black,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          backgroundColor: Colors.red.shade400,
-          duration: Duration(seconds: 1),
-        ),
-      );
+      _snackBar('Incorrect answer. Try again!', Colors.red.shade400);
 
       setState(() {
         answerIndex = null;
       });
       return;
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Correct answer!',
-            style: TextStyle(
-              color: Colors.black,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          backgroundColor: Colors.green.shade400,
-          duration: Duration(seconds: 1),
-        ),
-      );
+      _snackBar('Correct answer!', Colors.green.shade400);
     }
 
     if (tutorialIndex < readingTutorials.length - 1) {
@@ -378,23 +346,20 @@ class _MaterialScreenState extends State<MaterialScreen> {
   }
 
   void _previous() {
-    if (!tutorial) {
-      setState(() {
+    setState(() {
+      answerIndex = null;
+
+      if (!tutorial) {
         tutorial = true;
-      });
-    } else if (tutorialIndex > 0) {
-      setState(() {
+      } else if (tutorialIndex > 0) {
         tutorial = false;
         tutorialIndex--;
-      });
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('There is no previous content!'),
-          duration: Duration(seconds: 1),
-        ),
-      );
-    }
+
+        _createPossibleAnswers();
+      } else {
+        _snackBar('There is no previous content!', Colors.grey.shade600);
+      }
+    });
   }
 
   @override
@@ -409,6 +374,21 @@ class _MaterialScreenState extends State<MaterialScreen> {
 
   @override
   Widget build(BuildContext context) {
+    int totalTutorials = readingTutorials.length * 2;
+    int totalQuizQuestions = signToTextQuestions.length + matchQuestions.length;
+    int total = totalTutorials + totalQuizQuestions;
+    int index = 0;
+
+    if (total > 0) {
+      if (!isQuiz) {
+        index = (tutorialIndex * 2) + (tutorial ? 1 : 2);
+      } else if (quiz != null) {
+        index = totalTutorials + (quiz!.questionIndex + 1);
+      }
+    }
+
+    double progress = total > 0 ? (index / total).clamp(0.0, 1.0) : 0.0;
+
     // GaneshTamang (2024). Flutter PopScope for android back button to leave app showing black screen instead of going to home screen of android. [online] GitHub.
     // Available at: https://github.com/GaneshTamang/flast_chat_firebase_example/issues/1
     // [Accessed 3 Dec. 2025].
@@ -423,41 +403,125 @@ class _MaterialScreenState extends State<MaterialScreen> {
             builder: (BuildContext context) {
               return AlertDialog(
                 title: const Text('Are you sure you want to exit this lesson?'),
+                content: const Text(
+                  "Your progress in this lesson will not be saved until you finish.",
+                  style: TextStyle(fontSize: 18.0),
+                ),
                 actions: [
-                  TextButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                        Navigator.pop(context);
-                      }, child: const Text('Yes')),
                   TextButton(
                     onPressed: () {
                       Navigator.pop(context);
-                    }, child: const Text('No'),
+                    },
+                    child: const Text(
+                      "No",
+                      style: TextStyle(
+                        fontSize: 18.0,
+                        color: Colors.black,
+                      ),
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                      Navigator.pop(context);
+                    },
+                    child: const Text(
+                      "Yes",
+                      style: TextStyle(
+                        fontSize: 18.0,
+                        color: Colors.black,
+                      ),
+                    ),
                   ),
                 ],
               );
             }
         );
       },
-      child: Scaffold(
-        appBar: AppBar(
-          backgroundColor: Theme
-              .of(context)
-              .colorScheme
-              .inversePrimary,
-          title: Text(
-            "Lesson ${widget.lesson.lessonNum}",
-            style: const TextStyle(fontWeight: FontWeight.bold),
+      child: Stack(
+        children: [
+          Scaffold(
+            backgroundColor: Colors.orange.shade50,
+            appBar: AppBar(
+              centerTitle: true,
+              backgroundColor: Colors.transparent,
+              flexibleSpace: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(colors: [Colors.orange.shade500, Colors.deepOrange.shade800]),
+                ),
+              ),
+              title: Text(
+                "Lesson ${widget.lesson.lessonNum}",
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
+              ),
+            ),
+            body: Column(
+              children: [
+                // Flutter.dev. (2024). LinearProgressIndicator class - material library - Dart API. [online]
+                // Available at: https://api.flutter.dev/flutter/material/LinearProgressIndicator-class.html
+                // [Accessed 16 Jan. 2026].
+                LinearProgressIndicator(
+                  value: progress,
+                  backgroundColor: Colors.orange.shade100,
+                  color: Colors.orange.shade900,
+                  minHeight: 8.0,
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: readingTutorials.isEmpty ? const Center(
+                    child: CircularProgressIndicator()) : SingleChildScrollView(
+                    scrollDirection: Axis.vertical,
+                    child: isQuiz ? _buildQuiz() : _buildTutorial(),
+                  ),
+                ),
+              ],
+            ),
           ),
-        ),
-        body: Padding(
-          padding: const EdgeInsets.all(10.0),
-          child: readingTutorials.isEmpty ? const Center(
-              child: CircularProgressIndicator()) : SingleChildScrollView(
-            scrollDirection: Axis.vertical,
-            child: isQuiz ? _buildQuiz() : _buildTutorial(),
-          ),
-        ),
+          // Dart packages. (2020). animated_splash_screen. [online]
+          // Available at: https://pub.dev/packages/animated_splash_screen
+          // [Accessed 16 Jan. 2026].
+          if (quizAnimation) ...[
+            Positioned.fill(
+              child: AnimatedSplashScreen(
+                duration: 4000,
+                splashIconSize: 250,
+                splash: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.timer,
+                      color: Colors.orange.shade900,
+                      size: 80,
+                    ),
+                    const SizedBox(height: 20.0),
+                    Text(
+                      "Time for a quiz!",
+                      style: TextStyle(
+                        fontSize: 35.0,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
+                    ),
+                    Text(
+                      "Are you ready?",
+                      style: TextStyle(
+                        fontSize: 30.0,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
+                    ),
+                  ],
+                ),
+                nextScreen: Container(),
+                splashTransition: SplashTransition.scaleTransition,
+                backgroundColor: Colors.orange.shade50,
+              ),
+            ),
+          ],
+        ],
       ),
     );
   }
@@ -474,37 +538,22 @@ class _MaterialScreenState extends State<MaterialScreen> {
       children: [
         const SizedBox(height: 5.0),
         Container(
-            padding: const EdgeInsets.all(8.0),
-            decoration: BoxDecoration(
-              color: Colors.purple.shade100,
-              border: Border.all(),
-            ),
-            alignment: Alignment.center,
-            child: Text(
-              'Time for a quiz!',
-              style: TextStyle(
-                fontSize: 22.0,
-                fontWeight: FontWeight.bold,
-              ),
-            )
-        ),
-        const SizedBox(height: 15.0),
-        Container(
           padding: const EdgeInsets.all(8.0),
           decoration: BoxDecoration(
-            color: Colors.purple.shade100,
-            border: Border.all(),
+            color: Colors.orange.shade100,
+            border: Border.all(width: 2.0, color: Colors.orange.shade300),
+            borderRadius: BorderRadius.circular(15.0),
           ),
           alignment: Alignment.center,
           child: Text(
             'Drag each image onto its correct meaning:',
-            style: const TextStyle(
-              fontSize: 22.0,
+            style: TextStyle(
+              fontSize: 20.0,
               fontWeight: FontWeight.bold,
             ),
           ),
         ),
-        const SizedBox(height: 30.0),
+        const SizedBox(height: 25.0),
         Column(
           children: List.generate(
             matchQuestions['shuffledPairs'].length, (index) {
@@ -517,35 +566,85 @@ class _MaterialScreenState extends State<MaterialScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Expanded(
-                    child: matchedImages.contains(img) ? const SizedBox(
-                        height: 120.0) : Draggable<Map<String, String>>(
+                    child: matchedImages.contains(img) ? Icon(
+                      Icons.check_circle,
+                      color: Colors.green.shade400,
+                      size: 60.0
+                    ) : Draggable<Map<String, String>>(
                       data: {
                         'image': img,
                         'text': txt,
                       },
                       feedback: Opacity(
                         opacity: 0.7,
-                        child: Image.asset(
-                          img,
-                          width: 120,
+                        child: Container(
+                          padding: const EdgeInsets.all(8.0),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(15.0),
+                            border: Border.all(
+                              width: 2.0,
+                              color: Colors.orange.shade100,
+                            ),
+                          ),
+                          child: Image.asset(
+                            img,
+                            height: 110,
+                          ),
                         ),
                       ),
-                      child: Card(
-                        elevation: 4.0,
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12.0)),
+                      childWhenDragging: Opacity(
+                        opacity: 0.3,
+                        child: Container(
+                          padding: const EdgeInsets.all(8.0),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(15.0),
+                            border: Border.all(
+                              width: 2.0,
+                              color: Colors.orange.shade100,
+                            ),
+                          ),
+                          child: Image.asset(
+                            img,
+                            height: 110,
+                          ),
+                        )
+                      ),
+                      child: Container(
+                        padding: const EdgeInsets.all(8.0),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(15.0),
+                          border: Border.all(
+                            width: 2.0,
+                            color: Colors.orange.shade100,
+                          ),
+                        ),
                         child: Image.asset(
                           img,
-                          width: 120,
-                          height: 120,
+                          height: 110,
                         ),
                       ),
                     ),
                   ),
-                  const SizedBox(width: 30.0),
+                  const SizedBox(width: 25.0),
                   Expanded(
-                    child: matchedTexts.contains(txt) ? const SizedBox(
-                        height: 60.0) : DragTarget<Map<String, String>>(
+                    child: matchedTexts.contains(txt) ? Container(
+                      height: 60,
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        color: Colors.green.shade50,
+                        borderRadius: BorderRadius.circular(12.0),
+                      ),
+                      child: Text(
+                        txt,
+                        style: const TextStyle(
+                          fontSize: 22.0,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.green)
+                      ),
+                    ) : DragTarget<Map<String, String>>(
                       onWillAcceptWithDetails: (_) => true,
                       onAcceptWithDetails: (details) {
                         final correctText = details.data['image']!
@@ -559,56 +658,24 @@ class _MaterialScreenState extends State<MaterialScreen> {
                             matchedTexts.add(txt);
                           });
 
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(
-                                'Correct answer!',
-                                style: TextStyle(
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              backgroundColor: Colors.green.shade400,
-                              duration: Duration(seconds: 1),
-                            ),
-                          );
+                          _snackBar('Correct answer!', Colors.green.shade400);
                         } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(
-                                'Incorrect answer. Try again!',
-                                style: TextStyle(
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              backgroundColor: Colors.red.shade400,
-                              duration: Duration(seconds: 1),
-                            ),
-                          );
+                          _snackBar('Incorrect answer. Try again!', Colors.red.shade400);
                         }
                       },
                       builder: (context, candidateData, rejectedData) {
                         bool isHovering = candidateData.isNotEmpty;
                         return AnimatedContainer(
                           duration: const Duration(milliseconds: 200),
-                          height: 80.0,
+                          height: 70.0,
                           alignment: Alignment.center,
                           decoration: BoxDecoration(
-                            color: isHovering ? Colors.indigo.shade200 : Colors
-                                .white,
+                            color: isHovering ? Colors.orange.shade100 : Colors.white,
                             borderRadius: BorderRadius.circular(12.0),
                             border: Border.all(
-                              color: isHovering ? Colors.indigo : Colors.grey
-                                  .shade400,
+                              color: isHovering ? Colors.orange.shade700 : Colors.orange.shade200,
                               width: 2.5,
                             ),
-                            boxShadow: [
-                              if (!isHovering)
-                                BoxShadow(color: Colors.grey.shade300,
-                                    spreadRadius: 1.0,
-                                    blurRadius: 3.0),
-                            ],
                           ),
                           child: Text(
                             txt,
@@ -627,7 +694,7 @@ class _MaterialScreenState extends State<MaterialScreen> {
           },
           ),
         ),
-        const SizedBox(height: 15.0),
+        const SizedBox(height: 25.0),
         _navigationButtons(),
       ],
     );
@@ -638,51 +705,47 @@ class _MaterialScreenState extends State<MaterialScreen> {
       children: [
         const SizedBox(height: 5.0),
         Container(
-            padding: const EdgeInsets.all(8.0),
-            decoration: BoxDecoration(
-              color: Colors.purple.shade100,
-              border: Border.all(),
-            ),
-            alignment: Alignment.center,
-            child: Text(
-              'Time for a quiz!',
-              style: TextStyle(
-                fontSize: 22.0,
-                fontWeight: FontWeight.bold,
-              ),
-            )
-        ),
-        const SizedBox(height: 15.0),
-        Container(
           padding: const EdgeInsets.all(8.0),
           decoration: BoxDecoration(
-            color: Colors.purple.shade100,
-            border: Border.all(),
+            color: Colors.orange.shade100,
+            border: Border.all(width: 2.0, color: Colors.orange.shade300),
+            borderRadius: BorderRadius.circular(15.0),
           ),
           alignment: Alignment.center,
           child: Text(
-            q.questionContent,
+            q.question,
             style: TextStyle(
-              fontSize: 22.0,
+              fontSize: 20.0,
               fontWeight: FontWeight.bold,
             ),
           ),
         ),
         const SizedBox(height: 30.0),
-        Image.asset(
-          q.questionContent,
-          width: double.infinity,
-          height: 400,
-          fit: BoxFit.contain,
+        Container(
+          padding: const EdgeInsets.all(12.0),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(15.0),
+            boxShadow: [BoxShadow(
+              color: Colors.orange,
+              blurRadius: 2.0,
+              offset: Offset(0.5, 0.5),
+            )],
+          ),
+          child: Image.asset(
+            q.questionContent,
+            height: 300,
+            fit: BoxFit.contain,
+          ),
         ),
-        const SizedBox(height: 30.0),
+        const SizedBox(height: 25.0),
         GridView.count(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           crossAxisCount: 3,
           mainAxisSpacing: 10.0,
           crossAxisSpacing: 10.0,
-          childAspectRatio: 2.5,
+          childAspectRatio: 2.0,
           children: List.generate(options.length, (index) {
             final selected = answerIndex == index;
 
@@ -692,15 +755,15 @@ class _MaterialScreenState extends State<MaterialScreen> {
                   answerIndex = index;
                 });
               },
-              child: Container(
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
+                  color: selected ? Colors.orange.shade100 : Colors.white,
                   border: Border.all(
-                    color: selected ? Colors.green : Colors.grey,
-                    width: 2.0,
+                    color: selected ? Colors.orange.shade700 : Colors.orange.shade200,                    width: 2.0,
                   ),
-                  borderRadius: BorderRadius.circular(10.0),
-                  color: selected ? Colors.green.shade100 : Colors.white,
+                  borderRadius: BorderRadius.circular(12.0),
                 ),
                 child: Text(
                   options[index],
@@ -713,8 +776,82 @@ class _MaterialScreenState extends State<MaterialScreen> {
             );
           }),
         ),
-        const SizedBox(height: 15.0),
+        const SizedBox(height: 25.0),
         _navigationButtons(),
+      ],
+    );
+  }
+
+  Widget _multipleChoiceQuestion() {
+    return Column(
+      children: [
+        CircleAvatar(
+          radius: 32.0,
+          backgroundColor: Colors.orange.shade700,
+          child: Text(
+            multipleChoiceQuestions[tutorialIndex].questionContent,
+            style: TextStyle(
+              fontSize: 30.0,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+        const SizedBox(height: 5.0),
+        Column(
+          children: List.generate(3, (index) {
+            final selected = answerIndex == index;
+
+            return Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: InkWell(
+                onTap: () {
+                  setState(() {
+                    answerIndex = index;
+                  });
+                },
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
+                  padding: const EdgeInsets.all(10.0),
+                  decoration: BoxDecoration(
+                    color: selected ? Colors.orange.shade100 : Colors.white,
+                    borderRadius: BorderRadius.circular(15.0),
+                    border: Border.all(
+                      color: selected ? Colors.orange.shade700 : Colors.orange.shade200,
+                      width: selected ? 3.0 : 1.0,
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        width: 40,
+                        height: 40,
+                        decoration: BoxDecoration(
+                          color: selected ? Colors.orange.shade700 : Colors.grey.shade300,
+                          shape: BoxShape.circle,
+                        ),
+                        alignment: Alignment.center,
+                        child: Text(
+                          '${index + 1}',
+                          style: TextStyle(
+                            fontSize: 18.0,
+                            color: Colors.black,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 30.0),
+                      Image.asset(
+                        possibleAnswers[index],
+                        height: 110,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          }),
+        ),
       ],
     );
   }
@@ -726,14 +863,15 @@ class _MaterialScreenState extends State<MaterialScreen> {
         Container(
           padding: const EdgeInsets.all(8.0),
           decoration: BoxDecoration(
-            color: Colors.purple.shade100,
-            border: Border.all(),
+            color: Colors.orange.shade100,
+            border: Border.all(width: 2.0, color: Colors.orange.shade300),
+            borderRadius: BorderRadius.circular(15.0),
           ),
           alignment: Alignment.center,
           child: Text(
             widget.lesson.name,
             style: TextStyle(
-              fontSize: 22.0,
+              fontSize: 20.0,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -742,8 +880,9 @@ class _MaterialScreenState extends State<MaterialScreen> {
         Container(
           padding: const EdgeInsets.all(8.0),
           decoration: BoxDecoration(
-            color: Colors.purple.shade100,
-            border: Border.all(),
+            color: Colors.white,
+            border: Border.all(width: 2.0, color: Colors.orange.shade300),
+            borderRadius: BorderRadius.circular(15.0),
           ),
           alignment: Alignment.center,
           child: Text(
@@ -751,86 +890,33 @@ class _MaterialScreenState extends State<MaterialScreen> {
                 ? readingTutorials[tutorialIndex].tutorialText
                 : multipleChoiceQuestions[tutorialIndex].question,
             style: TextStyle(
-              fontSize: 22.0,
+              fontSize: 20.0,
               fontWeight: FontWeight.bold,
             ),
           ),
         ),
+        const SizedBox(height: 10.0),
         if(tutorial) ...[
-          const SizedBox(height: 15.0),
-          Image.asset(
-            readingTutorials[tutorialIndex].tutorialImage,
-            width: double.infinity,
-            height: 400,
-            fit: BoxFit.contain,
+          Container(
+            padding: const EdgeInsets.all(12.0),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(15.0),
+              boxShadow: [BoxShadow(
+                color: Colors.orange,
+                blurRadius: 2.0,
+                offset: Offset(0.5, 0.5),
+              )],
+            ),
+            child: Image.asset(
+              readingTutorials[tutorialIndex].tutorialImage,
+              height: 300,
+              fit: BoxFit.contain,
+            ),
           ),
-        ] else
-          ...[
-            const SizedBox(height: 15.0),
-            Container(
-              padding: const EdgeInsets.all(8.0),
-              width: 70.0,
-              height: 60.0,
-              decoration: BoxDecoration(
-                color: Colors.green.shade300,
-                border: Border.all(),
-              ),
-              alignment: Alignment.center,
-              child: Text(
-                multipleChoiceQuestions[tutorialIndex].questionContent,
-                style: TextStyle(
-                  fontSize: 25.0,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-            const SizedBox(height: 5.0),
-            Column(
-              children: List.generate(3, (index) {
-                final selected = answerIndex == index;
-
-                return Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: InkWell(
-                    onTap: () {
-                      setState(() {
-                        answerIndex = index;
-                      });
-                    },
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          '${index + 1}.',
-                          style: TextStyle(
-                            fontSize: 22.0,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(width: 15.0),
-                        Container(
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                              color: selected ? Colors.green : Colors.grey,
-                              width: selected ? 3.0 : 2.0,
-                            ),
-                            borderRadius: BorderRadius.circular(12.0),
-                          ),
-                          padding: const EdgeInsets.all(8.0),
-                          child: Image.asset(
-                            possibleAnswers[index],
-                            height: 130.0,
-                            width: 130.0,
-                            fit: BoxFit.contain,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              }),
-            ),
-          ],
+        ] else ...[
+          _multipleChoiceQuestion(),
+        ],
         const SizedBox(height: 15.0),
         _navigationButtons(),
       ],
@@ -838,32 +924,47 @@ class _MaterialScreenState extends State<MaterialScreen> {
   }
 
   Widget _navigationButtons() {
-    return Row(
-      mainAxisAlignment: !isQuiz ? MainAxisAlignment.spaceBetween : MainAxisAlignment.end,
-      children: [
-        if (!isQuiz) ...[
+    return Container(
+      padding: const EdgeInsets.all(20.0),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        border: Border.all(width: 2.0, color: Colors.orange.shade300),
+        borderRadius: BorderRadius.circular(15.0),
+      ),
+      child: Row(
+        mainAxisAlignment: !isQuiz ? MainAxisAlignment.spaceBetween : MainAxisAlignment.end,
+        children: [
+          if (!isQuiz) ...[
+            TextButton(
+              onPressed: _previous,
+              child: Text(
+                'Previous',
+                style: TextStyle(
+                  fontSize: 18.0,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.orange.shade900,
+                ),
+              ),
+            ),
+          ],
           ElevatedButton(
-            onPressed: _previous,
+            onPressed: _next,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.orange.shade700,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
+            ),
             child: const Text(
-              'Previous',
+              'Next',
               style: TextStyle(
                 fontSize: 20.0,
-                color: Colors.black
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
               ),
             ),
           ),
         ],
-        ElevatedButton(
-          onPressed: _next,
-          child: const Text(
-            'Next',
-            style: TextStyle(
-              fontSize: 20.0,
-              color: Colors.black
-            ),
-          ),
-        ),
-      ],
+      ),
     );
   }
 }

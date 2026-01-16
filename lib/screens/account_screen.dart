@@ -212,6 +212,7 @@ class _AccountScreenState extends State<AccountScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        backgroundColor: Colors.orange.shade50,
         body: Padding(
             padding: const EdgeInsets.all(20.0),
             child: SingleChildScrollView(
@@ -219,14 +220,14 @@ class _AccountScreenState extends State<AccountScreen> {
               child: Container(
                 padding: const EdgeInsets.all(10.0),
                 decoration: BoxDecoration(
-                  color: Colors.purple.shade100,
                   border: Border.all(),
                   borderRadius: BorderRadius.circular(30.0),
                   boxShadow: [BoxShadow(
                     color: Colors.black,
-                    blurRadius: 10.0,
-                    offset: Offset(2.0, 2.0),
+                    blurRadius: 8.0,
+                    offset: Offset(0.5, 0.5),
                   )],
+                  gradient: LinearGradient(colors: [Colors.orange.shade100, Colors.white],),
                 ),
                 alignment: Alignment.center,
                 child: user == null ? Column(
@@ -236,7 +237,7 @@ class _AccountScreenState extends State<AccountScreen> {
                       Center(
                         child: CircleAvatar(
                           radius: 60.0,
-                          backgroundColor: Colors.deepPurple.shade300,
+                          backgroundColor: Colors.deepOrange.shade400,
                           child: Icon(
                             Icons.person,
                             size: 80.0,
@@ -340,7 +341,7 @@ class _AccountScreenState extends State<AccountScreen> {
                     Center(
                       child: CircleAvatar(
                         radius: 60.0,
-                        backgroundColor: Colors.deepPurple.shade300,
+                        backgroundColor: Colors.deepOrange.shade400,
                         child: Icon(
                           Icons.person,
                           size: 80.0,
@@ -356,20 +357,20 @@ class _AccountScreenState extends State<AccountScreen> {
                         const Text(
                           'Username: ',
                           style: TextStyle(
-                              fontSize: 22,
+                              fontSize: 22.0,
                               fontWeight: FontWeight.bold
                           ),
                         ),
                         Text(
                           user!.username,
                           style: const TextStyle(
-                              fontSize: 22,
+                              fontSize: 22.0,
                               fontWeight: FontWeight.bold
                           ),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 20.0),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -377,20 +378,20 @@ class _AccountScreenState extends State<AccountScreen> {
                         const Text(
                           'Full Name: ',
                           style: TextStyle(
-                              fontSize: 22,
+                              fontSize: 22.0,
                               fontWeight: FontWeight.bold
                           ),
                         ),
                         Text(
                             '${user!.name} ${user!.surname}',
                             style: const TextStyle(
-                                fontSize: 22,
+                                fontSize: 22.0,
                                 fontWeight: FontWeight.bold
                             )
                         ),
                       ],
                     ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 20.0),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -398,20 +399,20 @@ class _AccountScreenState extends State<AccountScreen> {
                         const Text(
                           'Email: ',
                           style: TextStyle(
-                              fontSize: 22,
+                              fontSize: 22.0,
                               fontWeight: FontWeight.bold
                           ),
                         ),
                         Text(
                           user!.email!,
                           style: const TextStyle(
-                              fontSize: 22,
+                              fontSize: 22.0,
                               fontWeight: FontWeight.bold
                           ),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 20.0),
                     Center(
                         child: ElevatedButton(
                           onPressed: () {
@@ -419,13 +420,13 @@ class _AccountScreenState extends State<AccountScreen> {
                               return AlertDialog(
                                 title: Row(
                                   children: [
-                                    const SizedBox(width: 10),
+                                    const SizedBox(width: 10.0),
                                     Icon(
-                                        Icons.warning,
-                                        color: Colors.red.shade800,
-                                        size: 50
+                                      Icons.warning,
+                                      color: Colors.red.shade800,
+                                      size: 50.0,
                                     ),
-                                    const SizedBox(width: 20),
+                                    const SizedBox(width: 20.0),
                                     const Text(
                                       "Log out",
                                       style: TextStyle(fontWeight: FontWeight.bold),
@@ -440,16 +441,29 @@ class _AccountScreenState extends State<AccountScreen> {
                                 ),
                                 actions: [
                                   TextButton(
+                                    onPressed: () { Navigator.pop(context); },
+                                    child: const Text(
+                                      "No",
+                                      style: TextStyle(
+                                        fontSize: 18.0,
+                                        color: Colors.black,
+                                      ),
+                                    ),
+                                  ),
+                                  TextButton(
                                     onPressed: () {
                                       setState(() {
                                         _logout();
                                       });
-
                                       Navigator.pop(context);
-                                    }, child: const Text('Yes')),
-                                  TextButton(
-                                    onPressed: () { Navigator.pop(context); },
-                                    child: const Text('No'),
+                                    },
+                                    child: const Text(
+                                      "Yes",
+                                      style: TextStyle(
+                                        fontSize: 18.0,
+                                        color: Colors.black,
+                                      ),
+                                    ),
                                   ),
                                 ],
                               );

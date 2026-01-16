@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../classes/user_class.dart';
+import 'leaderboard_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key, required this.changeIndex});
@@ -126,153 +127,200 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: Padding(
-          padding: const EdgeInsets.all(10.0),
+      backgroundColor: Colors.orange.shade50,
+      body: Padding(
+        padding: const EdgeInsets.all(10.0),
+        child: SingleChildScrollView(
+          scrollDirection: Axis.vertical,
           child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 15.0),
-                Text(
-                  user == null ? "Welcome!" : "Welcome, ${user!.username}",
-                  style: const TextStyle(
-                      fontSize: 26.0,
-                      fontWeight: FontWeight.bold
-                  ),
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 15.0),
+              Text(
+                user == null ? "Welcome!" : "Welcome, ${user!.username}!",
+                style: const TextStyle(
+                  fontSize: 26.0,
+                  fontWeight: FontWeight.bold,
                 ),
-                const SizedBox(height: 30.0),
-                Container(
-                    padding: const EdgeInsets.all(8.0),
-                    decoration: BoxDecoration(
-                      color: Colors.purple.shade100,
-                      border: Border.all()
-                    ),
-                    alignment: Alignment.center,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        _circle("Streak", user?.streakNum ?? 0),
-                        _circle("Streak Goal", user?.streakNumGoal ?? 0),
-                        _circle("Score", user?.score ?? 0),
-                      ],
-                    )
-                ),
-                const SizedBox(height: 30.0),
-                Container(
-                  padding: const EdgeInsets.all(3.0),
+              ),
+              const SizedBox(height: 15.0),
+              Card(
+                elevation: 4.0,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
+                child: Container(
+                  padding: const EdgeInsets.all(10.0),
                   decoration: BoxDecoration(
-                      color: Colors.purple.shade100,
-                      border: Border.all()
+                    borderRadius: BorderRadius.circular(15.0),
+                    gradient: LinearGradient(colors: [Colors.orange.shade100, Colors.white],),
                   ),
-                  alignment: Alignment.center,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      _progressItem("Streak", user?.streakNum ?? 0, Icons.local_fire_department),
+                      _progressItem("Streak Goal", user?.streakNumGoal ?? 0, Icons.tour),
+                      _progressItem("Score", user?.score ?? 0, Icons.emoji_events),
+                    ],
+                  )
+                ),
+              ),
+              const SizedBox(height: 15.0),
+              Card(
+                elevation: 4.0,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
+                child: Container(
+                  padding: const EdgeInsets.all(8.0),
+                  decoration: BoxDecoration(
+                    color: Colors.deepOrange.shade400,
+                    borderRadius: BorderRadius.circular(15.0),
+                  ),
                   child: TextButton(
                     onPressed: () => widget.changeIndex(1),
-                      child: Row(
-                        //mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          "Continue Learning... ",
+                          style: TextStyle(
+                            fontSize: 18.0,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
+                        ),
+                        Icon(
+                          Icons.arrow_forward_ios,
+                          size: 22.0,
+                          color: Colors.black,
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 15.0),
+              Card(
+                elevation: 4.0,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
+                child: Container(
+                  padding: const EdgeInsets.all(10.0),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(15.0),
+                    gradient: LinearGradient(colors: [Colors.orange.shade100, Colors.white],),
+                  ),
+                  child: Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Text(
-                            "Continue Learning... ",
+                          Text(
+                            "Leaderboard",
                             style: TextStyle(
                               fontSize: 22.0,
                               fontWeight: FontWeight.bold,
-                              color: Colors.black,
                             ),
                           ),
                           Icon(
-                            Icons.arrow_circle_right_outlined,
-                            size: 30.0,
-                            color: Colors.black,
-                          )
+                            Icons.workspace_premium,
+                            color: Colors.orange.shade900,
+                            size: 35.0,
+                          ),
                         ],
                       ),
-                    ),
-                ),
-                const SizedBox(height: 30.0),
-                Container(
-                  padding: const EdgeInsets.all(8.0),
-                  decoration: BoxDecoration(
-                    color: Colors.purple.shade100,
-                    border: Border.all(),
-                  ),
-                  alignment: Alignment.center,
-                  child: Column(
-                    children: [
-                      Text(
-                        "Leaderboard",
-                        style: TextStyle(
-                          fontSize: 22.0,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 10.0),
+                      const Divider(height: 35.0),
                       Column(
                         children: users.map((user) {
-                          return Column(
+                          return Row(
                             children: [
-                              const SizedBox(height: 10.0),
-                              Center(
-                                child: Row(
-                                  children: [
-                                    Expanded(
-                                      child: Text(
-                                        user.username,
-                                        textAlign: TextAlign.center,
-                                        style: const TextStyle(
-                                          fontSize: 18.0,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                    ),
-                                    Expanded(
-                                      child: Text(
-                                        user.score.toString(),
-                                        textAlign: TextAlign.center,
-                                        style: const TextStyle(
-                                          fontSize: 18.0,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
+                              Container(
+                                padding: const EdgeInsets.all(10.0),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  shape: BoxShape.circle,
                                 ),
+                                child: Text(
+                                  "${users.indexOf(user) + 1}",
+                                  style: TextStyle(
+                                    fontSize: 20.0,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.orange.shade900,
+                                  )
+                                ),
+                              ),
+                              const SizedBox(width: 15.0),
+                              Expanded(
+                                child: Text(
+                                  user.username,
+                                  style: const TextStyle(fontSize: 16.0)
+                                )
+                              ),
+                              Text(
+                                "${user.score} ",
+                                style: TextStyle(
+                                  fontSize: 18.0,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.orange.shade900,
+                                )
                               ),
                             ],
                           );
                         }).toList(),
-                      )
+                      ),
+                      const SizedBox(height: 15.0),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(15.0),
+                              gradient: LinearGradient(colors: [Colors.deepOrange.shade200, Colors.deepOrange.shade400],),
+                            ),
+                            child: TextButton(
+                              onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const LeaderboardScreen())),
+                              child: Text(
+                                "Full Leaderboard",
+                                style: TextStyle(
+                                  fontSize: 16.0,
+                                  color: Colors.black,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ],
                   ),
                 )
-              ]
-            ),
+              ),
+            ]
+          ),
         ),
+      ),
     );
   }
 }
 
-Widget _circle(String label, int value) {
+Widget _progressItem(String text, int num, IconData icon) {
   return Column(
     crossAxisAlignment: CrossAxisAlignment.center,
     children: [
+      Icon(
+        icon,
+        color: Colors.orange.shade900,
+        size: 60.0,
+      ),
+      const SizedBox(height: 15.0),
       Text(
-        label,
+        num.toString(),
         style: const TextStyle(
-          fontSize: 22.0,
+          fontSize: 25.0,
           fontWeight: FontWeight.bold
         ),
       ),
-      Container(
-        padding: const EdgeInsets.all(16.0),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          shape: BoxShape.circle,
-          border: Border.all(width: 2.0),
-        ),
-        child: Text(
-          value.toString(),
-          style: const TextStyle(
-            fontSize: 18.0,
-            fontWeight: FontWeight.bold
-          ),
+      const SizedBox(height: 3.0),
+      Text(
+        text,
+        style: TextStyle(
+          fontSize: 18.0,
+          fontWeight: FontWeight.bold,
         ),
       ),
     ],

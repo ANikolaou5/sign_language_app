@@ -49,10 +49,19 @@ class _MainScreenState extends State<MainScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        centerTitle: true,
+        backgroundColor: Colors.transparent,
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(colors: [Colors.orange.shade500, Colors.deepOrange.shade800]),
+          ),
+        ),
         title: Text(
           _titles.elementAt(_index),
-          style: const TextStyle(fontWeight: FontWeight.bold),
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Colors.black,
+          ),
         ),
       ),
       body: Center(
@@ -77,7 +86,7 @@ class _MainScreenState extends State<MainScreen> {
           ),
         ],
         currentIndex: _index,
-        selectedItemColor: Colors.deepPurple,
+        selectedItemColor: Colors.deepOrange.shade800,
         onTap: _onTap,
       ),
     );

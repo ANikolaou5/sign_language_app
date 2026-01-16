@@ -89,6 +89,9 @@ class _LearnScreenState extends State<LearnScreen> {
                 title: const Text('Log in for the full experience!'),
                 content: const Text(
                   'If you log in or register, you can earn points and appear on the leaderboard!',
+                  style: TextStyle(
+                    fontSize: 18.0,
+                  ),
                 ),
                 actions: [
                   TextButton(
@@ -99,7 +102,10 @@ class _LearnScreenState extends State<LearnScreen> {
                     },
                     child: const Text(
                       'Log in / Register',
-                      style: TextStyle(fontSize: 18.0),
+                      style: TextStyle(
+                        fontSize: 18.0,
+                        color: Colors.black,
+                      ),
                     ),
                   ),
                   TextButton(
@@ -109,7 +115,10 @@ class _LearnScreenState extends State<LearnScreen> {
                     },
                     child: const Text(
                       'Continue as Guest',
-                      style: TextStyle(fontSize: 18.0),
+                      style: TextStyle(
+                        fontSize: 18.0,
+                        color: Colors.black,
+                      ),
                     ),
                   ),
                 ],
@@ -133,6 +142,7 @@ class _LearnScreenState extends State<LearnScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        backgroundColor: Colors.orange.shade50,
         body: Padding(
             padding: const EdgeInsets.all(10.0),
             child: SingleChildScrollView(
@@ -143,126 +153,126 @@ class _LearnScreenState extends State<LearnScreen> {
                   final lessons = l.value;
 
                   return Column(
-                      children: [
-                        const SizedBox(height: 5.0),
-                        Container(
-                          padding: const EdgeInsets.all(3.0),
+                    children: [
+                      const SizedBox(height: 5.0),
+                      Card(
+                        elevation: 4.0,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
+                        child: Container(
+                          padding: const EdgeInsets.all(8.0),
                           decoration: BoxDecoration(
-                              color: Colors.purple.shade100,
-                              border: Border.all(width: 2.0)
+                            color: Colors.deepOrange.shade400,
+                            borderRadius: BorderRadius.circular(15.0),
                           ),
-                          alignment: Alignment.center,
-                          child: Text(
-                            "Level $level",
-                            style: const TextStyle(
-                              fontSize: 26.0,
-                              fontWeight: FontWeight.bold,
-                            ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                "Level $level",
+                                style: const TextStyle(
+                                  fontSize: 25.0,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                        const SizedBox(height: 15.0),
-                        GridView.count(
-                          crossAxisCount: 3,
-                          mainAxisSpacing: 10.0,
-                          crossAxisSpacing: 10.0,
-                          shrinkWrap: true,
-                          physics: NeverScrollableScrollPhysics(),
-                          children: lessons.map((lesson) {
-                            return Center(
-                              child: InkWell(
-                                onTap: lesson.lessonNum <= completedLessons + 1 ? () {
-                                  showDialog(
-                                    context: context,
-                                    builder: (BuildContext context) {
-                                      return AlertDialog(
-                                        title: (lesson.lessonNum <= completedLessons) ? Text('Review lesson') : Text('Start lesson'),
-                                        actions: [
-                                          TextButton(
-                                            onPressed: () async {
-                                              Navigator.pop(context);
-                                              await Navigator.push(
-                                                context,
-                                                MaterialPageRoute(builder: (
-                                                    context) => MaterialScreen(lesson: lesson, username: username ?? '')));
-                                              await _loadLearningDetails();
-                                            }, child: Row(
-                                              children: [
-                                                Text(
-                                                  (lesson.lessonNum <= completedLessons) ? "Review " : "Start ",
-                                                  style: TextStyle(
-                                                    fontSize: 22.0,
-                                                    fontWeight: FontWeight.bold,
-                                                    color: Colors.black,
-                                                  ),
-                                                ),
-                                                Icon(
-                                                  Icons.arrow_circle_right_outlined,
-                                                  size: 30.0,
-                                                  color: Colors.black,
-                                                )
-                                              ],
-                                            ),
+                      ),
+                      const SizedBox(height: 5.0),
+                      GridView.count(
+                        crossAxisCount: 3,
+                        mainAxisSpacing: 12.0,
+                        crossAxisSpacing: 12.0,
+                        shrinkWrap: true,
+                        childAspectRatio: 1.0,
+                        physics: NeverScrollableScrollPhysics(),
+                        children: lessons.map((lesson) {
+                          return InkWell(
+                            onTap: lesson.lessonNum <= completedLessons + 1 ? () {
+                              showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    title: (lesson.lessonNum <= completedLessons) ? Text('Review lesson?') : Text('Start lesson?'),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () async {
+                                          Navigator.pop(context);
+                                        },
+                                        child: const Text(
+                                          "No",
+                                          style: TextStyle(
+                                            fontSize: 18.0,
+                                            color: Colors.black,
                                           ),
-                                        ],
-                                      );
-                                    }
-                                  );
-                                }
-                                : null,
-                                child: Container(
-                                  padding: const EdgeInsets.all(8.0),
-                                  decoration: BoxDecoration(
-                                    color: (lesson.lessonNum <= completedLessons) ? Colors.green.shade300 : Colors.white,
-                                    border: Border.all(width: 2.0),
-                                  ),
-                                  alignment: Alignment.center,
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.center,
-                                    children: [
-                                      if (lesson.lessonNum > completedLessons + 1) ...[
-                                        Icon(
-                                          Icons.lock,
-                                          size: 30.0,
-                                          color: Colors.black,
-                                        ),
-                                      ] else if (lesson.lessonNum <= completedLessons) ...[
-                                        Icon(
-                                          Icons.check_circle,
-                                          size: 30.0,
-                                          color: Colors.black,
-                                        ),
-                                      ] else ...[
-                                        Icon(
-                                          Icons.play_circle,
-                                          size: 30.0,
-                                          color: Colors.black,
-                                        ),
-                                      ],
-                                      Text(
-                                        "Lesson",
-                                        style: TextStyle(
-                                          fontSize: 22.0,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.black,
                                         ),
                                       ),
-                                      Text(
-                                        "${lesson.lessonNum}",
-                                        style: TextStyle(
-                                          fontSize: 22.0,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.black,
+                                      TextButton(
+                                        onPressed: () async {
+                                          Navigator.pop(context);
+                                          await Navigator.push(
+                                              context,
+                                              MaterialPageRoute(builder: (
+                                                  context) => MaterialScreen(lesson: lesson, username: username ?? '')));
+                                          await _loadLearningDetails();
+                                        },
+                                        child: const Text(
+                                          "Yes",
+                                          style: TextStyle(
+                                            fontSize: 18.0,
+                                            color: Colors.black,
+                                          ),
                                         ),
                                       ),
                                     ],
-                                  ),
+                                  );
+                                }
+                              );
+                            }
+                            : null,
+                            child: Card(
+                              elevation: (lesson.lessonNum > completedLessons) ? 0 : 4.0,
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: (lesson.lessonNum <= completedLessons) ? Colors.deepOrange.shade200 : ((lesson.lessonNum > completedLessons + 1) ? Colors.grey.shade100 : Colors.white),
+                                  border: (lesson.lessonNum <= completedLessons) ? null : Border.all(width: 2.0, color: Colors.orange.shade300),
+                                  borderRadius: BorderRadius.circular(15.0),
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    SizedBox(height: 10.0),
+                                    Icon(
+                                      (lesson.lessonNum > completedLessons + 1) ? Icons.lock : ((lesson.lessonNum <= completedLessons) ? Icons.check_circle : Icons.play_circle),
+                                      size: 25.0,
+                                      color: (lesson.lessonNum > completedLessons + 1) ? Colors.grey : Colors.black,
+                                    ),
+                                    SizedBox(height: 8.0),
+                                    Text(
+                                      "Lesson",
+                                      style: TextStyle(
+                                        fontSize: 18.0,
+                                        fontWeight: FontWeight.bold,
+                                        color: (lesson.lessonNum > completedLessons + 1) ? Colors.grey : Colors.black,                                      ),
+                                    ),
+                                    Text(
+                                      "${lesson.lessonNum}",
+                                      style: TextStyle(
+                                        fontSize: 18.0,
+                                        fontWeight: FontWeight.bold,
+                                        color: (lesson.lessonNum > completedLessons + 1) ? Colors.grey : Colors.black,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
-                            );
-                          }).toList(),
-                        ),
-                        const SizedBox(height: 15.0),
-                      ],
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                      const SizedBox(height: 5.0),
+                    ],
                   );
                 }).toList(),
               ),
