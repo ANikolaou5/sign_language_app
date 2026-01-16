@@ -570,7 +570,11 @@ class _MaterialScreenState extends State<MaterialScreen> {
                       Icons.check_circle,
                       color: Colors.green.shade400,
                       size: 60.0
-                    ) : Draggable<Map<String, String>>(
+                    ) :
+                    Draggable<Map<String, String>>(
+                      // Darji, P. (2021). Drag and drop UI elements in Flutter with Draggable and DragTarget - LogRocket Blog. [online] LogRocket Blog.
+                      // Available at: https://blog.logrocket.com/drag-and-drop-ui-elements-in-flutter-with-draggable-and-dragtarget
+                      // [Accessed 16 Jan. 2026].
                       data: {
                         'image': img,
                         'text': txt,
