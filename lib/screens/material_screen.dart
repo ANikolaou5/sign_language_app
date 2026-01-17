@@ -46,6 +46,7 @@ class _MaterialScreenState extends State<MaterialScreen> {
   bool tutorial = true;
   bool isQuiz = false;
   bool quizAnimation = false;
+  bool completed = false;
 
   void _snackBar(String text, Color backgroundColor) {
     ScaffoldMessenger.of(context).showSnackBar(
@@ -70,7 +71,7 @@ class _MaterialScreenState extends State<MaterialScreen> {
       quizAnimation = true;
     });
 
-    await Future.delayed(const Duration(seconds: 4));
+    await Future.delayed(const Duration(seconds: 3));
 
     setState(() {
       quizAnimation = false;
@@ -277,7 +278,9 @@ class _MaterialScreenState extends State<MaterialScreen> {
             await prefs.setInt('guestCompletedLessons', widget.lesson.lessonNum);
           }
 
-          Navigator.pop(context);
+          setState(() {
+            completed = true;
+          });
           return;
         }
 
@@ -311,7 +314,9 @@ class _MaterialScreenState extends State<MaterialScreen> {
           });
         }
 
-        Navigator.pop(context);
+        setState(() {
+          completed = true;
+        });
       }
       return;
     }
@@ -474,7 +479,7 @@ class _MaterialScreenState extends State<MaterialScreen> {
                   child: readingTutorials.isEmpty ? const Center(
                     child: CircularProgressIndicator()) : SingleChildScrollView(
                     scrollDirection: Axis.vertical,
-                    child: isQuiz ? _buildQuiz() : _buildTutorial(),
+                    child: completed ? _completedLesson() : (isQuiz ? _buildQuiz() : _buildTutorial()),
                   ),
                 ),
               ],
@@ -486,7 +491,7 @@ class _MaterialScreenState extends State<MaterialScreen> {
           if (quizAnimation) ...[
             Positioned.fill(
               child: AnimatedSplashScreen(
-                duration: 4000,
+                duration: 3000,
                 splashIconSize: 250,
                 splash: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -765,7 +770,8 @@ class _MaterialScreenState extends State<MaterialScreen> {
                 decoration: BoxDecoration(
                   color: selected ? Colors.orange.shade100 : Colors.white,
                   border: Border.all(
-                    color: selected ? Colors.orange.shade700 : Colors.orange.shade200,                    width: 2.0,
+                    color: selected ? Colors.orange.shade700 : Colors.orange.shade200,
+                    width: 2.0,
                   ),
                   borderRadius: BorderRadius.circular(12.0),
                 ),
@@ -969,6 +975,76 @@ class _MaterialScreenState extends State<MaterialScreen> {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _completedLesson() {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        const SizedBox(height: 50.0),
+        const Icon(
+          Icons.stars,
+          color: Colors.orange,
+          size: 100,
+        ),
+        const SizedBox(height: 20.0),
+        const Text(
+          "Congratulations!",
+          style: TextStyle(
+            fontSize: 32.0,
+            fontWeight: FontWeight.bold
+          ),
+        ),
+        const SizedBox(height: 10.0),
+        Text(
+          "You have finished Lesson ${widget.lesson.lessonNum}",
+          style: const TextStyle(fontSize: 20.0),
+        ),
+        const SizedBox(height: 30.0),
+        Container(
+          padding: const EdgeInsets.all(20.0),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(15.0),
+            border: Border.all(color: Colors.orange.shade300),
+          ),
+          child: const Column(
+            children: [
+              Text(
+                "Score earned",
+                style: TextStyle(fontSize: 20.0),
+              ),
+              Text(
+                "+10 points",
+                style: TextStyle(
+                  fontSize: 25.0,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.orange,
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 35.0),
+        ElevatedButton(
+          onPressed: () => Navigator.pop(context),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.orange.shade700,
+            foregroundColor: Colors.white,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
+            padding: const EdgeInsets.all(15.0),
+          ),
+          child: const Text(
+            ' Exit ',
+            style: TextStyle(
+              fontSize: 22.0,
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
