@@ -84,17 +84,54 @@ class _LearnScreenState extends State<LearnScreen> {
         showDialog(
           context: context,
           barrierDismissible: true,
-          builder: (context) =>
-              AlertDialog(
-                title: const Text('Log in for the full experience!'),
-                content: const Text(
-                  'If you log in or register, you can earn points and appear on the leaderboard!',
-                  style: TextStyle(
-                    fontSize: 18.0,
+          builder: (context) => Dialog(
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
+            child: Container(
+              padding: const EdgeInsets.all(25.0),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20.0),
+                gradient: LinearGradient(colors: [Colors.orange.shade100, Colors.white],),
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text(
+                    "Log in for the full experience!",
+                    style: TextStyle(
+                      fontSize: 22.0,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                ),
-                actions: [
-                  TextButton(
+                  const SizedBox(height: 10.0),
+                  const Text(
+                    "If you log in or register, you can earn points and appear on the leaderboard!",
+                    style: TextStyle(fontSize: 18.0),
+                  ),
+                  const SizedBox(height: 10.0),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
+                    ),
+                    onPressed: () async {
+                      await prefs.setBool('showPrompt', true);
+                      Navigator.pop(context);
+                    },
+                    child: const Text(
+                      'Continue as Guest',
+                      style: TextStyle(
+                        fontSize: 18.0,
+                        color: Colors.black,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 10.0),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.orange.shade700,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
+                    ),
                     onPressed: () async {
                       await prefs.setBool('showPrompt', true);
                       Navigator.pop(context);
@@ -108,21 +145,10 @@ class _LearnScreenState extends State<LearnScreen> {
                       ),
                     ),
                   ),
-                  TextButton(
-                    onPressed: () async {
-                      await prefs.setBool('showPrompt', true);
-                      Navigator.pop(context);
-                    },
-                    child: const Text(
-                      'Continue as Guest',
-                      style: TextStyle(
-                        fontSize: 18.0,
-                        color: Colors.black,
-                      ),
-                    ),
-                  ),
                 ],
               ),
+            ),
+          ),
         );
       }
     }
@@ -192,39 +218,77 @@ class _LearnScreenState extends State<LearnScreen> {
                               showDialog(
                                 context: context,
                                 builder: (BuildContext context) {
-                                  return AlertDialog(
-                                    title: (lesson.lessonNum <= completedLessons) ? Text('Review lesson?') : Text('Start lesson?'),
-                                    actions: [
-                                      TextButton(
-                                        onPressed: () async {
-                                          Navigator.pop(context);
-                                        },
-                                        child: const Text(
-                                          "No",
-                                          style: TextStyle(
-                                            fontSize: 18.0,
-                                            color: Colors.black,
-                                          ),
-                                        ),
+                                  return Dialog(
+                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
+                                    child: Container(
+                                      padding: const EdgeInsets.all(20.0),
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(25.0),
+                                        gradient: LinearGradient(colors: [Colors.orange.shade100, Colors.white],),
                                       ),
-                                      TextButton(
-                                        onPressed: () async {
-                                          Navigator.pop(context);
-                                          await Navigator.push(
-                                              context,
-                                              MaterialPageRoute(builder: (
-                                                  context) => MaterialScreen(lesson: lesson, username: username ?? '')));
-                                          await _loadLearningDetails();
-                                        },
-                                        child: const Text(
-                                          "Yes",
-                                          style: TextStyle(
-                                            fontSize: 18.0,
-                                            color: Colors.black,
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Icon(
+                                            (lesson.lessonNum <= completedLessons) ? Icons.menu_book : Icons.play_circle,
+                                            color: Colors.orange.shade800,
+                                            size: 50,
                                           ),
-                                        ),
+                                          const SizedBox(height: 10.0),
+                                          Text(
+                                            (lesson.lessonNum <= completedLessons) ? 'Review lesson?' : 'Start lesson?',
+                                            style: const TextStyle(
+                                              fontSize: 22.0,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                          const SizedBox(height: 10.0),
+                                          Row(
+                                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                            children: [
+                                              ElevatedButton(
+                                                style: ElevatedButton.styleFrom(
+                                                  foregroundColor: Colors.white,
+                                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
+                                                ),
+                                                onPressed: () async {
+                                                  Navigator.pop(context);
+                                                },
+                                                child: const Text(
+                                                  "No",
+                                                  style: TextStyle(
+                                                    fontSize: 18.0,
+                                                    color: Colors.black,
+                                                  ),
+                                                ),
+                                              ),
+                                              ElevatedButton(
+                                                style: ElevatedButton.styleFrom(
+                                                  backgroundColor: Colors.orange.shade700,
+                                                  foregroundColor: Colors.white,
+                                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
+                                                ),
+                                                onPressed: () async {
+                                                  Navigator.pop(context);
+                                                  await Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(builder: (
+                                                          context) => MaterialScreen(lesson: lesson, username: username ?? '')));
+                                                  await _loadLearningDetails();
+                                                },
+                                                child: const Text(
+                                                  "Yes",
+                                                  style: TextStyle(
+                                                    fontSize: 18.0,
+                                                    color: Colors.black,
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
                                       ),
-                                    ],
+                                    ),
                                   );
                                 }
                               );

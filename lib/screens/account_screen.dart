@@ -150,14 +150,13 @@ class _AccountScreenState extends State<AccountScreen> {
     final prefs = await SharedPreferences.getInstance();
     await prefs.clear();
 
-    /* await prefs.remove('name');
-    await prefs.remove('surname');
-    await prefs.remove('email');
-    await prefs.remove('username');
-    await prefs.remove('password'); */
-
     setState(() {
       user = null;
+      usernameTextController.clear();
+      emailTextController.clear();
+      nameTextController.clear();
+      surnameTextController.clear();
+      passwordTextController.clear();
     });
   }
 
@@ -417,55 +416,87 @@ class _AccountScreenState extends State<AccountScreen> {
                         child: ElevatedButton(
                           onPressed: () {
                             showDialog(context: context, builder: (BuildContext context) {
-                              return AlertDialog(
-                                title: Row(
-                                  children: [
-                                    const SizedBox(width: 10.0),
-                                    Icon(
-                                      Icons.warning,
-                                      color: Colors.red.shade800,
-                                      size: 50.0,
-                                    ),
-                                    const SizedBox(width: 20.0),
-                                    const Text(
-                                      "Log out",
-                                      style: TextStyle(fontWeight: FontWeight.bold),
-                                    )
-                                  ],
-                                ),
-                                content: const Text(
-                                  "Are you sure you want to log out?",
-                                  style: TextStyle(
-                                    fontSize: 18.0,
+                              return Dialog(
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
+                                child: Container(
+                                  padding: const EdgeInsets.all(20.0),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(25.0),
+                                    gradient: LinearGradient(colors: [Colors.orange.shade100, Colors.white],),
                                   ),
-                                ),
-                                actions: [
-                                  TextButton(
-                                    onPressed: () { Navigator.pop(context); },
-                                    child: const Text(
-                                      "No",
-                                      style: TextStyle(
-                                        fontSize: 18.0,
-                                        color: Colors.black,
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Row(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: [
+                                          Icon(
+                                            Icons.warning,
+                                            color: Colors.red.shade800,
+                                            size: 50,
+                                          ),
+                                          const SizedBox(width: 10.0),
+                                          Text(
+                                            "Log out",
+                                            style: const TextStyle(
+                                              fontSize: 22.0,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                        ],
                                       ),
-                                    ),
-                                  ),
-                                  TextButton(
-                                    onPressed: () {
-                                      setState(() {
-                                        _logout();
-                                      });
-                                      Navigator.pop(context);
-                                    },
-                                    child: const Text(
-                                      "Yes",
-                                      style: TextStyle(
-                                        fontSize: 18.0,
-                                        color: Colors.black,
+                                      const SizedBox(height: 10.0),
+                                      const Text(
+                                        "Are you sure you want to log out?",
+                                        style: TextStyle(
+                                          fontSize: 18.0,
+                                        ),
                                       ),
-                                    ),
+                                      const SizedBox(height: 10.0),
+                                      Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                        children: [
+                                          ElevatedButton(
+                                            style: ElevatedButton.styleFrom(
+                                              backgroundColor: Colors.orange.shade700,
+                                              foregroundColor: Colors.white,
+                                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
+                                            ),
+                                            onPressed: () async {
+                                              Navigator.pop(context);
+                                            },
+                                            child: const Text(
+                                              "No",
+                                              style: TextStyle(
+                                                fontSize: 18.0,
+                                                color: Colors.black,
+                                              ),
+                                            ),
+                                          ),
+                                          ElevatedButton(
+                                            style: ElevatedButton.styleFrom(
+                                              foregroundColor: Colors.white,
+                                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
+                                            ),
+                                            onPressed: () {
+                                              setState(() {
+                                                _logout();
+                                              });
+                                              Navigator.pop(context);
+                                            },
+                                            child: const Text(
+                                              "Yes",
+                                              style: TextStyle(
+                                                fontSize: 18.0,
+                                                color: Colors.black,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
                                   ),
-                                ],
+                                ),
                               );
                             });
                           },

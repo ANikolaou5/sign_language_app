@@ -47,6 +47,7 @@ class _MaterialScreenState extends State<MaterialScreen> {
   bool isQuiz = false;
   bool quizAnimation = false;
   bool completed = false;
+  bool isCorrectAnswer = false;
 
   void _snackBar(String text, Color backgroundColor) {
     ScaffoldMessenger.of(context).showSnackBar(
@@ -228,6 +229,7 @@ class _MaterialScreenState extends State<MaterialScreen> {
     if (tutorial) {
       setState(() {
         tutorial = false;
+        isCorrectAnswer = false;
         _createPossibleAnswers();
       });
       return;
@@ -251,20 +253,23 @@ class _MaterialScreenState extends State<MaterialScreen> {
 
         final question = currentQuestion as Question;
         if (options[answerIndex!] != question.answer) {
-          _snackBar('Incorrect answer. Try again!', Colors.red.shade400);
-
           setState(() {
-            answerIndex = null;
+            isCorrectAnswer = false;
           });
-          return;
         } else {
-          _snackBar('Correct answer!', Colors.green.shade400);
+          if (!isCorrectAnswer) {
+            setState(() {
+              isCorrectAnswer = true;
+            });
+            return;
+          }
         }
       }
 
       if (!quiz!.isCompleted) {
         setState(() {
           quiz!.next();
+          isCorrectAnswer = false;
           answerIndex = null;
           matchedImages.clear();
           matchedTexts.clear();
@@ -316,6 +321,7 @@ class _MaterialScreenState extends State<MaterialScreen> {
 
         setState(() {
           completed = true;
+          isCorrectAnswer = false;
         });
       }
       return;
@@ -330,22 +336,31 @@ class _MaterialScreenState extends State<MaterialScreen> {
     final correctAnswer = multipleChoiceQuestions[tutorialIndex].answer;
 
     if (possibleAnswers[answerIndex!] != correctAnswer) {
-      _snackBar('Incorrect answer. Try again!', Colors.red.shade400);
-
       setState(() {
-        answerIndex = null;
+        isCorrectAnswer = false;
       });
-      return;
     } else {
-      _snackBar('Correct answer!', Colors.green.shade400);
+      if (!isCorrectAnswer) {
+        setState(() {
+          isCorrectAnswer = true;
+        });
+        return;
+      }
     }
 
     if (tutorialIndex < readingTutorials.length - 1) {
       setState(() {
+        isCorrectAnswer = false;
+        answerIndex = null;
         tutorial = true;
         tutorialIndex++;
       });
     } else {
+      setState(() {
+        isCorrectAnswer = false;
+        answerIndex = null;
+      });
+
       _quiz();
     }
   }
@@ -404,43 +419,76 @@ class _MaterialScreenState extends State<MaterialScreen> {
           return;
         }
         return await showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return AlertDialog(
-                title: const Text('Are you sure you want to exit this lesson?'),
-                content: const Text(
-                  "Your progress in this lesson will not be saved until you finish.",
-                  style: TextStyle(fontSize: 18.0),
+          context: context,
+          builder: (BuildContext context) {
+            return Dialog(
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
+              child: Container(
+                padding: const EdgeInsets.all(25.0),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20.0),
+                  gradient: LinearGradient(colors: [Colors.orange.shade100, Colors.white],),
                 ),
-                actions: [
-                  TextButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    child: const Text(
-                      "No",
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Text(
+                      'Are you sure you want to exit this lesson?',
                       style: TextStyle(
-                        fontSize: 18.0,
-                        color: Colors.black,
+                        fontSize: 22.0,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
-                  ),
-                  TextButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                      Navigator.pop(context);
-                    },
-                    child: const Text(
-                      "Yes",
-                      style: TextStyle(
-                        fontSize: 18.0,
-                        color: Colors.black,
-                      ),
+                    const SizedBox(height: 10.0),
+                    const Text(
+                      "Your progress in this lesson will not be saved until you finish.",
+                      style: TextStyle(fontSize: 18.0),
                     ),
-                  ),
-                ],
-              );
-            }
+                    const SizedBox(height: 10.0),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.orange.shade700,
+                            foregroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
+                          ),
+                          onPressed: () async {
+                            Navigator.pop(context);
+                          },
+                          child: const Text(
+                            "No",
+                            style: TextStyle(
+                              fontSize: 18.0,
+                              color: Colors.black,
+                            ),
+                          ),
+                        ),
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            foregroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
+                          ),
+                          onPressed: () {
+                            Navigator.pop(context);
+                            Navigator.pop(context);
+                          },
+                          child: const Text(
+                            "Yes",
+                            style: TextStyle(
+                              fontSize: 18.0,
+                              color: Colors.black,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }
         );
       },
       child: Stack(
@@ -666,8 +714,6 @@ class _MaterialScreenState extends State<MaterialScreen> {
                             matchedImages.add(details.data['image']!);
                             matchedTexts.add(txt);
                           });
-
-                          _snackBar('Correct answer!', Colors.green.shade400);
                         } else {
                           _snackBar('Incorrect answer. Try again!', Colors.red.shade400);
                         }
@@ -759,27 +805,52 @@ class _MaterialScreenState extends State<MaterialScreen> {
             final selected = answerIndex == index;
 
             return InkWell(
-              onTap: () {
+              onTap: answerIndex != null ? null : () {
                 setState(() {
                   answerIndex = index;
+                  isCorrectAnswer = (options[index] == q.answer);
                 });
               },
-              child: AnimatedContainer(
+              child: AnimatedOpacity(
                 duration: const Duration(milliseconds: 200),
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                  color: selected ? Colors.orange.shade100 : Colors.white,
-                  border: Border.all(
-                    color: selected ? Colors.orange.shade700 : Colors.orange.shade200,
-                    width: 2.0,
+                opacity: answerIndex == null ? 1.0 : (selected ? 1.0 : 0.6),
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    color: (answerIndex != null && options[index] == q.answer) ? Colors.green.shade100 : (selected ? Colors.red.shade100 : Colors.white),
+                    borderRadius: BorderRadius.circular(15.0),
+                    border: Border.all(
+                      color: (answerIndex != null && options[index] == q.answer) ? Colors.green.shade700 : (selected ? Colors.red.shade700 : Colors.orange.shade200),
+                      width: selected ? 3.0 : 1.0,
+                    ),
                   ),
-                  borderRadius: BorderRadius.circular(12.0),
-                ),
-                child: Text(
-                  options[index],
-                  style: const TextStyle(
-                    fontSize: 22.0,
-                    fontWeight: FontWeight.bold,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        options[index],
+                        style: const TextStyle(
+                          fontSize: 22.0,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      if (answerIndex != null && options[index] == q.answer) ...[
+                        const SizedBox(width: 10.0),
+                        Icon(
+                          Icons.check_circle,
+                          color: Colors.green,
+                          size: 25,
+                        ),
+                      ] else if (selected) ...[
+                        const SizedBox(width: 10.0),
+                        Icon(
+                          Icons.cancel,
+                          color: Colors.red,
+                          size: 25,
+                        ),
+                      ]
+                    ],
                   ),
                 ),
               ),
@@ -793,6 +864,8 @@ class _MaterialScreenState extends State<MaterialScreen> {
   }
 
   Widget _multipleChoiceQuestion() {
+    final String correctAnswer = multipleChoiceQuestions[tutorialIndex].answer;
+
     return Column(
       children: [
         CircleAvatar(
@@ -814,48 +887,68 @@ class _MaterialScreenState extends State<MaterialScreen> {
             return Padding(
               padding: const EdgeInsets.all(8.0),
               child: InkWell(
-                onTap: () {
+                onTap: answerIndex != null ? null : () {
                   setState(() {
                     answerIndex = index;
+                    isCorrectAnswer = (possibleAnswers[index] == multipleChoiceQuestions[tutorialIndex].answer);
                   });
                 },
-                child: AnimatedContainer(
+                child: AnimatedOpacity(
                   duration: const Duration(milliseconds: 200),
-                  padding: const EdgeInsets.all(10.0),
-                  decoration: BoxDecoration(
-                    color: selected ? Colors.orange.shade100 : Colors.white,
-                    borderRadius: BorderRadius.circular(15.0),
-                    border: Border.all(
-                      color: selected ? Colors.orange.shade700 : Colors.orange.shade200,
-                      width: selected ? 3.0 : 1.0,
+                  opacity: answerIndex == null ? 1.0 : (selected ? 1.0 : 0.6),
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    padding: const EdgeInsets.all(10.0),
+                    decoration: BoxDecoration(
+                      color: (answerIndex != null && possibleAnswers[index] == correctAnswer) ? Colors.green.shade100 : (selected ? Colors.red.shade100 : Colors.white),
+                      borderRadius: BorderRadius.circular(15.0),
+                      border: Border.all(
+                        color: (answerIndex != null && possibleAnswers[index] == correctAnswer) ? Colors.green.shade700 : (selected ? Colors.red.shade700 : Colors.orange.shade200),
+                        width: selected ? 3.0 : 1.0,
+                      ),
                     ),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Container(
-                        width: 40,
-                        height: 40,
-                        decoration: BoxDecoration(
-                          color: selected ? Colors.orange.shade700 : Colors.grey.shade300,
-                          shape: BoxShape.circle,
-                        ),
-                        alignment: Alignment.center,
-                        child: Text(
-                          '${index + 1}',
-                          style: TextStyle(
-                            fontSize: 18.0,
-                            color: Colors.black,
-                            fontWeight: FontWeight.bold,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          width: 40,
+                          height: 40,
+                          decoration: BoxDecoration(
+                            color: selected ? Colors.orange.shade700 : Colors.grey.shade300,
+                            shape: BoxShape.circle,
+                          ),
+                          alignment: Alignment.center,
+                          child: Text(
+                            '${index + 1}',
+                            style: TextStyle(
+                              fontSize: 18.0,
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
-                      ),
-                      const SizedBox(width: 30.0),
-                      Image.asset(
-                        possibleAnswers[index],
-                        height: 110,
-                      ),
-                    ],
+                        const SizedBox(width: 30.0),
+                        Image.asset(
+                          possibleAnswers[index],
+                          height: 110,
+                        ),
+                        if (answerIndex != null && possibleAnswers[index] == correctAnswer) ...[
+                          const SizedBox(width: 30.0),
+                          Icon(
+                            Icons.check_circle,
+                            color: Colors.green,
+                            size: 35,
+                          ),
+                        ] else if (selected) ...[
+                          const SizedBox(width: 30.0),
+                          Icon(
+                            Icons.cancel,
+                            color: Colors.red,
+                            size: 35,
+                          ),
+                        ]
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -942,9 +1035,10 @@ class _MaterialScreenState extends State<MaterialScreen> {
         borderRadius: BorderRadius.circular(15.0),
       ),
       child: Row(
-        mainAxisAlignment: !isQuiz ? MainAxisAlignment.spaceBetween : MainAxisAlignment.end,
+        //mainAxisAlignment: !isQuiz ? MainAxisAlignment.spaceBetween : MainAxisAlignment.end,
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          if (!isQuiz) ...[
+          /*if (!isQuiz) ...[
             TextButton(
               onPressed: _previous,
               child: Text(
@@ -956,7 +1050,25 @@ class _MaterialScreenState extends State<MaterialScreen> {
                 ),
               ),
             ),
+          ],*/
+          if (answerIndex != null) ...[
+            Icon(
+              isCorrectAnswer ? Icons.check_circle : Icons.cancel,
+              color: isCorrectAnswer ? Colors.green : Colors.red.shade400,
+              size: 35,
+            ),
+            Text(
+              isCorrectAnswer ? "Correct answer!" : "Incorrect answer!",
+              style: TextStyle(
+                color: isCorrectAnswer ? Colors.green : Colors.red.shade400,
+                fontSize: 16.0,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ] else ...[
+            const Expanded(child: SizedBox()),
           ],
+          const SizedBox(width: 10.0),
           ElevatedButton(
             onPressed: _next,
             style: ElevatedButton.styleFrom(
