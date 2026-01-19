@@ -12,7 +12,7 @@ class LeaderboardScreen extends StatefulWidget {
 
 class _LeaderboardScreenState extends State<LeaderboardScreen> {
   final DatabaseReference usersRef = FirebaseDatabase.instance.ref().child('users');
-  List<User> users = [];
+  List<UserClass> users = [];
 
   Future<void> _loadUsers() async {
     final snapshot = await usersRef.get();
@@ -21,7 +21,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
     final data = Map<String, dynamic>.from(snapshot.value as Map);
 
     users = data.entries.map((entry) {
-      return User.fromFirebase(entry.key, Map<String, dynamic>.from(entry.value as Map));
+      return UserClass.fromFirebase(entry.key, Map<String, dynamic>.from(entry.value as Map));
     }).toList();
 
     users.sort((b, a) => a.score.compareTo(b.score));
@@ -69,7 +69,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
     );
   }
 
-  Widget _leaderboardList(User user, int ranking) {
+  Widget _leaderboardList(UserClass user, int ranking) {
     Color circleColor;
 
     if (ranking == 1) {

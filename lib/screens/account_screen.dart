@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -24,15 +25,16 @@ class _AccountScreenState extends State<AccountScreen> {
   late TextEditingController passwordTextController;
 
   final DatabaseReference usersRef = FirebaseDatabase.instance.ref().child('users');
+  final FirebaseAuth auth = FirebaseAuth.instance;
 
   String? errorMessage;
-  User? user;
+  UserClass? user;
 
   bool visible = false;
-  bool login = false;
+  bool signIn = false;
   bool loading = false;
 
-  Future<void> _register() async {
+  Future<void> _signUp() async {
     setState(() => loading = true);
 
     String inputName = nameTextController.text.trim();
@@ -62,91 +64,124 @@ class _AccountScreenState extends State<AccountScreen> {
       return;
     }
 
-    // Saving user in database.
-    await userRef.set({
-      'accountDetails' : {
-        'name': inputName,
-        'surname': inputSurname,
-        'email': inputEmail,
-        'username': inputUsername,
-        'password': inputPassword,
-      },
-      'learningDetails' : {
-        'streakNum' : 0,
-        'streakNumGoal' : 0,
-        'score' : 0,
-        'completedLessons' : 0,
-      }
-    });
+    // Firebase. (n.d.). Authenticate with Firebase using Password-Based Accounts on Flutter | Firebase Documentation. [online]
+    // Available at: https://firebase.google.com/docs/auth/flutter/password-auth
+    // [Accessed 19 Jan. 2026].
+    // firebase.flutter.dev. (n.d.). Using Firebase Authentication | FlutterFire. [online]
+    // Available at: https://firebase.flutter.dev/docs/auth/usage/
+    // [Accessed 19 Jan. 2026].
+    try {
+      UserCredential credential = await auth.createUserWithEmailAndPassword(
+        email: emailTextController.text.trim(),
+        password: passwordTextController.text.trim(),
+      );
 
-    final newUser = User(
-      name: inputName,
-      surname: inputSurname,
-      email: inputEmail,
-      username: inputUsername,
-      password: inputPassword,
-      streakNum: 0,
-      streakNumGoal: 0,
-      score: 0,
-      completedLessons: 0,
-    );
-
-    // Saving user info to local storage.
-    await _saveUserLocalStorage(newUser);
-
-    setState(() {
-      user = newUser;
-      errorMessage = null;
-      loading = false;
-    });
-  }
-
-  Future<void> _login() async {
-    setState(() => loading = true);
-
-    String inputUsername = usernameTextController.text.trim();
-    String inputPassword = passwordTextController.text.trim();
-
-    // Forcing user to fill all fields.
-    if (inputUsername.isEmpty || inputPassword.isEmpty) {
-      setState(() {
-        errorMessage = "Enter username and password!";
-        loading = false;
+      // Saving user in database.
+      await userRef.set({
+        'accountDetails' : {
+          'uid': credential.user!.uid,
+          'name': inputName,
+          'surname': inputSurname,
+          'email': inputEmail,
+          'username': inputUsername,
+        },
+        'learningDetails' : {
+          'streakNum' : 0,
+          'streakNumGoal' : 0,
+          'score' : 0,
+          'completedLessons' : 0,
+        }
       });
-      return;
-    }
 
-    final DatabaseReference userRef = usersRef.child(inputUsername);
-    final DataSnapshot snapshot = await userRef.get();
-
-    // Check if credentials are correct.
-    if (!snapshot.exists || snapshot.child('accountDetails/password').value.toString() != inputPassword) {
-      setState(() {
-        errorMessage = "Invalid username or password!";
-        loading = false;
-      });
-      return;
-    }
-
-    final snapshotValue = snapshot.value;
-
-    if (snapshotValue is Map) {
-      final data = Map<String, dynamic>.from(snapshotValue);
-      final dbUser = User.fromFirebase(inputUsername, data);
+      final newUser = UserClass(
+        uid: credential.user!.uid,
+        name: inputName,
+        surname: inputSurname,
+        email: inputEmail,
+        username: inputUsername,
+        streakNum: 0,
+        streakNumGoal: 0,
+        score: 0,
+        completedLessons: 0,
+      );
 
       // Saving user info to local storage.
-      await _saveUserLocalStorage(dbUser);
+      await _saveUserLocalStorage(newUser);
 
       setState(() {
-        user = dbUser;
+        user = newUser;
         errorMessage = null;
         loading = false;
       });
+    } on FirebaseAuthException catch (e) {
+      setState(() {
+        errorMessage = e.message;
+        loading = false;
+      });
     }
   }
 
-  // Function for logging out.
-  Future<void> _logout() async {
+  Future<void> _signIn() async {
+    setState(() => loading = true);
+
+    String inputEmail = emailTextController.text.trim();
+    String inputPassword = passwordTextController.text.trim();
+
+    // Forcing user to fill all fields.
+    if (inputEmail.isEmpty || inputPassword.isEmpty) {
+      setState(() {
+        errorMessage = "Enter email and password!";
+        loading = false;
+      });
+      return;
+    }
+
+    // Firebase. (n.d.). Authenticate with Firebase using Password-Based Accounts on Flutter | Firebase Documentation. [online]
+    // Available at: https://firebase.google.com/docs/auth/flutter/password-auth
+    // [Accessed 19 Jan. 2026].
+    // firebase.flutter.dev. (n.d.). Using Firebase Authentication | FlutterFire. [online]
+    // Available at: https://firebase.flutter.dev/docs/auth/usage/
+    // [Accessed 19 Jan. 2026].
+    try {
+      UserCredential credential = await auth.signInWithEmailAndPassword(
+        email: emailTextController.text.trim(),
+        password: passwordTextController.text.trim(),
+      );
+
+      final snapshot = await usersRef
+          .orderByChild('accountDetails/uid')
+          .equalTo(credential.user!.uid)
+          .get();
+
+      if (snapshot.exists) {
+        final Map<dynamic, dynamic> result = snapshot.value as Map;
+        String username = result.keys.first.toString();
+        Map<String, dynamic> data = Map<String, dynamic>.from(result[username]);
+        final dbUser = UserClass.fromFirebase(username, data);
+
+        // Saving user info to local storage.
+        await _saveUserLocalStorage(dbUser);
+
+        setState(() {
+          user = dbUser;
+          errorMessage = null;
+          loading = false;
+        });
+      }
+    } on FirebaseAuthException {
+      setState(() {
+        errorMessage = "Invalid email or password.";
+        loading = false;
+      });
+    }
+  }
+
+  // Function for signing out.
+  Future<void> _signOut() async {
+    // firebase.flutter.dev. (n.d.). Using Firebase Authentication | FlutterFire. [online]
+    // Available at: https://firebase.flutter.dev/docs/auth/usage/
+    // [Accessed 19 Jan. 2026].
+    await auth.signOut();
     final prefs = await SharedPreferences.getInstance();
     await prefs.clear();
 
@@ -160,16 +195,16 @@ class _AccountScreenState extends State<AccountScreen> {
     });
   }
 
-  // Function to load user info from local storage, when already logged in.
+  // Function to load user info from local storage, when already signed in.
   Future<void> _loadUserLocalStorage() async {
     final prefs = await SharedPreferences.getInstance();
     final username = prefs.getString('username');
     if (username == null) return;
 
     setState(() {
-      user = User(
+      user = UserClass(
+        uid: prefs.getString('uid') ?? '',
         username: username,
-        password: prefs.getString('password'),
         name: prefs.getString('name'),
         surname: prefs.getString('surname'),
         email: prefs.getString('email'),
@@ -182,10 +217,11 @@ class _AccountScreenState extends State<AccountScreen> {
   }
 
   // Function to save user info to local storage.
-  Future<void> _saveUserLocalStorage(User user) async {
+  Future<void> _saveUserLocalStorage(UserClass user) async {
     final prefs = await SharedPreferences.getInstance();
 
     await prefs.setString('username', user.username);
+    await prefs.setString('uid', user.uid);
     if (user.name != null) await prefs.setString('name', user.name!);
     if (user.surname != null) await prefs.setString('surname', user.surname!);
     if (user.email != null) await prefs.setString('email', user.email!);
@@ -246,18 +282,18 @@ class _AccountScreenState extends State<AccountScreen> {
                       ),
                       const SizedBox(height: 40),
                       TextField(
-                          controller: usernameTextController,
+                          controller: emailTextController,
                           decoration: const InputDecoration(
-                              labelText: 'Username',
+                              labelText: 'Email',
                               border: OutlineInputBorder()
                           )
                       ),
                       const SizedBox(height: 10),
-                      if (!login)...[
+                      if (!signIn)...[
                         TextField(
-                            controller: emailTextController,
+                            controller: usernameTextController,
                             decoration: const InputDecoration(
-                                labelText: 'Email',
+                                labelText: 'Username',
                                 border: OutlineInputBorder()
                             )
                         ),
@@ -301,9 +337,9 @@ class _AccountScreenState extends State<AccountScreen> {
                       loading ? const Center(child: CircularProgressIndicator()) : Column(
                         children: [
                           ElevatedButton(
-                              onPressed: login ? _login : _register,
+                              onPressed: signIn ? _signIn : _signUp,
                               child: Text(
-                                  login ? 'Log in' : 'Register',
+                                  signIn ? 'Sign in' : 'Sign up',
                                   style: const TextStyle(
                                     fontSize: 18.0,
                                     fontWeight: FontWeight.bold,
@@ -315,13 +351,24 @@ class _AccountScreenState extends State<AccountScreen> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text(
-                                  login ? "Don't have an account?" : "Already have an account?",
+                                  signIn ? "Don't have an account?" : "Already have an account?",
                                   style: const TextStyle(fontSize: 16.0)
                               ),
                               TextButton(
-                                onPressed: () => setState(() => login = !login),
+                                onPressed: () {
+                                  usernameTextController.clear();
+                                  emailTextController.clear();
+                                  nameTextController.clear();
+                                  surnameTextController.clear();
+                                  passwordTextController.clear();
+
+                                  setState(() {
+                                    errorMessage = null;
+                                    signIn = !signIn;
+                                  });
+                                },
                                 child: Text(
-                                    login ? "Register" : "Log in",
+                                    signIn ? "Sign up" : "Sign in",
                                     style: const TextStyle(
                                         fontSize: 16.0,
                                         decoration: TextDecoration.underline,
@@ -437,7 +484,7 @@ class _AccountScreenState extends State<AccountScreen> {
                                           ),
                                           const SizedBox(width: 10.0),
                                           Text(
-                                            "Log out",
+                                            "Sign out",
                                             style: const TextStyle(
                                               fontSize: 22.0,
                                               fontWeight: FontWeight.bold,
@@ -447,7 +494,7 @@ class _AccountScreenState extends State<AccountScreen> {
                                       ),
                                       const SizedBox(height: 10.0),
                                       const Text(
-                                        "Are you sure you want to log out?",
+                                        "Are you sure you want to sign out?",
                                         style: TextStyle(
                                           fontSize: 18.0,
                                         ),
@@ -480,7 +527,7 @@ class _AccountScreenState extends State<AccountScreen> {
                                             ),
                                             onPressed: () {
                                               setState(() {
-                                                _logout();
+                                                _signOut();
                                               });
                                               Navigator.pop(context);
                                             },
@@ -501,7 +548,7 @@ class _AccountScreenState extends State<AccountScreen> {
                             });
                           },
                           child: const Text(
-                              'Log out',
+                              'Sign out',
                               style: TextStyle(
                                 fontSize: 18.0,
                                 fontWeight: FontWeight.bold,

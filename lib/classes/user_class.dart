@@ -1,6 +1,6 @@
-class User {
+class UserClass {
+  final String uid;
   final String username;
-  final String? password;
   final String? name;
   final String? surname;
   final String? email;
@@ -10,9 +10,9 @@ class User {
   final int score;
   final int completedLessons;
 
-  User({
+  UserClass({
+    required this.uid,
     required this.username,
-    required this.password,
     this.name,
     this.surname,
     this.email,
@@ -22,13 +22,13 @@ class User {
     required this.completedLessons,
   });
 
-  factory User.fromFirebase(String username, Map<String, dynamic> data) {
+  factory UserClass.fromFirebase(String username, Map<String, dynamic> data) {
     final learningDetails = data['learningDetails'] ?? {};
     final accountDetails = data['accountDetails'] ?? {};
 
-    return User(
+    return UserClass(
+      uid: accountDetails['uid'] ?? '',
       username: username,
-      password: accountDetails['password'],
       name: accountDetails['name'],
       surname: accountDetails['surname'],
       email: accountDetails['email'],

@@ -1,5 +1,6 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../classes/user_class.dart';
@@ -17,8 +18,8 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   late TextEditingController streakGoalTextController;
   final DatabaseReference usersRef = FirebaseDatabase.instance.ref().child('users');
-  User? user;
-  List<User> users = [];
+  UserClass? user;
+  List<UserClass> users = [];
 
   // Function to load username from local storage, when already logged in.
   Future<void> _loadUserLocalStorage() async {
@@ -29,10 +30,9 @@ class _HomeScreenState extends State<HomeScreen> {
       final snapshot = await usersRef.child(username).get();
 
       if (snapshot.exists) {
-        final data =
-        Map<String, dynamic>.from(snapshot.value as Map);
+        final data = Map<String, dynamic>.from(snapshot.value as Map);
         setState(() {
-          user = User.fromFirebase(username, data);
+          user = UserClass.fromFirebase(username, data);
         });
       }
     }
@@ -49,9 +49,9 @@ class _HomeScreenState extends State<HomeScreen> {
     });
 
     setState(() {
-      user = User(
+      user = UserClass(
+        uid: user!.uid,
         username: user!.username,
-        password: user!.password,
         name: user!.name,
         surname: user!.surname,
         email: user!.email,
@@ -73,24 +73,71 @@ class _HomeScreenState extends State<HomeScreen> {
       Future.delayed(Duration.zero, () {
         showDialog(
           context: context,
-          builder: (context) =>
-            AlertDialog(
-              title: Text('Streak Goal'),
-              content: TextField(
-                controller: streakGoalTextController,
-                autofocus: true,
-                decoration: InputDecoration(
-                    hintText: 'Update your streak goal..'),
+          barrierDismissible: false,
+          builder: (context) => Dialog(
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
+            child: Container(
+              padding: const EdgeInsets.all(20.0),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(25.0),
+                gradient: LinearGradient(colors: [Colors.orange.shade100, Colors.white],),
               ),
-              actions: [
-                TextButton(
-                  onPressed: () async {
-                    await _updateStreakNum();
-                  },
-                  child: Text('Save'),
-                )
-              ],
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    "Update your streak goal!",
+                    style: const TextStyle(
+                      fontSize: 22.0,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 10.0),
+                  TextField(
+                    controller: streakGoalTextController,
+                    autofocus: true,
+                    keyboardType: TextInputType.number,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.digitsOnly,
+                    ],
+                    decoration: InputDecoration(
+                      hintText: 'Streak number',
+                      enabledBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(
+                          color: Colors.orange.shade900,
+                          width: 2.0,
+                        ),
+                      ),
+                      focusedBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(
+                          color: Colors.orange.shade900,
+                          width: 2.0,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 10.0),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.orange.shade700,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
+                    ),
+                    onPressed: () async {
+                      await _updateStreakNum();
+                    },
+                    child: const Text(
+                      "Save",
+                      style: TextStyle(
+                        fontSize: 18.0,
+                        color: Colors.black,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
+          ),
         );
       });
     }
@@ -104,7 +151,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final data = Map<String, dynamic>.from(snapshot.value as Map);
 
     users = data.entries.map((entry) {
-      return User.fromFirebase(entry.key, Map<String, dynamic>.from(entry.value as Map));
+      return UserClass.fromFirebase(entry.key, Map<String, dynamic>.from(entry.value as Map));
     }).toList();
 
     users.sort((b, a) => a.score.compareTo(b.score));
