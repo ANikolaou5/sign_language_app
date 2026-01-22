@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../classes/user_class.dart';
+import '../components/progress_item_widget.dart';
+import '../services/user_service.dart';
 
 class AccountScreen extends StatefulWidget {
   const AccountScreen({super.key, required this.changeIndex});
@@ -26,6 +28,7 @@ class _AccountScreenState extends State<AccountScreen> {
 
   final DatabaseReference usersRef = FirebaseDatabase.instance.ref().child('users');
   final FirebaseAuth auth = FirebaseAuth.instance;
+  final UserService userService = UserService();
 
   String? errorMessage;
   UserClass? user;
@@ -106,7 +109,7 @@ class _AccountScreenState extends State<AccountScreen> {
       );
 
       // Saving user info to local storage.
-      await _saveUserLocalStorage(newUser);
+      await userService.saveUserLocalStorage(newUser);
 
       setState(() {
         user = newUser;
@@ -160,7 +163,7 @@ class _AccountScreenState extends State<AccountScreen> {
         final dbUser = UserClass.fromFirebase(username, data);
 
         // Saving user info to local storage.
-        await _saveUserLocalStorage(dbUser);
+        await userService.saveUserLocalStorage(dbUser);
 
         setState(() {
           user = dbUser;
@@ -197,38 +200,11 @@ class _AccountScreenState extends State<AccountScreen> {
 
   // Function to load user info from local storage, when already signed in.
   Future<void> _loadUserLocalStorage() async {
-    final prefs = await SharedPreferences.getInstance();
-    final username = prefs.getString('username');
-    if (username == null) return;
+    user = await userService.loadUserLocalStorage();
 
-    setState(() {
-      user = UserClass(
-        uid: prefs.getString('uid') ?? '',
-        username: username,
-        name: prefs.getString('name'),
-        surname: prefs.getString('surname'),
-        email: prefs.getString('email'),
-        streakNum: prefs.getInt('streakNum') ?? 0,
-        streakNumGoal: prefs.getInt('streakNumGoal') ?? 0,
-        score: prefs.getInt('score') ?? 0,
-        completedLessons: prefs.getInt('completedLessons') ?? 0,
-      );
-    });
-  }
-
-  // Function to save user info to local storage.
-  Future<void> _saveUserLocalStorage(UserClass user) async {
-    final prefs = await SharedPreferences.getInstance();
-
-    await prefs.setString('username', user.username);
-    await prefs.setString('uid', user.uid);
-    if (user.name != null) await prefs.setString('name', user.name!);
-    if (user.surname != null) await prefs.setString('surname', user.surname!);
-    if (user.email != null) await prefs.setString('email', user.email!);
-    await prefs.setInt('streakNum', user.streakNum);
-    await prefs.setInt('streakNumGoal', user.streakNumGoal);
-    await prefs.setInt('score', user.score);
-    await prefs.setInt('completedLessons', user.completedLessons);
+    if (user != null) {
+      setState(() {});
+    }
   }
 
   @override
@@ -252,314 +228,462 @@ class _AccountScreenState extends State<AccountScreen> {
             padding: const EdgeInsets.all(20.0),
             child: SingleChildScrollView(
               scrollDirection: Axis.vertical,
-              child: Container(
-                padding: const EdgeInsets.all(10.0),
-                decoration: BoxDecoration(
-                  border: Border.all(),
-                  borderRadius: BorderRadius.circular(30.0),
-                  boxShadow: [BoxShadow(
-                    color: Colors.black,
-                    blurRadius: 8.0,
-                    offset: Offset(0.5, 0.5),
-                  )],
-                  gradient: LinearGradient(colors: [Colors.orange.shade100, Colors.white],),
-                ),
-                alignment: Alignment.center,
-                child: user == null ? Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      const SizedBox(height: 20.0),
-                      Center(
-                        child: CircleAvatar(
-                          radius: 60.0,
-                          backgroundColor: Colors.deepOrange.shade400,
-                          child: Icon(
-                            Icons.person,
-                            size: 80.0,
-                            color: Colors.black,
+              child: Column(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(10.0),
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: Colors.deepOrange.shade400,
+                        width: 2.0,
+                      ),
+                      borderRadius: BorderRadius.circular(30.0),
+                      gradient: LinearGradient(colors: [Colors.orange.shade100, Colors.white],),
+                    ),
+                    alignment: Alignment.center,
+                    child: user == null ? Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        const SizedBox(height: 20.0),
+                        Center(
+                          child: CircleAvatar(
+                            radius: 60.0,
+                            backgroundColor: Colors.deepOrange.shade400,
+                            child: Icon(
+                              Icons.person,
+                              size: 80.0,
+                              color: Colors.black,
+                            ),
                           ),
                         ),
-                      ),
-                      const SizedBox(height: 40),
-                      TextField(
+                        const SizedBox(height: 40),
+                        TextField(
                           controller: emailTextController,
-                          decoration: const InputDecoration(
-                              labelText: 'Email',
-                              border: OutlineInputBorder()
-                          )
-                      ),
-                      const SizedBox(height: 10),
-                      if (!signIn)...[
-                        TextField(
-                            controller: usernameTextController,
-                            decoration: const InputDecoration(
-                                labelText: 'Username',
-                                border: OutlineInputBorder()
-                            )
-                        ),
-                        const SizedBox(height: 10),
-                        TextField(
-                            controller: nameTextController,
-                            decoration: const InputDecoration(
-                                labelText: 'Name',
-                                border: OutlineInputBorder()
-                            )
-                        ),
-                        const SizedBox(height: 10),
-                        TextField(
-                            controller: surnameTextController,
-                            decoration: const InputDecoration(
-                                labelText: 'Surname',
-                                border: OutlineInputBorder()
-                            )
-                        ),
-                        const SizedBox(height: 10),
-                      ],
-                      TextField(
-                        controller: passwordTextController,
-                        decoration: InputDecoration(
-                          labelText: 'Password',
-                          border: const OutlineInputBorder(),
-                          suffixIcon: IconButton(
-                            icon: Icon(visible ? Icons.visibility : Icons.visibility_off,),
-                            onPressed: () {
-                              setState(() {
-                                visible = !visible;
-                              });
-                            },
-                          ),
-                        ),
-                        obscureText: !visible,
-                      ),
-                      const SizedBox(height: 10),
-                      if (errorMessage != null) Text(errorMessage!, style: const TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
-                      const SizedBox(height: 40),
-                      loading ? const Center(child: CircularProgressIndicator()) : Column(
-                        children: [
-                          ElevatedButton(
-                              onPressed: signIn ? _signIn : _signUp,
-                              child: Text(
-                                  signIn ? 'Sign in' : 'Sign up',
-                                  style: const TextStyle(
-                                    fontSize: 18.0,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.black,
-                                  )
-                              )
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                  signIn ? "Don't have an account?" : "Already have an account?",
-                                  style: const TextStyle(fontSize: 16.0)
+                          decoration: InputDecoration(
+                            labelText: 'Email',
+                            border: OutlineInputBorder(),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                color: Colors.deepOrange.shade400,
+                                width: 2.0,
                               ),
-                              TextButton(
-                                onPressed: () {
-                                  usernameTextController.clear();
-                                  emailTextController.clear();
-                                  nameTextController.clear();
-                                  surnameTextController.clear();
-                                  passwordTextController.clear();
-
-                                  setState(() {
-                                    errorMessage = null;
-                                    signIn = !signIn;
-                                  });
-                                },
-                                child: Text(
-                                    signIn ? "Sign up" : "Sign in",
-                                    style: const TextStyle(
-                                        fontSize: 16.0,
-                                        decoration: TextDecoration.underline,
-                                        decorationThickness: 1.5
-                                    )
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        if (!signIn)...[
+                          TextField(
+                            controller: usernameTextController,
+                            decoration: InputDecoration(
+                              labelText: 'Username',
+                              border: OutlineInputBorder(),
+                              focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                  color: Colors.deepOrange.shade400,
+                                  width: 2.0,
                                 ),
                               ),
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                          TextField(
+                            controller: nameTextController,
+                            decoration:  InputDecoration(
+                              labelText: 'Name',
+                              border: OutlineInputBorder(),
+                              focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                  color: Colors.deepOrange.shade400,
+                                  width: 2.0,
+                                ),
+                              ),
+                            )
+                          ),
+                          const SizedBox(height: 10),
+                          TextField(
+                            controller: surnameTextController,
+                            decoration: InputDecoration(
+                              labelText: 'Surname',
+                              border: OutlineInputBorder(),
+                              focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                  color: Colors.deepOrange.shade400,
+                                  width: 2.0,
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                        ],
+                        TextField(
+                          controller: passwordTextController,
+                          decoration: InputDecoration(
+                            labelText: 'Password',
+                            border: OutlineInputBorder(),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                color: Colors.deepOrange.shade400,
+                                width: 2.0,
+                              ),
+                            ),
+                            suffixIcon: IconButton(
+                              icon: Icon(visible ? Icons.visibility : Icons.visibility_off,),
+                              onPressed: () {
+                                setState(() {
+                                  visible = !visible;
+                                });
+                              },
+                            ),
+                          ),
+                          obscureText: !visible,
+                        ),
+                        const SizedBox(height: 10),
+                        if (errorMessage != null) Text(errorMessage!, style: const TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
+                        const SizedBox(height: 40),
+                        loading ? const Center(child: CircularProgressIndicator()) : Column(
+                          children: [
+                            ElevatedButton(
+                                onPressed: signIn ? _signIn : _signUp,
+                                child: Text(
+                                    signIn ? 'Sign in' : 'Sign up',
+                                    style: const TextStyle(
+                                      fontSize: 18.0,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black,
+                                    )
+                                )
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                    signIn ? "Don't have an account?" : "Already have an account?",
+                                    style: const TextStyle(fontSize: 16.0)
+                                ),
+                                TextButton(
+                                  onPressed: () {
+                                    usernameTextController.clear();
+                                    emailTextController.clear();
+                                    nameTextController.clear();
+                                    surnameTextController.clear();
+                                    passwordTextController.clear();
+
+                                    setState(() {
+                                      errorMessage = null;
+                                      signIn = !signIn;
+                                    });
+                                  },
+                                  child: Text(
+                                      signIn ? "Sign up" : "Sign in",
+                                      style: const TextStyle(
+                                          fontSize: 16.0,
+                                          decoration: TextDecoration.underline,
+                                          decorationThickness: 1.5
+                                      )
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ]
+                    ) : Center(
+                      child: Column (
+                        children: [
+                          const SizedBox(height: 10.0),
+                          CircleAvatar(
+                            radius: 40.0,
+                            backgroundColor: Colors.deepOrange.shade400,
+                            child: Icon(
+                              Icons.person,
+                              size: 50.0,
+                              color: Colors.black,
+                            ),
+                          ),
+                          const SizedBox(height: 10.0),
+                          Text(
+                            user!.username,
+                            style: const TextStyle(
+                              fontSize: 24.0,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Text(
+                            '${user!.name} ${user!.surname}',
+                            style: const TextStyle(fontSize: 14.0),
+                          ),
+                          const SizedBox(height: 5.0),
+                          Text(
+                            user!.email!,
+                            style: const TextStyle(fontSize: 14.0,),
+                          ),
+                          const SizedBox(height: 5.0),
+                          Divider(color: Colors.deepOrange.shade400),
+                          const SizedBox(height: 5.0),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              ProgressItem(text: "Streak", num: user?.streakNum ?? 0),
+                              ProgressItem(text: "Streak Goal", num: user?.streakNumGoal ?? 0),
+                              ProgressItem(text: "Score", num: user?.score ?? 0),
                             ],
                           ),
+                          const SizedBox(height: 10.0),
                         ],
                       ),
-                    ]
-                ) : Column (
-                  children: [
-                    const SizedBox(height: 20),
-                    Center(
-                      child: CircleAvatar(
-                        radius: 60.0,
-                        backgroundColor: Colors.deepOrange.shade400,
-                        child: Icon(
-                          Icons.person,
-                          size: 80.0,
-                          color: Colors.black,
+                    ),
+                  ),
+                  if (user != null) ...[
+                    const SizedBox(height: 10.0),
+                    Container(
+                      padding: const EdgeInsets.all(8.0),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        border: Border.all(
+                          color: Colors.grey.shade300,
+                          width: 2.0,
                         ),
+                        borderRadius: BorderRadius.circular(15.0),
                       ),
-                    ),
-                    const SizedBox(height: 20),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'Username: ',
-                          style: TextStyle(
-                              fontSize: 22.0,
-                              fontWeight: FontWeight.bold
-                          ),
-                        ),
-                        Text(
-                          user!.username,
-                          style: const TextStyle(
-                              fontSize: 22.0,
-                              fontWeight: FontWeight.bold
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 20.0),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'Full Name: ',
-                          style: TextStyle(
-                              fontSize: 22.0,
-                              fontWeight: FontWeight.bold
-                          ),
-                        ),
-                        Text(
-                            '${user!.name} ${user!.surname}',
-                            style: const TextStyle(
-                                fontSize: 22.0,
-                                fontWeight: FontWeight.bold
-                            )
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 20.0),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'Email: ',
-                          style: TextStyle(
-                              fontSize: 22.0,
-                              fontWeight: FontWeight.bold
-                          ),
-                        ),
-                        Text(
-                          user!.email!,
-                          style: const TextStyle(
-                              fontSize: 22.0,
-                              fontWeight: FontWeight.bold
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 20.0),
-                    Center(
-                        child: ElevatedButton(
-                          onPressed: () {
-                            showDialog(context: context, builder: (BuildContext context) {
-                              return Dialog(
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
-                                child: Container(
-                                  padding: const EdgeInsets.all(20.0),
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(25.0),
-                                    gradient: LinearGradient(colors: [Colors.orange.shade100, Colors.white],),
-                                  ),
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Row(
-                                        mainAxisAlignment: MainAxisAlignment.center,
-                                        children: [
-                                          Icon(
-                                            Icons.warning,
-                                            color: Colors.red.shade800,
-                                            size: 50,
-                                          ),
-                                          const SizedBox(width: 10.0),
-                                          Text(
-                                            "Sign out",
-                                            style: const TextStyle(
-                                              fontSize: 22.0,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      const SizedBox(height: 10.0),
-                                      const Text(
-                                        "Are you sure you want to sign out?",
-                                        style: TextStyle(
-                                          fontSize: 18.0,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 10.0),
-                                      Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                        children: [
-                                          ElevatedButton(
-                                            style: ElevatedButton.styleFrom(
-                                              backgroundColor: Colors.orange.shade700,
-                                              foregroundColor: Colors.white,
-                                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
-                                            ),
-                                            onPressed: () async {
-                                              Navigator.pop(context);
-                                            },
-                                            child: const Text(
-                                              "No",
-                                              style: TextStyle(
-                                                fontSize: 18.0,
-                                                color: Colors.black,
-                                              ),
-                                            ),
-                                          ),
-                                          ElevatedButton(
-                                            style: ElevatedButton.styleFrom(
-                                              foregroundColor: Colors.white,
-                                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
-                                            ),
-                                            onPressed: () {
-                                              setState(() {
-                                                _signOut();
-                                              });
-                                              Navigator.pop(context);
-                                            },
-                                            child: const Text(
-                                              "Yes",
-                                              style: TextStyle(
-                                                fontSize: 18.0,
-                                                color: Colors.black,
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              );
-                            });
-                          },
-                          child: const Text(
-                              'Sign out',
+                      child: TextButton(
+                        onPressed: () {},
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Container(
+                              width: 40,
+                              height: 40,
+                              decoration: BoxDecoration(
+                                color: Colors.orange.shade100,
+                                shape: BoxShape.circle,
+                              ),
+                              alignment: Alignment.center,
+                              child: Icon(
+                                Icons.person_outlined,
+                                size: 25.0,
+                                color: Colors.deepOrange.shade800,
+                              ),
+                            ),
+                            const SizedBox(width: 10.0),
+                            const Text(
+                              "Edit Profile",
                               style: TextStyle(
                                 fontSize: 18.0,
                                 fontWeight: FontWeight.bold,
                                 color: Colors.black,
-                              )
-                          ),
-                        )
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 10.0),
+                    Container(
+                      padding: const EdgeInsets.all(8.0),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        border: Border.all(
+                          color: Colors.grey.shade300,
+                          width: 2.0,
+                        ),
+                        borderRadius: BorderRadius.circular(15.0),
+                      ),
+                      child: TextButton(
+                        onPressed: () {},
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Container(
+                              width: 40,
+                              height: 40,
+                              decoration: BoxDecoration(
+                                color: Colors.orange.shade100,
+                                shape: BoxShape.circle,
+                              ),
+                              alignment: Alignment.center,
+                              child: Icon(
+                                Icons.dark_mode_outlined,
+                                size: 25.0,
+                                color: Colors.deepOrange.shade800,
+                              ),
+                            ),
+                            const SizedBox(width: 10.0),
+                            const Text(
+                              "Appearance",
+                              style: TextStyle(
+                                fontSize: 18.0,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 10.0),
+                    Container(
+                      padding: const EdgeInsets.all(8.0),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        border: Border.all(
+                          color: Colors.grey.shade300,
+                          width: 2.0,
+                        ),
+                        borderRadius: BorderRadius.circular(15.0),
+                      ),
+                      child: TextButton(
+                        onPressed: () {},
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Container(
+                              width: 40,
+                              height: 40,
+                              decoration: BoxDecoration(
+                                color: Colors.orange.shade100,
+                                shape: BoxShape.circle,
+                              ),
+                              alignment: Alignment.center,
+                              child: Icon(
+                                Icons.help_outline,
+                                size: 25.0,
+                                color: Colors.deepOrange.shade800,
+                              ),
+                            ),
+                            const SizedBox(width: 10.0),
+                            const Text(
+                              "Help & Support",
+                              style: TextStyle(
+                                fontSize: 18.0,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 10.0),
+                    Container(
+                      padding: const EdgeInsets.all(8.0),
+                      decoration: BoxDecoration(
+                        color: Colors.red.shade50,
+                        border: Border.all(
+                          color: Colors.red.shade200,
+                          width: 2.0,
+                        ),
+                        borderRadius: BorderRadius.circular(15.0),
+                      ),
+                      child: TextButton(
+                        onPressed: () {
+                          showDialog(context: context, builder: (BuildContext context) {
+                            return Dialog(
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
+                              child: Container(
+                                padding: const EdgeInsets.all(20.0),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(25.0),
+                                  gradient: LinearGradient(colors: [Colors.orange.shade100, Colors.white],),
+                                ),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        Icon(
+                                          Icons.warning,
+                                          color: Colors.red.shade800,
+                                          size: 25.0,
+                                        ),
+                                        const SizedBox(width: 10.0),
+                                        Text(
+                                          "Sign out",
+                                          style: const TextStyle(
+                                            fontSize: 22.0,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 10.0),
+                                    const Text(
+                                      "Are you sure you want to sign out?",
+                                      style: TextStyle(
+                                        fontSize: 18.0,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 10.0),
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                      children: [
+                                        ElevatedButton(
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor: Colors.orange.shade700,
+                                            foregroundColor: Colors.white,
+                                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
+                                          ),
+                                          onPressed: () async {
+                                            Navigator.pop(context);
+                                          },
+                                          child: const Text(
+                                            "No",
+                                            style: TextStyle(
+                                              fontSize: 18.0,
+                                              color: Colors.black,
+                                            ),
+                                          ),
+                                        ),
+                                        ElevatedButton(
+                                          style: ElevatedButton.styleFrom(
+                                            foregroundColor: Colors.white,
+                                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
+                                          ),
+                                          onPressed: () {
+                                            setState(() {
+                                              _signOut();
+                                            });
+                                            Navigator.pop(context);
+                                          },
+                                          child: const Text(
+                                            "Yes",
+                                            style: TextStyle(
+                                              fontSize: 18.0,
+                                              color: Colors.black,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
+                          });
+                        },
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Icon(
+                              Icons.logout,
+                              size: 22.0,
+                              color: Colors.red,
+                            ),
+                            const SizedBox(width: 10.0),
+                            const Text(
+                              "Sign out",
+                              style: TextStyle(
+                                fontSize: 18.0,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.red,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
                   ],
-                ),
+                ],
               ),
             )
         )

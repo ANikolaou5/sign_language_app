@@ -1,9 +1,10 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import '../classes/user_class.dart';
+import '../components/progress_item_widget.dart';
+import '../services/user_service.dart';
 import 'leaderboard_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -18,23 +19,17 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   late TextEditingController streakGoalTextController;
   final DatabaseReference usersRef = FirebaseDatabase.instance.ref().child('users');
+  final UserService userService = UserService();
+
   UserClass? user;
   List<UserClass> users = [];
 
   // Function to load username from local storage, when already logged in.
   Future<void> _loadUserLocalStorage() async {
-    final prefs = await SharedPreferences.getInstance();
-    final username = prefs.getString('username') ?? '';
+    user = await userService.loadUserLocalStorage();
 
-    if (username != '') {
-      final snapshot = await usersRef.child(username).get();
-
-      if (snapshot.exists) {
-        final data = Map<String, dynamic>.from(snapshot.value as Map);
-        setState(() {
-          user = UserClass.fromFirebase(username, data);
-        });
-      }
+    if (user != null) {
+      setState(() {});
     }
   }
 
@@ -143,19 +138,9 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  // Function to load all users from the Realtime database.
-  Future<void> _loadUsers() async {
-    final snapshot = await usersRef.get();
-    if (!snapshot.exists) return;
-
-    final data = Map<String, dynamic>.from(snapshot.value as Map);
-
-    users = data.entries.map((entry) {
-      return UserClass.fromFirebase(entry.key, Map<String, dynamic>.from(entry.value as Map));
-    }).toList();
-
-    users.sort((b, a) => a.score.compareTo(b.score));
-    users = users.take(3).toList();
+  // Function to load top users from the Realtime database for the leaderboard.
+  Future<void> _loadTopUsers() async {
+    users = await userService.loadTopUsers(3);
 
     setState(() {});
   }
@@ -167,7 +152,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
     _loadUserLocalStorage().then((_) async {
       await _checkStreakGoal();
-      await _loadUsers();
+      await _loadTopUsers();
     });
   }
 
@@ -203,9 +188,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      _progressItem("Streak", user?.streakNum ?? 0, Icons.local_fire_department),
-                      _progressItem("Streak Goal", user?.streakNumGoal ?? 0, Icons.tour),
-                      _progressItem("Score", user?.score ?? 0, Icons.emoji_events),
+                      ProgressItem(text: "Streak", num: user?.streakNum ?? 0, icon: Icons.local_fire_department),
+                      ProgressItem(text: "Streak Goal", num: user?.streakNumGoal ?? 0, icon: Icons.tour),
+                      ProgressItem(text: "Score", num: user?.score ?? 0, icon: Icons.emoji_events),
                     ],
                   )
                 ),
@@ -259,7 +244,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            "Leaderboard",
+                            "Leaderboard - Top 3",
                             style: TextStyle(
                               fontSize: 22.0,
                               fontWeight: FontWeight.bold,
@@ -343,33 +328,4 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
-}
-
-Widget _progressItem(String text, int num, IconData icon) {
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.center,
-    children: [
-      Icon(
-        icon,
-        color: Colors.orange.shade900,
-        size: 60.0,
-      ),
-      const SizedBox(height: 15.0),
-      Text(
-        num.toString(),
-        style: const TextStyle(
-          fontSize: 25.0,
-          fontWeight: FontWeight.bold
-        ),
-      ),
-      const SizedBox(height: 3.0),
-      Text(
-        text,
-        style: TextStyle(
-          fontSize: 18.0,
-          fontWeight: FontWeight.bold,
-        ),
-      ),
-    ],
-  );
 }

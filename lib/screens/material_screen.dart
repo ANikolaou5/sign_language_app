@@ -2,6 +2,7 @@ import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sign_language_app/services/general_service.dart';
 
 import '../classes/lesson_class.dart';
 import '../classes/question_class.dart';
@@ -27,6 +28,7 @@ class _MaterialScreenState extends State<MaterialScreen> {
         26, (i) => 'assets/images/${String.fromCharCode(65 + i)}.png'),
     ...List.generate(10, (i) => 'assets/images/${i + 1}.png'),
   ];
+  final GeneralService generalService = GeneralService();
 
   List<ReadingTutorial> readingTutorials = [];
   List<Question> multipleChoiceQuestions = [];
@@ -49,24 +51,6 @@ class _MaterialScreenState extends State<MaterialScreen> {
   bool completed = false;
   bool isCorrectAnswer = false;
 
-  void _snackBar(String text, Color backgroundColor) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          text,
-          style: TextStyle(
-            color: Colors.black,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        backgroundColor: backgroundColor,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
-        duration: Duration(seconds: 1),
-      ),
-    );
-  }
-
   void _quiz() async {
     setState(() {
       quizAnimation = true;
@@ -86,26 +70,6 @@ class _MaterialScreenState extends State<MaterialScreen> {
       matchedImages.clear();
       matchedTexts.clear();
     });
-  }
-
-  void _createOptions() {
-    final lessonNum = widget.lesson.lessonNum;
-
-    if (lessonNum == 1) {
-      options = ['A', 'B', 'C', 'D', 'E'];
-    } else if (lessonNum == 2) {
-      options = ['F', 'G', 'H', 'I', 'J'];
-    } else if (lessonNum == 3) {
-      options = ['K', 'L', 'M', 'N', 'O'];
-    } else if (lessonNum == 4) {
-      options = ['P', 'Q', 'R', 'S', 'T'];
-    } else if (lessonNum == 5) {
-      options = ['U', 'V', 'W', 'X', 'Y', 'Z'];
-    } else if (lessonNum == 6) {
-      options = ['1', '2', '3', '4', '5'];
-    } else if (lessonNum == 7) {
-      options = ['6', '7', '8', '9', '10'];
-    }
   }
 
   void _createMatchQuestions() {
@@ -162,7 +126,7 @@ class _MaterialScreenState extends State<MaterialScreen> {
     }
   }
 
-  void _createPossibleAnswers() {
+  void _createPossibleAnswersMCQ() {
     final correctImage = multipleChoiceQuestions[tutorialIndex].answer;
 
     final wrongImages = images
@@ -230,7 +194,7 @@ class _MaterialScreenState extends State<MaterialScreen> {
       setState(() {
         tutorial = false;
         isCorrectAnswer = false;
-        _createPossibleAnswers();
+        _createPossibleAnswersMCQ();
       });
       return;
     }
@@ -241,13 +205,13 @@ class _MaterialScreenState extends State<MaterialScreen> {
 
       if (quiz!.isMatch) {
         if (matchedImages.length < 3) {
-          _snackBar('You should match all images to text!', Colors.grey.shade600);
+          generalService.snackBar(context, 'You should match all images to text!', Colors.grey.shade600);
           return;
         }
       } else {
         // Check of signToText question.
         if (answerIndex == null) {
-          _snackBar('You should select an answer!', Colors.grey.shade600);
+          generalService.snackBar(context, 'You should select an answer!', Colors.grey.shade600);
           return;
         }
 
@@ -329,7 +293,7 @@ class _MaterialScreenState extends State<MaterialScreen> {
 
     // Check of multipleChoice question.
     if (answerIndex == null) {
-      _snackBar('You should select an answer!', Colors.grey.shade600);
+      generalService.snackBar(context, 'You should select an answer!', Colors.grey.shade600);
       return;
     }
 
@@ -365,30 +329,13 @@ class _MaterialScreenState extends State<MaterialScreen> {
     }
   }
 
-  void _previous() {
-    setState(() {
-      answerIndex = null;
-
-      if (!tutorial) {
-        tutorial = true;
-      } else if (tutorialIndex > 0) {
-        tutorial = false;
-        tutorialIndex--;
-
-        _createPossibleAnswers();
-      } else {
-        _snackBar('There is no previous content!', Colors.grey.shade600);
-      }
-    });
-  }
-
   @override
   void initState() {
     super.initState();
 
     _loadReadingTutorials();
     _loadQuestions();
-    _createOptions();
+    options = generalService.createOptions(widget.lesson.lessonNum);
     _createMatchQuestions();
   }
 
@@ -715,7 +662,7 @@ class _MaterialScreenState extends State<MaterialScreen> {
                             matchedTexts.add(txt);
                           });
                         } else {
-                          _snackBar('Incorrect answer. Try again!', Colors.red.shade400);
+                          generalService.snackBar(context, 'Incorrect answer. Try again!', Colors.red.shade400);
                         }
                       },
                       builder: (context, candidateData, rejectedData) {
@@ -1035,22 +982,8 @@ class _MaterialScreenState extends State<MaterialScreen> {
         borderRadius: BorderRadius.circular(15.0),
       ),
       child: Row(
-        //mainAxisAlignment: !isQuiz ? MainAxisAlignment.spaceBetween : MainAxisAlignment.end,
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          /*if (!isQuiz) ...[
-            TextButton(
-              onPressed: _previous,
-              child: Text(
-                'Previous',
-                style: TextStyle(
-                  fontSize: 18.0,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.orange.shade900,
-                ),
-              ),
-            ),
-          ],*/
           if (answerIndex != null) ...[
             Icon(
               isCorrectAnswer ? Icons.check_circle : Icons.cancel,

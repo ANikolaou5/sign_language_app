@@ -4,6 +4,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sign_language_app/screens/material_screen.dart';
 
 import '../classes/lesson_class.dart';
+import '../classes/user_class.dart';
+import '../services/user_service.dart';
 
 class LearnScreen extends StatefulWidget {
   const LearnScreen({super.key, required this.changeIndex});
@@ -15,36 +17,24 @@ class LearnScreen extends StatefulWidget {
 }
 
 class _LearnScreenState extends State<LearnScreen> {
-  String? username;
-  int completedLessons = 0;
+  final UserService userService = UserService();
+  UserClass? user;
   Map<int, List<Lesson>> levelLessons = {};
+  Map<int, String> levelDescriptions = {};
+  int completedLessons = 0;
 
   // Function to load username from local storage, when already logged in.
   Future<void> _loadUserLocalStorage() async {
-    final prefs = await SharedPreferences.getInstance();
-    setState(() {
-      username = prefs.getString('username') ?? '';
-    });
+    user = await userService.loadUserLocalStorage();
+
+    if (user != null) {
+      setState(() {});
+    }
   }
 
   Future<void> _loadLearningDetails() async {
-    if (username != null && username!.isNotEmpty) {
-      final DatabaseReference usersRef = FirebaseDatabase.instance.ref().child('users');
-      final DatabaseReference userRef = usersRef.child(username!);
-      final DataSnapshot snapshot = await userRef.get();
-
-      int dbCompletedLessons = snapshot.child('learningDetails/completedLessons').value as int;
-
-      setState(() {
-        completedLessons = dbCompletedLessons;
-      });
-      return;
-    } else {
-      final prefs = await SharedPreferences.getInstance();
-      setState(() {
-        completedLessons = prefs.getInt('guestCompletedLessons') ?? 0;
-      });
-    }
+    completedLessons = await userService.loadCompletedLessons(username: user!.username);
+    setState(() {});
   }
 
   Future<void> _loadLessons() async {
@@ -54,10 +44,12 @@ class _LearnScreenState extends State<LearnScreen> {
 
     final data = Map<String, dynamic>.from(snapshot.value as Map);
     Map<int, List<Lesson>> levels = {};
+    Map<int, String> descriptions = {};
 
     for (var level in data.entries) {
       final levelMap = Map<String, dynamic>.from(level.value as Map);
       final levelNum = levelMap['levelNum'] as int? ?? 0;
+      descriptions[levelNum] = levelMap['levelDesc'] ?? '';
 
       final lessons = levelMap.entries
           .where((e) => e.key.startsWith('lesson'))
@@ -71,13 +63,14 @@ class _LearnScreenState extends State<LearnScreen> {
 
     setState(() {
       levelLessons = levels;
+      levelDescriptions = descriptions;
     });
   }
 
   Future<void> _loginPrompt() async {
     final prefs = await SharedPreferences.getInstance();
 
-    if (username == null || username!.isEmpty) {
+    if (user == null) {
       bool showPrompt = prefs.getBool('showPrompt') ?? false;
 
       if (!showPrompt) {
@@ -205,6 +198,14 @@ class _LearnScreenState extends State<LearnScreen> {
                         ),
                       ),
                       const SizedBox(height: 5.0),
+                      Text(
+                        levelDescriptions[level] ?? '',
+                        style: const TextStyle(
+                          fontSize: 18.0,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 5.0),
                       GridView.count(
                         crossAxisCount: 3,
                         mainAxisSpacing: 12.0,
@@ -273,7 +274,7 @@ class _LearnScreenState extends State<LearnScreen> {
                                                   await Navigator.push(
                                                       context,
                                                       MaterialPageRoute(builder: (
-                                                          context) => MaterialScreen(lesson: lesson, username: username ?? '')));
+                                                          context) => MaterialScreen(lesson: lesson, username: user!.username)));
                                                   await _loadLearningDetails();
                                                 },
                                                 child: const Text(
