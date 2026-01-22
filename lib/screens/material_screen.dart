@@ -8,6 +8,9 @@ import '../classes/lesson_class.dart';
 import '../classes/question_class.dart';
 import '../classes/quiz_class.dart';
 import '../classes/reading_tutorial_class.dart';
+import '../components/build_quiz_widget.dart';
+import '../components/build_tutorial_widget.dart';
+import '../components/completed_lesson_widget.dart';
 
 class MaterialScreen extends StatefulWidget {
   const MaterialScreen({super.key, required this.lesson, required this.username});
@@ -474,7 +477,51 @@ class _MaterialScreenState extends State<MaterialScreen> {
                   child: readingTutorials.isEmpty ? const Center(
                     child: CircularProgressIndicator()) : SingleChildScrollView(
                     scrollDirection: Axis.vertical,
-                    child: completed ? _completedLesson() : (isQuiz ? _buildQuiz() : _buildTutorial()),
+                    child: completed
+                      ? CompletedLesson(
+                        lessonNum: widget.lesson.lessonNum,
+                        completed: () => Navigator.pop(context),
+                      ) : (isQuiz
+                        ? BuildQuiz(
+                          quiz: quiz!,
+                          matchedImages: matchedImages,
+                          matchedTexts: matchedTexts,
+                          answerIndex: answerIndex,
+                          isCorrectAnswer: isCorrectAnswer,
+                          options: options,
+                          generalService: generalService,
+                          next: _next,
+                          onMatch: (img, txt) {
+                            setState(() {
+                              matchedImages.add(img);
+                              matchedTexts.add(txt);
+                            });
+                          },
+                          onTap: (index) {
+                            setState(() {
+                              answerIndex = index;
+                              isCorrectAnswer = (options[index] == quiz!.question.answer);
+                            });
+                          },
+                        )
+                        : BuildTutorial(
+                        lesson: widget.lesson,
+                        tutorial: tutorial,
+                        readingTutorials: readingTutorials,
+                        multipleChoiceQuestions: multipleChoiceQuestions,
+                        tutorialIndex: tutorialIndex,
+                        possibleAnswers: possibleAnswers,
+                        answerIndex: answerIndex,
+                        isCorrectAnswer: isCorrectAnswer,
+                        onTap: (index) {
+                          setState(() {
+                            answerIndex = index;
+                            isCorrectAnswer = (possibleAnswers[index] == multipleChoiceQuestions[tutorialIndex].answer);
+                          });
+                        },
+                        next: _next,
+                      )
+                    ),
                   ),
                 ),
               ],
@@ -523,573 +570,6 @@ class _MaterialScreenState extends State<MaterialScreen> {
           ],
         ],
       ),
-    );
-  }
-
-  Widget _buildQuiz() {
-    final currentQuestion = quiz!.question;
-    return quiz!.isMatch ? _matchQuestion(
-        currentQuestion as Map<String, dynamic>) : _signToTextQuestion(
-        currentQuestion as Question);
-  }
-
-  Widget _matchQuestion(Map<String, dynamic> matchQuestions) {
-    return Column(
-      children: [
-        const SizedBox(height: 5.0),
-        Container(
-          padding: const EdgeInsets.all(8.0),
-          decoration: BoxDecoration(
-            color: Colors.orange.shade100,
-            border: Border.all(width: 2.0, color: Colors.orange.shade300),
-            borderRadius: BorderRadius.circular(15.0),
-          ),
-          alignment: Alignment.center,
-          child: Text(
-            'Drag each image onto its correct meaning:',
-            style: TextStyle(
-              fontSize: 20.0,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ),
-        const SizedBox(height: 25.0),
-        Column(
-          children: List.generate(
-            matchQuestions['shuffledPairs'].length, (index) {
-            final img = matchQuestions['correctPairs'][index]['image'];
-            final txt = matchQuestions['shuffledPairs'][index]['text'];
-
-            return Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Expanded(
-                    child: matchedImages.contains(img) ? Icon(
-                      Icons.check_circle,
-                      color: Colors.green.shade400,
-                      size: 60.0
-                    ) :
-                    Draggable<Map<String, String>>(
-                      // Darji, P. (2021). Drag and drop UI elements in Flutter with Draggable and DragTarget - LogRocket Blog. [online] LogRocket Blog.
-                      // Available at: https://blog.logrocket.com/drag-and-drop-ui-elements-in-flutter-with-draggable-and-dragtarget
-                      // [Accessed 16 Jan. 2026].
-                      data: {
-                        'image': img,
-                        'text': txt,
-                      },
-                      feedback: Opacity(
-                        opacity: 0.7,
-                        child: Container(
-                          padding: const EdgeInsets.all(8.0),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(15.0),
-                            border: Border.all(
-                              width: 2.0,
-                              color: Colors.orange.shade100,
-                            ),
-                          ),
-                          child: Image.asset(
-                            img,
-                            height: 110,
-                          ),
-                        ),
-                      ),
-                      childWhenDragging: Opacity(
-                        opacity: 0.3,
-                        child: Container(
-                          padding: const EdgeInsets.all(8.0),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(15.0),
-                            border: Border.all(
-                              width: 2.0,
-                              color: Colors.orange.shade100,
-                            ),
-                          ),
-                          child: Image.asset(
-                            img,
-                            height: 110,
-                          ),
-                        )
-                      ),
-                      child: Container(
-                        padding: const EdgeInsets.all(8.0),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(15.0),
-                          border: Border.all(
-                            width: 2.0,
-                            color: Colors.orange.shade100,
-                          ),
-                        ),
-                        child: Image.asset(
-                          img,
-                          height: 110,
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 25.0),
-                  Expanded(
-                    child: matchedTexts.contains(txt) ? Container(
-                      height: 60,
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                        color: Colors.green.shade50,
-                        borderRadius: BorderRadius.circular(12.0),
-                      ),
-                      child: Text(
-                        txt,
-                        style: const TextStyle(
-                          fontSize: 22.0,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.green)
-                      ),
-                    ) : DragTarget<Map<String, String>>(
-                      onWillAcceptWithDetails: (_) => true,
-                      onAcceptWithDetails: (details) {
-                        final correctText = details.data['image']!
-                            .split('/').last
-                            .replaceAll('.png', '')
-                            .toUpperCase();
-
-                        if (correctText == txt) {
-                          setState(() {
-                            matchedImages.add(details.data['image']!);
-                            matchedTexts.add(txt);
-                          });
-                        } else {
-                          generalService.snackBar(context, 'Incorrect answer. Try again!', Colors.red.shade400);
-                        }
-                      },
-                      builder: (context, candidateData, rejectedData) {
-                        bool isHovering = candidateData.isNotEmpty;
-                        return AnimatedContainer(
-                          duration: const Duration(milliseconds: 200),
-                          height: 70.0,
-                          alignment: Alignment.center,
-                          decoration: BoxDecoration(
-                            color: isHovering ? Colors.orange.shade100 : Colors.white,
-                            borderRadius: BorderRadius.circular(12.0),
-                            border: Border.all(
-                              color: isHovering ? Colors.orange.shade700 : Colors.orange.shade200,
-                              width: 2.5,
-                            ),
-                          ),
-                          child: Text(
-                            txt,
-                            style: const TextStyle(
-                              fontSize: 22.0,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                ],
-              ),
-            );
-          },
-          ),
-        ),
-        const SizedBox(height: 25.0),
-        _navigationButtons(),
-      ],
-    );
-  }
-
-  Widget _signToTextQuestion(Question q) {
-    return Column(
-      children: [
-        const SizedBox(height: 5.0),
-        Container(
-          padding: const EdgeInsets.all(8.0),
-          decoration: BoxDecoration(
-            color: Colors.orange.shade100,
-            border: Border.all(width: 2.0, color: Colors.orange.shade300),
-            borderRadius: BorderRadius.circular(15.0),
-          ),
-          alignment: Alignment.center,
-          child: Text(
-            q.question,
-            style: TextStyle(
-              fontSize: 20.0,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ),
-        const SizedBox(height: 30.0),
-        Container(
-          padding: const EdgeInsets.all(12.0),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(15.0),
-            boxShadow: [BoxShadow(
-              color: Colors.orange,
-              blurRadius: 2.0,
-              offset: Offset(0.5, 0.5),
-            )],
-          ),
-          child: Image.asset(
-            q.questionContent,
-            height: 300,
-            fit: BoxFit.contain,
-          ),
-        ),
-        const SizedBox(height: 25.0),
-        GridView.count(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          crossAxisCount: 3,
-          mainAxisSpacing: 10.0,
-          crossAxisSpacing: 10.0,
-          childAspectRatio: 2.0,
-          children: List.generate(options.length, (index) {
-            final selected = answerIndex == index;
-
-            return InkWell(
-              onTap: answerIndex != null ? null : () {
-                setState(() {
-                  answerIndex = index;
-                  isCorrectAnswer = (options[index] == q.answer);
-                });
-              },
-              child: AnimatedOpacity(
-                duration: const Duration(milliseconds: 200),
-                opacity: answerIndex == null ? 1.0 : (selected ? 1.0 : 0.6),
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 200),
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    color: (answerIndex != null && options[index] == q.answer) ? Colors.green.shade100 : (selected ? Colors.red.shade100 : Colors.white),
-                    borderRadius: BorderRadius.circular(15.0),
-                    border: Border.all(
-                      color: (answerIndex != null && options[index] == q.answer) ? Colors.green.shade700 : (selected ? Colors.red.shade700 : Colors.orange.shade200),
-                      width: selected ? 3.0 : 1.0,
-                    ),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        options[index],
-                        style: const TextStyle(
-                          fontSize: 22.0,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      if (answerIndex != null && options[index] == q.answer) ...[
-                        const SizedBox(width: 10.0),
-                        Icon(
-                          Icons.check_circle,
-                          color: Colors.green,
-                          size: 25,
-                        ),
-                      ] else if (selected) ...[
-                        const SizedBox(width: 10.0),
-                        Icon(
-                          Icons.cancel,
-                          color: Colors.red,
-                          size: 25,
-                        ),
-                      ]
-                    ],
-                  ),
-                ),
-              ),
-            );
-          }),
-        ),
-        const SizedBox(height: 25.0),
-        _navigationButtons(),
-      ],
-    );
-  }
-
-  Widget _multipleChoiceQuestion() {
-    final String correctAnswer = multipleChoiceQuestions[tutorialIndex].answer;
-
-    return Column(
-      children: [
-        CircleAvatar(
-          radius: 32.0,
-          backgroundColor: Colors.orange.shade700,
-          child: Text(
-            multipleChoiceQuestions[tutorialIndex].questionContent,
-            style: TextStyle(
-              fontSize: 30.0,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ),
-        const SizedBox(height: 5.0),
-        Column(
-          children: List.generate(3, (index) {
-            final selected = answerIndex == index;
-
-            return Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: InkWell(
-                onTap: answerIndex != null ? null : () {
-                  setState(() {
-                    answerIndex = index;
-                    isCorrectAnswer = (possibleAnswers[index] == multipleChoiceQuestions[tutorialIndex].answer);
-                  });
-                },
-                child: AnimatedOpacity(
-                  duration: const Duration(milliseconds: 200),
-                  opacity: answerIndex == null ? 1.0 : (selected ? 1.0 : 0.6),
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 200),
-                    padding: const EdgeInsets.all(10.0),
-                    decoration: BoxDecoration(
-                      color: (answerIndex != null && possibleAnswers[index] == correctAnswer) ? Colors.green.shade100 : (selected ? Colors.red.shade100 : Colors.white),
-                      borderRadius: BorderRadius.circular(15.0),
-                      border: Border.all(
-                        color: (answerIndex != null && possibleAnswers[index] == correctAnswer) ? Colors.green.shade700 : (selected ? Colors.red.shade700 : Colors.orange.shade200),
-                        width: selected ? 3.0 : 1.0,
-                      ),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Container(
-                          width: 40,
-                          height: 40,
-                          decoration: BoxDecoration(
-                            color: selected ? Colors.orange.shade700 : Colors.grey.shade300,
-                            shape: BoxShape.circle,
-                          ),
-                          alignment: Alignment.center,
-                          child: Text(
-                            '${index + 1}',
-                            style: TextStyle(
-                              fontSize: 18.0,
-                              color: Colors.black,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 30.0),
-                        Image.asset(
-                          possibleAnswers[index],
-                          height: 110,
-                        ),
-                        if (answerIndex != null && possibleAnswers[index] == correctAnswer) ...[
-                          const SizedBox(width: 30.0),
-                          Icon(
-                            Icons.check_circle,
-                            color: Colors.green,
-                            size: 35,
-                          ),
-                        ] else if (selected) ...[
-                          const SizedBox(width: 30.0),
-                          Icon(
-                            Icons.cancel,
-                            color: Colors.red,
-                            size: 35,
-                          ),
-                        ]
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            );
-          }),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildTutorial() {
-    return Column(
-      children: [
-        const SizedBox(height: 5.0),
-        Container(
-          padding: const EdgeInsets.all(8.0),
-          decoration: BoxDecoration(
-            color: Colors.orange.shade100,
-            border: Border.all(width: 2.0, color: Colors.orange.shade300),
-            borderRadius: BorderRadius.circular(15.0),
-          ),
-          alignment: Alignment.center,
-          child: Text(
-            widget.lesson.name,
-            style: TextStyle(
-              fontSize: 20.0,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ),
-        const SizedBox(height: 15.0),
-        Container(
-          padding: const EdgeInsets.all(8.0),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            border: Border.all(width: 2.0, color: Colors.orange.shade300),
-            borderRadius: BorderRadius.circular(15.0),
-          ),
-          alignment: Alignment.center,
-          child: Text(
-            tutorial
-                ? readingTutorials[tutorialIndex].tutorialText
-                : multipleChoiceQuestions[tutorialIndex].question,
-            style: TextStyle(
-              fontSize: 20.0,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ),
-        const SizedBox(height: 10.0),
-        if(tutorial) ...[
-          Container(
-            padding: const EdgeInsets.all(12.0),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(15.0),
-              boxShadow: [BoxShadow(
-                color: Colors.orange,
-                blurRadius: 2.0,
-                offset: Offset(0.5, 0.5),
-              )],
-            ),
-            child: Image.asset(
-              readingTutorials[tutorialIndex].tutorialImage,
-              height: 300,
-              fit: BoxFit.contain,
-            ),
-          ),
-        ] else ...[
-          _multipleChoiceQuestion(),
-        ],
-        const SizedBox(height: 15.0),
-        _navigationButtons(),
-      ],
-    );
-  }
-
-  Widget _navigationButtons() {
-    return Container(
-      padding: const EdgeInsets.all(20.0),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border.all(width: 2.0, color: Colors.orange.shade300),
-        borderRadius: BorderRadius.circular(15.0),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          if (answerIndex != null) ...[
-            Icon(
-              isCorrectAnswer ? Icons.check_circle : Icons.cancel,
-              color: isCorrectAnswer ? Colors.green : Colors.red.shade400,
-              size: 35,
-            ),
-            Text(
-              isCorrectAnswer ? "Correct answer!" : "Incorrect answer!",
-              style: TextStyle(
-                color: isCorrectAnswer ? Colors.green : Colors.red.shade400,
-                fontSize: 16.0,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ] else ...[
-            const Expanded(child: SizedBox()),
-          ],
-          const SizedBox(width: 10.0),
-          ElevatedButton(
-            onPressed: _next,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.orange.shade700,
-              foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
-            ),
-            child: const Text(
-              'Next',
-              style: TextStyle(
-                fontSize: 20.0,
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _completedLesson() {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        const SizedBox(height: 50.0),
-        const Icon(
-          Icons.stars,
-          color: Colors.orange,
-          size: 100,
-        ),
-        const SizedBox(height: 20.0),
-        const Text(
-          "Congratulations!",
-          style: TextStyle(
-            fontSize: 32.0,
-            fontWeight: FontWeight.bold
-          ),
-        ),
-        const SizedBox(height: 10.0),
-        Text(
-          "You have finished Lesson ${widget.lesson.lessonNum}",
-          style: const TextStyle(fontSize: 20.0),
-        ),
-        const SizedBox(height: 30.0),
-        Container(
-          padding: const EdgeInsets.all(20.0),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(15.0),
-            border: Border.all(color: Colors.orange.shade300),
-          ),
-          child: const Column(
-            children: [
-              Text(
-                "Score earned",
-                style: TextStyle(fontSize: 20.0),
-              ),
-              Text(
-                "+10 points",
-                style: TextStyle(
-                  fontSize: 25.0,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.orange,
-                ),
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(height: 35.0),
-        ElevatedButton(
-          onPressed: () => Navigator.pop(context),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.orange.shade700,
-            foregroundColor: Colors.white,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
-            padding: const EdgeInsets.all(15.0),
-          ),
-          child: const Text(
-            ' Exit ',
-            style: TextStyle(
-              fontSize: 22.0,
-              fontWeight: FontWeight.bold,
-              color: Colors.black,
-            ),
-          ),
-        ),
-      ],
     );
   }
 }
