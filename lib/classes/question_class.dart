@@ -33,4 +33,16 @@ class Question {
       answer: map['answer'],
     );
   }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'questionNum': questionNum,
+      'lessonNum': lessonNum,
+      'type': questionType.name,
+      'question': question,
+      'questionContent': questionContent,
+      'answer': answer,
+    };
+  }
+
 }

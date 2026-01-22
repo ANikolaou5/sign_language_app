@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'account_screen.dart';
 import 'home_screen.dart';
 import 'learn_screen.dart';
+import 'game_lobby_screen.dart'; // Import your new game lobby/matchmaking screen
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -17,6 +18,7 @@ class _MainScreenState extends State<MainScreen> {
   final _titles = [
     'Home',
     'Learn',
+    'Play', // New Title
     'Account',
   ];
 
@@ -27,9 +29,11 @@ class _MainScreenState extends State<MainScreen> {
     super.initState();
 
     _screens = [
-      HomeScreen(changeIndex: changeIndex),
-      LearnScreen(changeIndex: changeIndex),
-      AccountScreen(changeIndex: changeIndex),
+      HomeScreen(key: const PageStorageKey('home'), changeIndex: changeIndex),
+      LearnScreen(key: const PageStorageKey('learn'), changeIndex: changeIndex),
+      // This is the entry point for your mini-game system
+      GameLobbyScreen(key: const PageStorageKey('play'), changeIndex: changeIndex),
+      AccountScreen(key: const PageStorageKey('account'), changeIndex: changeIndex),
     ];
   }
 
@@ -50,43 +54,59 @@ class _MainScreenState extends State<MainScreen> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
+        elevation: 0,
         backgroundColor: Colors.transparent,
         flexibleSpace: Container(
           decoration: BoxDecoration(
-            gradient: LinearGradient(colors: [Colors.orange.shade500, Colors.deepOrange.shade800]),
+            gradient: LinearGradient(
+              colors: [Colors.orange.shade500, Colors.deepOrange.shade800],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
           ),
         ),
         title: Text(
-          _titles.elementAt(_index),
-          style: TextStyle(
+          _titles[_index],
+          style: const TextStyle(
             fontWeight: FontWeight.bold,
-            color: Colors.black,
+            color: Colors.white, // Changed to white for better contrast against deepOrange
           ),
         ),
       ),
-      body: Center(
-          child: _screens.elementAt(_index)
+      // IMPROVEMENT: IndexedStack keeps screen state alive when switching tabs
+      body: IndexedStack(
+        index: _index,
+        children: _screens,
       ),
-      // api.flutter.dev. (n.d.). BottomNavigationBar class - material library - Dart API. [online]
-      // Available at: https://api.flutter.dev/flutter/material/BottomNavigationBar-class.html
-      // [Accessed 24 Nov. 2025].
       bottomNavigationBar: BottomNavigationBar(
+        type: BottomNavigationBarType.fixed, // Necessary for 4+ items to prevent shifting
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-            icon: Icon(Icons.home),
+            icon: Icon(Icons.home_outlined),
+            activeIcon: Icon(Icons.home),
             label: "Home",
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.menu_book),
+            icon: Icon(Icons.menu_book_outlined),
+            activeIcon: Icon(Icons.menu_book),
             label: "Learn",
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.person),
+            // Using a gamepad or sports icon for the Mini Game
+            icon: Icon(Icons.sports_esports_outlined),
+            activeIcon: Icon(Icons.sports_esports),
+            label: "Play",
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person_outline),
+            activeIcon: Icon(Icons.person),
             label: "Account",
           ),
         ],
         currentIndex: _index,
         selectedItemColor: Colors.deepOrange.shade800,
+        unselectedItemColor: Colors.grey,
+        showUnselectedLabels: true,
         onTap: _onTap,
       ),
     );
