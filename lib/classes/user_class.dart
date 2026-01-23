@@ -14,6 +14,8 @@ class UserClass {
   final int draws;
   final int losses;
 
+  final List<int> badges;
+
   UserClass({
     required this.uid,
     required this.username,
@@ -27,12 +29,18 @@ class UserClass {
     this.wins = 0,
     this.draws = 0,
     this.losses = 0,
+    this.badges = const [],
   });
 
   factory UserClass.fromFirebase(String username, Map<String, dynamic> data) {
     final learningDetails = data['learningDetails'] ?? {};
     final accountDetails = data['accountDetails'] ?? {};
-    final gameStats = data['gameStats'] ?? {}; // New node for games
+    final gameStats = data['gameStats'] ?? {};
+
+    List<int> dbBadges = [];
+    if (learningDetails['badges'] != null) {
+      dbBadges = List<int>.from(learningDetails['badges']);
+    }
 
     return UserClass(
       uid: accountDetails['uid'] ?? '',
@@ -47,6 +55,7 @@ class UserClass {
       wins: gameStats['wins'] ?? 0,
       draws: gameStats['draws'] ?? 0,
       losses: gameStats['losses'] ?? 0,
+      badges: dbBadges,
     );
   }
 }

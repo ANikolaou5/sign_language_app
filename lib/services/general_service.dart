@@ -1,4 +1,7 @@
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+
+import '../classes/badge_class.dart';
 
 class GeneralService {
 
@@ -42,5 +45,21 @@ class GeneralService {
     }
 
     return options;
+  }
+
+  Future<List<BadgeClass>> loadBadges() async {
+    final DatabaseReference badgesRef = FirebaseDatabase.instance.ref().child('badges');
+    final snapshot = await badgesRef.get();
+    if (!snapshot.exists) return [];
+
+    List<BadgeClass> badges;
+    final data = Map<dynamic, dynamic>.from(snapshot.value as Map);
+
+    badges = data.entries.map((entry) {
+      return BadgeClass.fromFirebase(Map<String, dynamic>.from(entry.value as Map));
+    }).toList();
+
+    badges.sort((a, b) => a.badgeNum.compareTo(b.badgeNum));
+    return badges;
   }
 }

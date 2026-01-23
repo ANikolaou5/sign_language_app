@@ -240,7 +240,7 @@ class _GameLobbyScreenState extends State<GameLobbyScreen> {
 
     // Normal Lobby UI
     return Padding(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(10.0),
       child: Column(
         children: [
           _buildPlayerCard(),
@@ -288,7 +288,7 @@ class _GameLobbyScreenState extends State<GameLobbyScreen> {
                   borderRadius: BorderRadius.circular(12),
                 ),
               ),
-              child: const Text("Go to Login", style: TextStyle(color: Colors.white),),
+              child: const Text("Go to Sign in", style: TextStyle(color: Colors.white),),
             ),
           ],
         ),

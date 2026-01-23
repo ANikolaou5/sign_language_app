@@ -74,10 +74,11 @@ class _MainScreenState extends State<MainScreen> {
         ),
       ),
       // IMPROVEMENT: IndexedStack keeps screen state alive when switching tabs
-      body: IndexedStack(
+      /*body: IndexedStack(
         index: _index,
         children: _screens,
-      ),
+      ),*/
+      body: Center(child: _screens.elementAt(_index)),
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed, // Necessary for 4+ items to prevent shifting
         items: const <BottomNavigationBarItem>[

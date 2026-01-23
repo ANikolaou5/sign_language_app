@@ -34,7 +34,7 @@ class _AccountScreenState extends State<AccountScreen> {
   UserClass? user;
 
   bool visible = false;
-  bool signIn = false;
+  bool signIn = true;
   bool loading = false;
 
   Future<void> _signUp() async {
@@ -93,6 +93,11 @@ class _AccountScreenState extends State<AccountScreen> {
           'streakNumGoal' : 0,
           'score' : 0,
           'completedLessons' : 0,
+        },
+        'gameStats' : {
+          'draws' : 0,
+          'losses' : 0,
+          'wins' : 0,
         }
       });
 
@@ -106,6 +111,10 @@ class _AccountScreenState extends State<AccountScreen> {
         streakNumGoal: 0,
         score: 0,
         completedLessons: 0,
+        draws: 0,
+        losses: 0,
+        wins: 0,
+        badges: [],
       );
 
       // Saving user info to local storage.
@@ -217,7 +226,18 @@ class _AccountScreenState extends State<AccountScreen> {
     surnameTextController = TextEditingController();
     passwordTextController = TextEditingController();
 
+    userService.refreshUser();
     _loadUserLocalStorage();
+  }
+
+  @override
+  void dispose() {
+    usernameTextController.dispose();
+    emailTextController.dispose();
+    nameTextController.dispose();
+    surnameTextController.dispose();
+    passwordTextController.dispose();
+    super.dispose();
   }
 
   @override
@@ -225,7 +245,7 @@ class _AccountScreenState extends State<AccountScreen> {
     return Scaffold(
         backgroundColor: Colors.orange.shade50,
         body: Padding(
-            padding: const EdgeInsets.all(20.0),
+            padding: const EdgeInsets.all(10.0),
             child: SingleChildScrollView(
               scrollDirection: Axis.vertical,
               child: Column(
@@ -252,7 +272,7 @@ class _AccountScreenState extends State<AccountScreen> {
                             child: Icon(
                               Icons.person,
                               size: 80.0,
-                              color: Colors.black,
+                              color: Colors.white,
                             ),
                           ),
                         ),
@@ -339,19 +359,23 @@ class _AccountScreenState extends State<AccountScreen> {
                         ),
                         const SizedBox(height: 10),
                         if (errorMessage != null) Text(errorMessage!, style: const TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
-                        const SizedBox(height: 40),
+                        const SizedBox(height: 20),
                         loading ? const Center(child: CircularProgressIndicator()) : Column(
                           children: [
                             ElevatedButton(
-                                onPressed: signIn ? _signIn : _signUp,
-                                child: Text(
-                                    signIn ? 'Sign in' : 'Sign up',
-                                    style: const TextStyle(
-                                      fontSize: 18.0,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black,
-                                    )
-                                )
+                              onPressed: signIn ? _signIn : _signUp,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.deepOrange,
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0),),
+                              ),
+                              child: Text(
+                                signIn ? 'Sign in' : 'Sign up',
+                                style: const TextStyle(
+                                  fontSize: 18.0,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black,
+                                ),
+                              ),
                             ),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,
@@ -374,12 +398,12 @@ class _AccountScreenState extends State<AccountScreen> {
                                     });
                                   },
                                   child: Text(
-                                      signIn ? "Sign up" : "Sign in",
-                                      style: const TextStyle(
-                                          fontSize: 16.0,
-                                          decoration: TextDecoration.underline,
-                                          decorationThickness: 1.5
-                                      )
+                                    signIn ? "Sign up" : "Sign in",
+                                    style: const TextStyle(
+                                      fontSize: 16.0,
+                                      decoration: TextDecoration.underline,
+                                      decorationThickness: 1.5,
+                                    ),
                                   ),
                                 ),
                               ],
@@ -397,7 +421,7 @@ class _AccountScreenState extends State<AccountScreen> {
                             child: Icon(
                               Icons.person,
                               size: 50.0,
-                              color: Colors.black,
+                              color: Colors.white,
                             ),
                           ),
                           const SizedBox(height: 10.0),
@@ -435,18 +459,18 @@ class _AccountScreenState extends State<AccountScreen> {
                   ),
                   if (user != null) ...[
                     const SizedBox(height: 10.0),
-                    Container(
-                      padding: const EdgeInsets.all(8.0),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        border: Border.all(
-                          color: Colors.grey.shade300,
-                          width: 2.0,
+                    InkWell(
+                      onTap: () {},
+                      child: Container(
+                        padding: const EdgeInsets.all(12.0),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          border: Border.all(
+                            color: Colors.grey.shade300,
+                            width: 2.0,
+                          ),
+                          borderRadius: BorderRadius.circular(15.0),
                         ),
-                        borderRadius: BorderRadius.circular(15.0),
-                      ),
-                      child: TextButton(
-                        onPressed: () {},
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
@@ -478,18 +502,18 @@ class _AccountScreenState extends State<AccountScreen> {
                       ),
                     ),
                     const SizedBox(height: 10.0),
-                    Container(
-                      padding: const EdgeInsets.all(8.0),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        border: Border.all(
-                          color: Colors.grey.shade300,
-                          width: 2.0,
+                    InkWell(
+                      onTap: () {},
+                      child: Container(
+                        padding: const EdgeInsets.all(12.0),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          border: Border.all(
+                            color: Colors.grey.shade300,
+                            width: 2.0,
+                          ),
+                          borderRadius: BorderRadius.circular(15.0),
                         ),
-                        borderRadius: BorderRadius.circular(15.0),
-                      ),
-                      child: TextButton(
-                        onPressed: () {},
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
@@ -521,18 +545,18 @@ class _AccountScreenState extends State<AccountScreen> {
                       ),
                     ),
                     const SizedBox(height: 10.0),
-                    Container(
-                      padding: const EdgeInsets.all(8.0),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        border: Border.all(
-                          color: Colors.grey.shade300,
-                          width: 2.0,
+                    InkWell(
+                      onTap: () {},
+                      child: Container(
+                        padding: const EdgeInsets.all(12.0),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          border: Border.all(
+                            color: Colors.grey.shade300,
+                            width: 2.0,
+                          ),
+                          borderRadius: BorderRadius.circular(15.0),
                         ),
-                        borderRadius: BorderRadius.circular(15.0),
-                      ),
-                      child: TextButton(
-                        onPressed: () {},
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
@@ -564,110 +588,119 @@ class _AccountScreenState extends State<AccountScreen> {
                       ),
                     ),
                     const SizedBox(height: 10.0),
-                    Container(
-                      padding: const EdgeInsets.all(8.0),
-                      decoration: BoxDecoration(
-                        color: Colors.red.shade50,
-                        border: Border.all(
-                          color: Colors.red.shade200,
-                          width: 2.0,
-                        ),
-                        borderRadius: BorderRadius.circular(15.0),
-                      ),
-                      child: TextButton(
-                        onPressed: () {
-                          showDialog(context: context, builder: (BuildContext context) {
-                            return Dialog(
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
-                              child: Container(
-                                padding: const EdgeInsets.all(20.0),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(25.0),
-                                  gradient: LinearGradient(colors: [Colors.orange.shade100, Colors.white],),
-                                ),
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      children: [
-                                        Icon(
-                                          Icons.warning,
-                                          color: Colors.red.shade800,
-                                          size: 25.0,
-                                        ),
-                                        const SizedBox(width: 10.0),
-                                        Text(
-                                          "Sign out",
-                                          style: const TextStyle(
-                                            fontSize: 22.0,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    const SizedBox(height: 10.0),
-                                    const Text(
-                                      "Are you sure you want to sign out?",
-                                      style: TextStyle(
-                                        fontSize: 18.0,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 10.0),
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                      children: [
-                                        ElevatedButton(
-                                          style: ElevatedButton.styleFrom(
-                                            backgroundColor: Colors.orange.shade700,
-                                            foregroundColor: Colors.white,
-                                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
-                                          ),
-                                          onPressed: () async {
-                                            Navigator.pop(context);
-                                          },
-                                          child: const Text(
-                                            "No",
-                                            style: TextStyle(
-                                              fontSize: 18.0,
-                                              color: Colors.black,
-                                            ),
-                                          ),
-                                        ),
-                                        ElevatedButton(
-                                          style: ElevatedButton.styleFrom(
-                                            foregroundColor: Colors.white,
-                                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
-                                          ),
-                                          onPressed: () {
-                                            setState(() {
-                                              _signOut();
-                                            });
-                                            Navigator.pop(context);
-                                          },
-                                          child: const Text(
-                                            "Yes",
-                                            style: TextStyle(
-                                              fontSize: 18.0,
-                                              color: Colors.black,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
+                    InkWell(
+                      onTap: () {
+                        showDialog(context: context, builder: (BuildContext context) {
+                          return Dialog(
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
+                            child: Container(
+                              padding: const EdgeInsets.all(20.0),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(25.0),
+                                gradient: LinearGradient(colors: [Colors.orange.shade100, Colors.white],),
                               ),
-                            );
-                          });
-                        },
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(
+                                        Icons.warning,
+                                        color: Colors.red.shade800,
+                                        size: 25.0,
+                                      ),
+                                      const SizedBox(width: 10.0),
+                                      Text(
+                                        "Sign out",
+                                        style: const TextStyle(
+                                          fontSize: 22.0,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 10.0),
+                                  const Text(
+                                    "Are you sure you want to sign out?",
+                                    style: TextStyle(
+                                      fontSize: 18.0,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 10.0),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                    children: [
+                                      ElevatedButton(
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: Colors.orange.shade700,
+                                          foregroundColor: Colors.white,
+                                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
+                                        ),
+                                        onPressed: () async {
+                                          Navigator.pop(context);
+                                        },
+                                        child: const Text(
+                                          "No",
+                                          style: TextStyle(
+                                            fontSize: 18.0,
+                                            color: Colors.black,
+                                          ),
+                                        ),
+                                      ),
+                                      ElevatedButton(
+                                        style: ElevatedButton.styleFrom(
+                                          foregroundColor: Colors.white,
+                                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
+                                        ),
+                                        onPressed: () {
+                                          setState(() {
+                                            _signOut();
+                                          });
+                                          Navigator.pop(context);
+                                        },
+                                        child: const Text(
+                                          "Yes",
+                                          style: TextStyle(
+                                            fontSize: 18.0,
+                                            color: Colors.black,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        });
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.all(12.0),
+                        decoration: BoxDecoration(
+                          color: Colors.red.shade50,
+                          border: Border.all(
+                            color: Colors.red.shade200,
+                            width: 2.0,
+                          ),
+                          borderRadius: BorderRadius.circular(15.0),
+                        ),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
-                            Icon(
-                              Icons.logout,
-                              size: 22.0,
-                              color: Colors.red,
+                            Container(
+                              width: 40,
+                              height: 40,
+                              decoration: BoxDecoration(
+                                color: Colors.red.shade100,
+                                shape: BoxShape.circle,
+                              ),
+                              alignment: Alignment.center,
+                              child: Icon(
+                                Icons.logout,
+                                size: 25.0,
+                                color: Colors.deepOrange.shade800,
+                              ),
                             ),
                             const SizedBox(width: 10.0),
                             const Text(

@@ -12,6 +12,9 @@ class UserService {
     final username = prefs.getString('username');
     if (username == null) return null;
 
+    final List<String> badgesList = prefs.getStringList('badges') ?? [];
+    List<int> badges = badgesList.map((n) => int.parse(n)).toList();
+
     return UserClass(
       uid: prefs.getString('uid') ?? '',
       username: username,
@@ -22,6 +25,10 @@ class UserService {
       streakNumGoal: prefs.getInt('streakNumGoal') ?? 0,
       score: prefs.getInt('score') ?? 0,
       completedLessons: prefs.getInt('completedLessons') ?? 0,
+      draws: prefs.getInt('draws') ?? 0,
+      losses: prefs.getInt('losses') ?? 0,
+      wins: prefs.getInt('wins') ?? 0,
+      badges: badges,
     );
   }
 
@@ -38,6 +45,32 @@ class UserService {
     await prefs.setInt('streakNumGoal', user.streakNumGoal);
     await prefs.setInt('score', user.score);
     await prefs.setInt('completedLessons', user.completedLessons);
+    await prefs.setInt('draws', user.draws);
+    await prefs.setInt('losses', user.losses);
+    await prefs.setInt('wins', user.wins);
+
+    List<String> badges = user.badges
+        .map((badgeNum) => badgeNum.toString())
+        .toList();
+
+    await prefs.setStringList('badges', badges);
+  }
+
+  Future<UserClass?> refreshUser() async {
+    final prefs = await SharedPreferences.getInstance();
+    String? username = prefs.getString('username');
+
+    if (username != null) {
+      final DatabaseReference userRef = usersRef.child(username);
+      final DataSnapshot snapshot = await userRef.get();
+
+      if (snapshot.exists) {
+        UserClass user = UserClass.fromFirebase(username, Map<String, dynamic>.from(snapshot.value as Map));
+        await saveUserLocalStorage(user);
+        return user;
+      }
+    }
+    return null;
   }
 
   // Function to load all users from the Realtime database.

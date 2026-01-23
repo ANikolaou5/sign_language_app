@@ -47,7 +47,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
             "Leaderboard",
             style: TextStyle(
               fontWeight: FontWeight.bold,
-              color: Colors.black,
+              color: Colors.white,
             ),
           ),
         ),

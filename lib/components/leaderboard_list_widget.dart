@@ -66,8 +66,8 @@ class LeaderboardList extends StatelessWidget {
             const Text(
               "points",
               style: TextStyle(
-                  fontSize: 12.0,
-                  fontWeight: FontWeight.bold
+                fontSize: 12.0,
+                fontWeight: FontWeight.bold
               ),
             ),
           ],

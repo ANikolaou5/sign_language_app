@@ -1,6 +1,7 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:sign_language_app/screens/achievements_screen.dart';
 
 import '../classes/user_class.dart';
 import '../components/progress_item_widget.dart';
@@ -54,6 +55,10 @@ class _HomeScreenState extends State<HomeScreen> {
         streakNumGoal: int.tryParse(inputStreakGoal) ?? 0,
         score: user!.score,
         completedLessons: user!.completedLessons,
+        draws: user!.draws,
+        losses: user!.losses,
+        wins: user!.wins,
+        badges: user!.badges,
       );
     });
 
@@ -150,10 +155,18 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     streakGoalTextController = TextEditingController();
 
+    userService.refreshUser();
+
     _loadUserLocalStorage().then((_) async {
       await _checkStreakGoal();
       await _loadTopUsers();
     });
+  }
+
+  @override
+  void dispose() {
+    streakGoalTextController.dispose();
+    super.dispose();
   }
 
   @override
@@ -195,19 +208,19 @@ class _HomeScreenState extends State<HomeScreen> {
                   )
                 ),
               ),
-              const SizedBox(height: 15.0),
+              const SizedBox(height: 10.0),
               Card(
                 elevation: 4.0,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
-                child: Container(
-                  padding: const EdgeInsets.all(8.0),
-                  decoration: BoxDecoration(
-                    color: Colors.deepOrange.shade400,
-                    borderRadius: BorderRadius.circular(15.0),
-                  ),
-                  child: TextButton(
-                    onPressed: () => widget.changeIndex(1),
-                    child: Row(
+                child: InkWell(
+                  onTap: () => widget.changeIndex(1),
+                  child: Container(
+                    padding: const EdgeInsets.all(15.0),
+                    decoration: BoxDecoration(
+                      color: Colors.deepOrange.shade400,
+                      borderRadius: BorderRadius.circular(15.0),
+                    ),
+                    child:Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         const Text(
@@ -228,7 +241,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
               ),
-              const SizedBox(height: 15.0),
+              const SizedBox(height: 10.0),
               Card(
                 elevation: 4.0,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
@@ -300,13 +313,14 @@ class _HomeScreenState extends State<HomeScreen> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
-                          Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(15.0),
-                              gradient: LinearGradient(colors: [Colors.deepOrange.shade200, Colors.deepOrange.shade400],),
-                            ),
-                            child: TextButton(
-                              onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const LeaderboardScreen())),
+                          InkWell(
+                            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const LeaderboardScreen())),
+                            child: Container(
+                              padding: const EdgeInsets.all(10.0),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(15.0),
+                                gradient: LinearGradient(colors: [Colors.deepOrange.shade200, Colors.deepOrange.shade400],),
+                              ),
                               child: Text(
                                 "Full Leaderboard",
                                 style: TextStyle(
@@ -321,6 +335,46 @@ class _HomeScreenState extends State<HomeScreen> {
                     ],
                   ),
                 )
+              ),
+              const SizedBox(height: 10.0),
+              Card(
+                elevation: 4.0,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
+                child: InkWell(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute<void>(
+                        builder: (context) => const AchievementsScreen(),
+                      ),
+                    );
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.all(15.0),
+                    decoration: BoxDecoration(
+                      color: Colors.deepOrange.shade400,
+                      borderRadius: BorderRadius.circular(15.0),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          "Achievements",
+                          style: TextStyle(
+                            fontSize: 18.0,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
+                        ),
+                        Icon(
+                          Icons.arrow_forward_ios,
+                          size: 22.0,
+                          color: Colors.black,
+                        )
+                      ],
+                    ),
+                  ),
+                ),
               ),
             ]
           ),

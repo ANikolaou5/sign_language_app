@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sign_language_app/services/general_service.dart';
 
+import '../classes/badge_class.dart';
 import '../classes/lesson_class.dart';
 import '../classes/question_class.dart';
 import '../classes/quiz_class.dart';
@@ -42,7 +43,7 @@ class _MaterialScreenState extends State<MaterialScreen> {
   List<String> options = [];
   Set<String> matchedImages = {};
   Set<String> matchedTexts = {};
-
+  List<BadgeClass> badges = [];
   String? answer;
 
   int? answerIndex;
@@ -275,13 +276,37 @@ class _MaterialScreenState extends State<MaterialScreen> {
             .child('learningDetails/completedLessons')
             .value as int;
 
+        List<int> dbBadges = [];
+        if (snapshot.child('learningDetails/badges').exists) {
+          dbBadges = List<int>.from(snapshot.child('learningDetails/badges').value as List);
+        }
+
         if (widget.lesson.lessonNum > dbCompletedLessons) {
+          final badgesSnapshot = await FirebaseDatabase.instance.ref().child('badges').get();
+
+          if (badgesSnapshot.exists) {
+            final Map<dynamic, dynamic> badges = badgesSnapshot.value as Map;
+
+            for (var entry in badges.entries) {
+              final data = Map<String, dynamic>.from(entry.value as Map);
+
+              if (data['lessonNum'] == widget.lesson.lessonNum) {
+                int badgeNum = data['badgeNum'] as int;
+
+                if (!dbBadges.contains(badgeNum)) {
+                  dbBadges.add(badgeNum);
+                }
+              }
+            }
+          }
+
           await userRef.update({
             'learningDetails': {
               'streakNum': dbStreakNum,
               'streakNumGoal': dbStreakNumGoal,
               'score': dbScore + 10,
               'completedLessons': dbCompletedLessons + 1,
+              'badges': dbBadges,
             }
           });
         }
@@ -332,6 +357,11 @@ class _MaterialScreenState extends State<MaterialScreen> {
     }
   }
 
+  Future<void> _loadBadges() async {
+    badges = await generalService.loadBadges();
+    setState(() {});
+  }
+
   @override
   void initState() {
     super.initState();
@@ -340,6 +370,7 @@ class _MaterialScreenState extends State<MaterialScreen> {
     _loadQuestions();
     options = generalService.createOptions(widget.lesson.lessonNum);
     _createMatchQuestions();
+    _loadBadges();
   }
 
   @override
@@ -457,7 +488,7 @@ class _MaterialScreenState extends State<MaterialScreen> {
                 "Lesson ${widget.lesson.lessonNum}",
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
-                  color: Colors.black,
+                  color: Colors.white,
                 ),
               ),
             ),
@@ -481,6 +512,7 @@ class _MaterialScreenState extends State<MaterialScreen> {
                       ? CompletedLesson(
                         lessonNum: widget.lesson.lessonNum,
                         completed: () => Navigator.pop(context),
+                        badges: badges,
                       ) : (isQuiz
                         ? BuildQuiz(
                           quiz: quiz!,

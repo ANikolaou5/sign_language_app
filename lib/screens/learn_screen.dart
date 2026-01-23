@@ -33,7 +33,7 @@ class _LearnScreenState extends State<LearnScreen> {
   }
 
   Future<void> _loadLearningDetails() async {
-    completedLessons = await userService.loadCompletedLessons(username: user!.username);
+    completedLessons = await userService.loadCompletedLessons(username: user?.username);
     setState(() {});
   }
 
@@ -103,15 +103,17 @@ class _LearnScreenState extends State<LearnScreen> {
                   const SizedBox(height: 10.0),
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.orange.shade700,
                       foregroundColor: Colors.white,
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
                     ),
                     onPressed: () async {
                       await prefs.setBool('showPrompt', true);
                       Navigator.pop(context);
+                      widget.changeIndex(3);
                     },
                     child: const Text(
-                      'Continue as Guest',
+                      'Sign in',
                       style: TextStyle(
                         fontSize: 18.0,
                         color: Colors.black,
@@ -121,17 +123,15 @@ class _LearnScreenState extends State<LearnScreen> {
                   const SizedBox(height: 10.0),
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.orange.shade700,
                       foregroundColor: Colors.white,
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
                     ),
                     onPressed: () async {
                       await prefs.setBool('showPrompt', true);
                       Navigator.pop(context);
-                      widget.changeIndex(2);
                     },
                     child: const Text(
-                      'Log in / Register',
+                      'Continue as Guest',
                       style: TextStyle(
                         fontSize: 18.0,
                         color: Colors.black,
@@ -150,6 +150,8 @@ class _LearnScreenState extends State<LearnScreen> {
   @override
   void initState() {
     super.initState();
+
+    userService.refreshUser();
 
     _loadUserLocalStorage().then((_) async {
       await _loadLessons();
@@ -173,7 +175,6 @@ class _LearnScreenState extends State<LearnScreen> {
 
                   return Column(
                     children: [
-                      const SizedBox(height: 5.0),
                       Card(
                         elevation: 4.0,
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
