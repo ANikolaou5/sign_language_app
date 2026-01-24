@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 import '../classes/badge_class.dart';
 
 class CompletedLesson extends StatelessWidget {
-  const CompletedLesson({super.key, required this.lessonNum, required this.completed, required this.badges,});
+  const CompletedLesson({super.key, required this.lessonNum, required this.completed, required this.badges, required this.score, required this.reviewLesson,});
 
   final int lessonNum;
   final VoidCallback completed;
   final List<BadgeClass> badges;
+  final int score;
+  final bool reviewLesson;
 
   @override
   Widget build(BuildContext context) {
@@ -33,11 +35,50 @@ class CompletedLesson extends StatelessWidget {
         ),
         const SizedBox(height: 10.0),
         Text(
-          "You have finished Lesson $lessonNum",
+          !reviewLesson ? "You have finished Lesson $lessonNum" : "You have reviewed Lesson $lessonNum",
           style: const TextStyle(fontSize: 20.0),
         ),
         const SizedBox(height: 25.0),
-        if (earned) ...[
+        if (!reviewLesson) ...[
+          if (earned) ...[
+            Container(
+              padding: const EdgeInsets.all(20.0),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(15.0),
+                border: Border.all(color: Colors.orange.shade300),
+              ),
+              child: Column(
+                children: [
+                  const Text(
+                    "Badge earned",
+                    style: TextStyle(fontSize: 20.0,),
+                  ),
+                  Image.asset(
+                    earnedBadge.badgeImage,
+                    height: 90,
+                  ),
+                  Text(
+                    earnedBadge.badgeName,
+                    style: TextStyle(
+                      fontSize: 20.0,
+                      color: Colors.orange.shade700,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Text(
+                    earnedBadge.badgeDesc,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      fontSize: 14.0,
+                      color: Colors.black,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 15.0),
+          ],
           Container(
             padding: const EdgeInsets.all(20.0),
             decoration: BoxDecoration(
@@ -47,60 +88,23 @@ class CompletedLesson extends StatelessWidget {
             ),
             child: Column(
               children: [
-                const Text(
-                  "Badge earned",
+                Text(
+                  "Score earned",
                   style: TextStyle(fontSize: 20.0,),
                 ),
-                Image.asset(
-                  earnedBadge.badgeImage,
-                  height: 90,
-                ),
                 Text(
-                  earnedBadge.badgeName,
+                  "$score points",
                   style: TextStyle(
-                    fontSize: 20.0,
-                    color: Colors.orange.shade700,
+                    fontSize: 25.0,
                     fontWeight: FontWeight.bold,
-                  ),
-                ),
-                Text(
-                  earnedBadge.badgeDesc,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    fontSize: 14.0,
-                    color: Colors.black,
+                    color: Colors.orange.shade700,
                   ),
                 ),
               ],
             ),
           ),
-          const SizedBox(height: 15.0),
+          const SizedBox(height: 25.0),
         ],
-        Container(
-          padding: const EdgeInsets.all(20.0),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(15.0),
-            border: Border.all(color: Colors.orange.shade300),
-          ),
-          child: Column(
-            children: [
-              Text(
-                "Score earned",
-                style: TextStyle(fontSize: 20.0,),
-              ),
-              Text(
-                "+10 points",
-                style: TextStyle(
-                  fontSize: 25.0,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.orange.shade700,
-                ),
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(height: 25.0),
         ElevatedButton(
           onPressed: () => Navigator.pop(context),
           style: ElevatedButton.styleFrom(

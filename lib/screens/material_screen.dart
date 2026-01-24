@@ -48,12 +48,16 @@ class _MaterialScreenState extends State<MaterialScreen> {
 
   int? answerIndex;
   int tutorialIndex = 0;
+  int score = 0;
+  final matchQuestionPoints = 15;
+  final signToTextQuestionPoints = 5;
 
   bool tutorial = true;
   bool isQuiz = false;
   bool quizAnimation = false;
   bool completed = false;
   bool isCorrectAnswer = false;
+  bool reviewLesson = false;
 
   void _quiz() async {
     setState(() {
@@ -205,12 +209,15 @@ class _MaterialScreenState extends State<MaterialScreen> {
 
     if (isQuiz && quiz != null) {
       // Check of match question.
-      final currentQuestion = quiz!.question;
 
       if (quiz!.isMatch) {
         if (matchedImages.length < 3) {
           generalService.snackBar(context, 'You should match all images to text!', Colors.grey.shade600);
           return;
+        } else {
+          setState(() {
+            score += matchQuestionPoints;
+          });
         }
       } else {
         // Check of signToText question.
@@ -219,18 +226,10 @@ class _MaterialScreenState extends State<MaterialScreen> {
           return;
         }
 
-        final question = currentQuestion as Question;
-        if (options[answerIndex!] != question.answer) {
+        if(isCorrectAnswer){
           setState(() {
-            isCorrectAnswer = false;
+            score += signToTextQuestionPoints;
           });
-        } else {
-          if (!isCorrectAnswer) {
-            setState(() {
-              isCorrectAnswer = true;
-            });
-            return;
-          }
         }
       }
 
@@ -242,6 +241,7 @@ class _MaterialScreenState extends State<MaterialScreen> {
           matchedImages.clear();
           matchedTexts.clear();
         });
+        return;
       } else {
         if (widget.username.isEmpty) {
           final prefs = await SharedPreferences.getInstance();
@@ -304,7 +304,7 @@ class _MaterialScreenState extends State<MaterialScreen> {
             'learningDetails': {
               'streakNum': dbStreakNum,
               'streakNumGoal': dbStreakNumGoal,
-              'score': dbScore + 10,
+              'score': dbScore + score,
               'completedLessons': dbCompletedLessons + 1,
               'badges': dbBadges,
             }
@@ -314,6 +314,7 @@ class _MaterialScreenState extends State<MaterialScreen> {
         setState(() {
           completed = true;
           isCorrectAnswer = false;
+          reviewLesson = widget.lesson.lessonNum <= dbCompletedLessons;
         });
       }
       return;
@@ -513,6 +514,8 @@ class _MaterialScreenState extends State<MaterialScreen> {
                         lessonNum: widget.lesson.lessonNum,
                         completed: () => Navigator.pop(context),
                         badges: badges,
+                        score: score,
+                        reviewLesson: reviewLesson,
                       ) : (isQuiz
                         ? BuildQuiz(
                           quiz: quiz!,
@@ -522,6 +525,7 @@ class _MaterialScreenState extends State<MaterialScreen> {
                           isCorrectAnswer: isCorrectAnswer,
                           options: options,
                           generalService: generalService,
+                          questionPoints: quiz!.isMatch ? matchQuestionPoints : signToTextQuestionPoints,
                           next: _next,
                           onMatch: (img, txt) {
                             setState(() {

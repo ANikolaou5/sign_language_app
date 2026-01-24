@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 
 class NavigationButtons extends StatelessWidget {
-  const NavigationButtons({super.key, required this.answerIndex, required this.isCorrectAnswer, required this.next,});
+  const NavigationButtons({super.key, required this.answerIndex, required this.isCorrectAnswer, required this.questionPoints, required this.next,});
 
   final int? answerIndex;
   final bool isCorrectAnswer;
+  final int questionPoints;
   final VoidCallback next;
 
   @override
@@ -25,18 +26,32 @@ class NavigationButtons extends StatelessWidget {
               color: isCorrectAnswer ? Colors.green : Colors.red.shade400,
               size: 35,
             ),
-            Text(
-              isCorrectAnswer ? "Correct answer!" : "Incorrect answer!",
-              style: TextStyle(
-                color: isCorrectAnswer ? Colors.green : Colors.red.shade400,
-                fontSize: 16.0,
-                fontWeight: FontWeight.bold,
-              ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  isCorrectAnswer ? "Correct answer!" : "Incorrect answer!",
+                  style: TextStyle(
+                    color: isCorrectAnswer ? Colors.green : Colors.red.shade400,
+                    fontSize: 18.0,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                if (isCorrectAnswer && questionPoints > 0) ...[
+                  Text(
+                    "You earned $questionPoints points.",
+                    style: TextStyle(
+                      color: isCorrectAnswer ? Colors.green : Colors.red.shade400,
+                      fontSize: 14.0,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ],
             ),
-          ] else
-            ...[
-              const Expanded(child: SizedBox()),
-            ],
+          ] else ...[
+            const Expanded(child: SizedBox()),
+          ],
           const SizedBox(width: 10.0),
           ElevatedButton(
             onPressed: next,

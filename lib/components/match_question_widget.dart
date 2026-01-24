@@ -9,6 +9,7 @@ class MatchQuestion extends StatelessWidget {
     required this.matchedTexts,
     required this.answerIndex,
     required this.isCorrectAnswer,
+    required this.questionPoints,
     required this.onMatch,
     required this.next,
     required this.generalService,
@@ -19,6 +20,7 @@ class MatchQuestion extends StatelessWidget {
   final Set<String> matchedTexts;
   final int? answerIndex;
   final bool isCorrectAnswer;
+  final int questionPoints;
   final Function(String, String) onMatch;
   final VoidCallback next;
   final dynamic generalService;
@@ -42,6 +44,14 @@ class MatchQuestion extends StatelessWidget {
               fontSize: 20.0,
               fontWeight: FontWeight.bold,
             ),
+          ),
+        ),
+        const SizedBox(height: 5.0),
+        Text(
+          "This question is $questionPoints points",
+          style: TextStyle(
+            fontSize: 14.0,
+            color: Colors.grey.shade700,
           ),
         ),
         const SizedBox(height: 25.0),
@@ -189,7 +199,7 @@ class MatchQuestion extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 25.0),
-        NavigationButtons(answerIndex: answerIndex, isCorrectAnswer: isCorrectAnswer, next: next,),
+        NavigationButtons(answerIndex: answerIndex, isCorrectAnswer: isCorrectAnswer, questionPoints: questionPoints, next: next,),
       ],
     );
   }

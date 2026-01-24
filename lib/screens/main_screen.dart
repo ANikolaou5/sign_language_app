@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'account_screen.dart';
 import 'home_screen.dart';
 import 'learn_screen.dart';
-import 'game_lobby_screen.dart'; // Import your new game lobby/matchmaking screen
+import 'game_lobby_screen.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -18,7 +18,7 @@ class _MainScreenState extends State<MainScreen> {
   final _titles = [
     'Home',
     'Learn',
-    'Play', // New Title
+    'Play',
     'Account',
   ];
 
@@ -69,18 +69,17 @@ class _MainScreenState extends State<MainScreen> {
           _titles[_index],
           style: const TextStyle(
             fontWeight: FontWeight.bold,
-            color: Colors.white, // Changed to white for better contrast against deepOrange
+            color: Colors.white,
           ),
         ),
       ),
-      // IMPROVEMENT: IndexedStack keeps screen state alive when switching tabs
       /*body: IndexedStack(
         index: _index,
         children: _screens,
       ),*/
       body: Center(child: _screens.elementAt(_index)),
       bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed, // Necessary for 4+ items to prevent shifting
+        type: BottomNavigationBarType.fixed,
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.home_outlined),
@@ -93,7 +92,6 @@ class _MainScreenState extends State<MainScreen> {
             label: "Learn",
           ),
           BottomNavigationBarItem(
-            // Using a gamepad or sports icon for the Mini Game
             icon: Icon(Icons.sports_esports_outlined),
             activeIcon: Icon(Icons.sports_esports),
             label: "Play",

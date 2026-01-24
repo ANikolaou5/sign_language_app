@@ -9,6 +9,7 @@ class SignToTextQuestion extends StatelessWidget {
     required this.options,
     required this.answerIndex,
     required this.isCorrectAnswer,
+    required this.questionPoints,
     required this.next,
     required this.onTap,
   });
@@ -17,6 +18,7 @@ class SignToTextQuestion extends StatelessWidget {
   final List<String> options;
   final int? answerIndex;
   final bool isCorrectAnswer;
+  final int questionPoints;
   final VoidCallback next;
   final Function(int) onTap;
 
@@ -39,6 +41,14 @@ class SignToTextQuestion extends StatelessWidget {
               fontSize: 20.0,
               fontWeight: FontWeight.bold,
             ),
+          ),
+        ),
+        const SizedBox(height: 5.0),
+        Text(
+          "This question is $questionPoints points",
+          style: TextStyle(
+            fontSize: 14.0,
+            color: Colors.grey.shade700,
           ),
         ),
         const SizedBox(height: 30.0),
@@ -127,7 +137,7 @@ class SignToTextQuestion extends StatelessWidget {
           }),
         ),
         const SizedBox(height: 25.0),
-        NavigationButtons(answerIndex: answerIndex, isCorrectAnswer: isCorrectAnswer, next: next,),
+        NavigationButtons(answerIndex: answerIndex, isCorrectAnswer: isCorrectAnswer, questionPoints: questionPoints, next: next,),
       ],
     );
   }

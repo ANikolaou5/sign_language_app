@@ -15,6 +15,7 @@ class BuildQuiz extends StatelessWidget {
     required this.isCorrectAnswer,
     required this.options,
     required this.generalService,
+    required this.questionPoints,
     required this.next,
     required this.onMatch,
     required this.onTap,
@@ -27,6 +28,7 @@ class BuildQuiz extends StatelessWidget {
   final bool isCorrectAnswer;
   final List<String> options;
   final dynamic generalService;
+  final int questionPoints;
   final VoidCallback next;
   final Function(String, String) onMatch;
   final Function(int) onTap;
@@ -41,6 +43,7 @@ class BuildQuiz extends StatelessWidget {
       answerIndex: answerIndex,
       isCorrectAnswer: isCorrectAnswer,
       generalService: generalService,
+      questionPoints: questionPoints,
       next: next,
       onMatch: onMatch,
     )
@@ -49,6 +52,7 @@ class BuildQuiz extends StatelessWidget {
       options: options,
       answerIndex: answerIndex,
       isCorrectAnswer: isCorrectAnswer,
+      questionPoints: questionPoints,
       next: next,
       onTap: onTap,
     );
