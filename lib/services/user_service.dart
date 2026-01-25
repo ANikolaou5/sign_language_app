@@ -15,6 +15,9 @@ class UserService {
     final List<String> badgesList = prefs.getStringList('badges') ?? [];
     List<int> badges = badgesList.map((n) => int.parse(n)).toList();
 
+    String? date = prefs.getString('lastStreakDate');
+    DateTime? lastStreakDate = date != null ? DateTime.tryParse(date) : null;
+
     return UserClass(
       uid: prefs.getString('uid') ?? '',
       username: username,
@@ -23,6 +26,7 @@ class UserService {
       email: prefs.getString('email'),
       streakNum: prefs.getInt('streakNum') ?? 0,
       streakNumGoal: prefs.getInt('streakNumGoal') ?? 0,
+      lastStreakDate: lastStreakDate,
       score: prefs.getInt('score') ?? 0,
       completedLessons: prefs.getInt('completedLessons') ?? 0,
       draws: prefs.getInt('draws') ?? 0,
@@ -49,6 +53,10 @@ class UserService {
     await prefs.setInt('losses', user.losses);
     await prefs.setInt('wins', user.wins);
 
+    if (user.lastStreakDate != null) {
+      await prefs.setString('lastStreakDate', user.lastStreakDate!.toIso8601String());
+    }
+
     List<String> badges = user.badges
         .map((badgeNum) => badgeNum.toString())
         .toList();
@@ -56,7 +64,7 @@ class UserService {
     await prefs.setStringList('badges', badges);
   }
 
-  Future<UserClass?> refreshUser() async {
+  Future<UserClass?> refreshUserLocalStorage() async {
     final prefs = await SharedPreferences.getInstance();
     String? username = prefs.getString('username');
 

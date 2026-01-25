@@ -24,6 +24,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   UserClass? user;
   List<UserClass> users = [];
+  String? errorMessage;
 
   // Function to load username from local storage, when already logged in.
   Future<void> _loadUserLocalStorage() async {
@@ -34,35 +35,141 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  Future<void> _updateStreakNum() async {
+  Future<void> _resetStreakNum() async {
+    if (user == null || user!.lastStreakDate == null) return;
+
+    if (user!.streakNum != 0) {
+      DateTime now = DateTime.now();
+      DateTime today = DateTime(now.year, now.month, now.day);
+      DateTime lastStreakDate = user!.lastStreakDate!;
+      DateTime lastDate = DateTime(
+          lastStreakDate.year, lastStreakDate.month, lastStreakDate.day);
+      int difference = today
+          .difference(lastDate)
+          .inDays;
+
+      if (difference > 1) {
+        final userRef = usersRef.child(user!.username).child('learningDetails');
+
+        await userRef.update({
+          'streakNum': 0,
+        });
+
+        await userService.refreshUserLocalStorage();
+        user = await userService.loadUserLocalStorage();
+        setState(() {});
+
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (BuildContext context) {
+            return Dialog(
+              shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(15.0)),
+              child: Container(
+                padding: const EdgeInsets.all(20.0),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(25.0),
+                  gradient: LinearGradient(colors: [
+                    Colors.orange.shade100,
+                    Colors.white
+                  ],),
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.local_fire_department,
+                      color: Colors.orange.shade900,
+                      size: 80.0,
+                    ),
+                    Text(
+                      "Your streak was broken!",
+                      style: TextStyle(
+                        fontSize: 22.0,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 15.0),
+                    const Text(
+                      "It's been a while since your last lesson. Your streak has reset to 0, but don't give up!",
+                      textAlign: TextAlign.justify,
+                      style: TextStyle(fontSize: 18.0),
+                    ),
+                    const SizedBox(height: 25.0),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.orange.shade700,
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12.0)),
+                      ),
+                      onPressed: () => Navigator.pop(context),
+                      child: const Text(
+                        "Start a new streak",
+                        style: TextStyle(
+                          fontSize: 18.0,
+                          color: Colors.black,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      }
+    }
+  }
+
+  Future<void> _updateStreakNumGoal(StateSetter setDialogState) async {
     if (user == null) return;
 
-    final userRef = usersRef.child(user!.username).child('learningDetails');
     String inputStreakGoal = streakGoalTextController.text.trim();
 
-    await userRef.update({
-      'streakNumGoal': int.tryParse(inputStreakGoal) ?? 0,
+    setDialogState(() {
+      if (int.tryParse(inputStreakGoal) == null ||
+          int.tryParse(inputStreakGoal)! <= 0) {
+        errorMessage = "Please enter a number greater than 0.";
+      } else if (int.tryParse(inputStreakGoal)! <= user!.streakNumGoal) {
+        errorMessage =
+        "Your new goal must be higher than your current goal (${user!
+            .streakNumGoal}).";
+      } else {
+        errorMessage = null;
+      }
     });
 
-    setState(() {
-      user = UserClass(
-        uid: user!.uid,
-        username: user!.username,
-        name: user!.name,
-        surname: user!.surname,
-        email: user!.email,
-        streakNum: user!.streakNum,
-        streakNumGoal: int.tryParse(inputStreakGoal) ?? 0,
-        score: user!.score,
-        completedLessons: user!.completedLessons,
-        draws: user!.draws,
-        losses: user!.losses,
-        wins: user!.wins,
-        badges: user!.badges,
-      );
-    });
+    if (errorMessage == null) {
+      final userRef = usersRef.child(user!.username).child('learningDetails');
 
-    Navigator.pop(context);
+      await userRef.update({
+        'streakNumGoal': int.tryParse(inputStreakGoal) ?? 0,
+      });
+
+      setState(() {
+        userService.refreshUserLocalStorage();
+
+        user = UserClass(
+          uid: user!.uid,
+          username: user!.username,
+          name: user!.name,
+          surname: user!.surname,
+          email: user!.email,
+          streakNum: user!.streakNum,
+          streakNumGoal: int.tryParse(inputStreakGoal) ?? 0,
+          score: user!.score,
+          completedLessons: user!.completedLessons,
+          draws: user!.draws,
+          losses: user!.losses,
+          wins: user!.wins,
+          badges: user!.badges,
+        );
+      });
+
+      Navigator.pop(context);
+    }
   }
 
   // Function to load the learning details of the user from the Realtime database.
@@ -74,69 +181,79 @@ class _HomeScreenState extends State<HomeScreen> {
         showDialog(
           context: context,
           barrierDismissible: false,
-          builder: (context) => Dialog(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
-            child: Container(
-              padding: const EdgeInsets.all(20.0),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(25.0),
-                gradient: LinearGradient(colors: [Colors.orange.shade100, Colors.white],),
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    "Update your streak goal!",
-                    style: const TextStyle(
-                      fontSize: 22.0,
-                      fontWeight: FontWeight.bold,
-                    ),
+          builder: (context) => StatefulBuilder(
+            builder: (context, setDialogState) {
+              return Dialog(
+                shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(15.0)),
+                child: Container(
+                  padding: const EdgeInsets.all(20.0),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(25.0),
+                    gradient: LinearGradient(colors: [
+                      Colors.orange.shade100,
+                      Colors.white
+                    ],),
                   ),
-                  const SizedBox(height: 10.0),
-                  TextField(
-                    controller: streakGoalTextController,
-                    autofocus: true,
-                    keyboardType: TextInputType.number,
-                    inputFormatters: [
-                      FilteringTextInputFormatter.digitsOnly,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        "Update your streak goal!",
+                        style: const TextStyle(
+                          fontSize: 22.0,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 10.0),
+                      TextField(
+                        controller: streakGoalTextController,
+                        autofocus: true,
+                        keyboardType: TextInputType.number,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly,
+                        ],
+                        decoration: InputDecoration(
+                          hintText: 'Streak number',
+                          enabledBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(
+                              color: Colors.orange.shade900,
+                              width: 2.0,
+                            ),
+                          ),
+                          focusedBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(
+                              color: Colors.orange.shade900,
+                              width: 2.0,
+                            ),
+                          ),
+                        ),
+                      ),
+                      if (errorMessage != null) Text(errorMessage!, style: const TextStyle(color: Colors.red,)),
+                      const SizedBox(height: 10.0),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.orange.shade700,
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12.0)),
+                        ),
+                        onPressed: () async {
+                          await _updateStreakNumGoal(setDialogState);
+                        },
+                        child: const Text(
+                          "Save",
+                          style: TextStyle(
+                            fontSize: 18.0,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ),
                     ],
-                    decoration: InputDecoration(
-                      hintText: 'Streak number',
-                      enabledBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(
-                          color: Colors.orange.shade900,
-                          width: 2.0,
-                        ),
-                      ),
-                      focusedBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(
-                          color: Colors.orange.shade900,
-                          width: 2.0,
-                        ),
-                      ),
-                    ),
                   ),
-                  const SizedBox(height: 10.0),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.orange.shade700,
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
-                    ),
-                    onPressed: () async {
-                      await _updateStreakNum();
-                    },
-                    child: const Text(
-                      "Save",
-                      style: TextStyle(
-                        fontSize: 18.0,
-                        color: Colors.black,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
+                ),
+              );
+            }
           ),
         );
       });
@@ -155,9 +272,8 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     streakGoalTextController = TextEditingController();
 
-    userService.refreshUser();
-
     _loadUserLocalStorage().then((_) async {
+      await _resetStreakNum();
       await _checkStreakGoal();
       await _loadTopUsers();
     });

@@ -3,13 +3,14 @@ import 'package:flutter/material.dart';
 import '../classes/badge_class.dart';
 
 class CompletedLesson extends StatelessWidget {
-  const CompletedLesson({super.key, required this.lessonNum, required this.completed, required this.badges, required this.score, required this.reviewLesson,});
+  const CompletedLesson({super.key, required this.lessonNum, required this.completed, required this.badges, required this.score, required this.reviewLesson, required this.isGuest,});
 
   final int lessonNum;
   final VoidCallback completed;
   final List<BadgeClass> badges;
   final int score;
   final bool reviewLesson;
+  final bool isGuest;
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +40,7 @@ class CompletedLesson extends StatelessWidget {
           style: const TextStyle(fontSize: 20.0),
         ),
         const SizedBox(height: 25.0),
-        if (!reviewLesson) ...[
+        if (!reviewLesson && !isGuest) ...[
           if (earned) ...[
             Container(
               padding: const EdgeInsets.all(20.0),

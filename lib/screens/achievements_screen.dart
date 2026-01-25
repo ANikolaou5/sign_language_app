@@ -38,7 +38,6 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
   void initState() {
     super.initState();
 
-    userService.refreshUser();
     _loadBadges();
     _loadUserLocalStorage();
   }

@@ -3,12 +3,14 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sign_language_app/services/general_service.dart';
+import 'package:sign_language_app/services/user_service.dart';
 
 import '../classes/badge_class.dart';
 import '../classes/lesson_class.dart';
 import '../classes/question_class.dart';
 import '../classes/quiz_class.dart';
 import '../classes/reading_tutorial_class.dart';
+import '../classes/user_class.dart';
 import '../components/build_quiz_widget.dart';
 import '../components/build_tutorial_widget.dart';
 import '../components/completed_lesson_widget.dart';
@@ -33,6 +35,7 @@ class _MaterialScreenState extends State<MaterialScreen> {
     ...List.generate(10, (i) => 'assets/images/${i + 1}.png'),
   ];
   final GeneralService generalService = GeneralService();
+  final UserService userService = UserService();
 
   List<ReadingTutorial> readingTutorials = [];
   List<Question> multipleChoiceQuestions = [];
@@ -58,6 +61,7 @@ class _MaterialScreenState extends State<MaterialScreen> {
   bool completed = false;
   bool isCorrectAnswer = false;
   bool reviewLesson = false;
+  bool isGuest = false;
 
   void _quiz() async {
     setState(() {
@@ -209,7 +213,6 @@ class _MaterialScreenState extends State<MaterialScreen> {
 
     if (isQuiz && quiz != null) {
       // Check of match question.
-
       if (quiz!.isMatch) {
         if (matchedImages.length < 3) {
           generalService.snackBar(context, 'You should match all images to text!', Colors.grey.shade600);
@@ -253,6 +256,7 @@ class _MaterialScreenState extends State<MaterialScreen> {
 
           setState(() {
             completed = true;
+            isGuest = true;
           });
           return;
         }
@@ -260,28 +264,16 @@ class _MaterialScreenState extends State<MaterialScreen> {
         final DatabaseReference usersRef = FirebaseDatabase.instance
             .ref()
             .child('users');
-        final DatabaseReference userRef = usersRef.child(widget.username);
+        final userRef = usersRef.child(widget.username);
         final DataSnapshot snapshot = await userRef.get();
+        UserClass user = UserClass.fromFirebase(widget.username, Map<String, dynamic>.from(snapshot.value as Map));
 
-        int dbStreakNum = snapshot
-            .child('learningDetails/streakNum')
-            .value as int;
-        int dbStreakNumGoal = snapshot
-            .child('learningDetails/streakNumGoal')
-            .value as int;
-        int dbScore = snapshot
-            .child('learningDetails/score')
-            .value as int;
-        int dbCompletedLessons = snapshot
-            .child('learningDetails/completedLessons')
-            .value as int;
-
-        List<int> dbBadges = [];
-        if (snapshot.child('learningDetails/badges').exists) {
-          dbBadges = List<int>.from(snapshot.child('learningDetails/badges').value as List);
-        }
-
-        if (widget.lesson.lessonNum > dbCompletedLessons) {
+        if (widget.lesson.lessonNum <= user.completedLessons) {
+          setState(() {
+            reviewLesson = true;
+          });
+        } else {
+          List<int> dbBadges = List<int>.from(user.badges);
           final badgesSnapshot = await FirebaseDatabase.instance.ref().child('badges').get();
 
           if (badgesSnapshot.exists) {
@@ -300,12 +292,32 @@ class _MaterialScreenState extends State<MaterialScreen> {
             }
           }
 
+          DateTime now = DateTime.now();
+          DateTime today = DateTime(now.year, now.month, now.day);
+
+          int streak = user.streakNum;
+
+          if (user.lastStreakDate != null) {
+            DateTime lastStreakDate = user.lastStreakDate!;
+            DateTime lastDate = DateTime(lastStreakDate.year, lastStreakDate.month, lastStreakDate.day);
+            int difference = today.difference(lastDate).inDays;
+
+            if (difference == 1) {
+              streak += 1;
+            } else if (difference > 1) {
+              streak = 1;
+            }
+          } else {
+            streak = 1;
+          }
+
           await userRef.update({
             'learningDetails': {
-              'streakNum': dbStreakNum,
-              'streakNumGoal': dbStreakNumGoal,
-              'score': dbScore + score,
-              'completedLessons': dbCompletedLessons + 1,
+              'streakNum': streak,
+              'streakNumGoal': user.streakNumGoal,
+              'lastStreakDate': today.toIso8601String(),
+              'score': user.score + score,
+              'completedLessons': user.completedLessons + 1,
               'badges': dbBadges,
             }
           });
@@ -314,7 +326,7 @@ class _MaterialScreenState extends State<MaterialScreen> {
         setState(() {
           completed = true;
           isCorrectAnswer = false;
-          reviewLesson = widget.lesson.lessonNum <= dbCompletedLessons;
+          userService.refreshUserLocalStorage();
         });
       }
       return;
@@ -516,6 +528,7 @@ class _MaterialScreenState extends State<MaterialScreen> {
                         badges: badges,
                         score: score,
                         reviewLesson: reviewLesson,
+                        isGuest: isGuest,
                       ) : (isQuiz
                         ? BuildQuiz(
                           quiz: quiz!,

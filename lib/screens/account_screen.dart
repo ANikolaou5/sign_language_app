@@ -91,6 +91,7 @@ class _AccountScreenState extends State<AccountScreen> {
         'learningDetails' : {
           'streakNum' : 0,
           'streakNumGoal' : 0,
+          'lastStreakDate': '',
           'score' : 0,
           'completedLessons' : 0,
         },
@@ -226,7 +227,6 @@ class _AccountScreenState extends State<AccountScreen> {
     surnameTextController = TextEditingController();
     passwordTextController = TextEditingController();
 
-    userService.refreshUser();
     _loadUserLocalStorage();
   }
 
@@ -271,7 +271,7 @@ class _AccountScreenState extends State<AccountScreen> {
                             backgroundColor: Colors.deepOrange.shade400,
                             child: Icon(
                               Icons.person,
-                              size: 80.0,
+                              size: 70.0,
                               color: Colors.white,
                             ),
                           ),
@@ -608,7 +608,7 @@ class _AccountScreenState extends State<AccountScreen> {
                                       Icon(
                                         Icons.warning,
                                         color: Colors.red.shade800,
-                                        size: 25.0,
+                                        size: 40.0,
                                       ),
                                       const SizedBox(width: 10.0),
                                       Text(

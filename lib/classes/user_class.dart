@@ -7,6 +7,7 @@ class UserClass {
 
   final int streakNum;
   final int streakNumGoal;
+  final DateTime? lastStreakDate;
   final int score;
   final int completedLessons;
 
@@ -24,6 +25,7 @@ class UserClass {
     this.email,
     required this.streakNum,
     required this.streakNumGoal,
+    this.lastStreakDate,
     required this.score,
     required this.completedLessons,
     this.wins = 0,
@@ -42,6 +44,11 @@ class UserClass {
       dbBadges = List<int>.from(learningDetails['badges']);
     }
 
+    DateTime? date;
+    if (learningDetails['lastStreakDate'] != null) {
+      date = DateTime.tryParse(learningDetails['lastStreakDate']);
+    }
+
     return UserClass(
       uid: accountDetails['uid'] ?? '',
       username: accountDetails["username"],
@@ -50,6 +57,7 @@ class UserClass {
       email: accountDetails['email'],
       streakNum: learningDetails['streakNum'] ?? 0,
       streakNumGoal: learningDetails['streakNumGoal'] ?? 0,
+      lastStreakDate: date,
       score: learningDetails['score'] ?? 0,
       completedLessons: learningDetails['completedLessons'] ?? 0,
       wins: gameStats['wins'] ?? 0,

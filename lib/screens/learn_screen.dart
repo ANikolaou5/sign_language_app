@@ -94,11 +94,13 @@ class _LearnScreenState extends State<LearnScreen> {
                       fontSize: 22.0,
                       fontWeight: FontWeight.bold,
                     ),
+                    textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 10.0),
                   const Text(
-                    "If you log in or register, you can earn points and appear on the leaderboard!",
+                    "If you log in or register, you can earn points and badges, and appear on the leaderboard!",
                     style: TextStyle(fontSize: 18.0),
+                    textAlign: TextAlign.justify,
                   ),
                   const SizedBox(height: 10.0),
                   ElevatedButton(
@@ -150,8 +152,6 @@ class _LearnScreenState extends State<LearnScreen> {
   @override
   void initState() {
     super.initState();
-
-    userService.refreshUser();
 
     _loadUserLocalStorage().then((_) async {
       await _loadLessons();
@@ -275,7 +275,7 @@ class _LearnScreenState extends State<LearnScreen> {
                                                   await Navigator.push(
                                                       context,
                                                       MaterialPageRoute(builder: (
-                                                          context) => MaterialScreen(lesson: lesson, username: user!.username)));
+                                                          context) => MaterialScreen(lesson: lesson, username: user?.username ?? '')));
                                                   await _loadLearningDetails();
                                                 },
                                                 child: const Text(
