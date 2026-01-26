@@ -124,6 +124,14 @@ flutter:
     - assets/animals/ant.png
     - assets/animals/moth.png
     - assets/animals/worm.png
+    - assets/conv/goodMorning.png
+    - assets/conv/goodNight.png
+    - assets/conv/haveAGoodDay.png
+    - assets/conv/hello.png
+    - assets/conv/howAreYou.png
+    - assets/conv/iAmFine.png
+    - assets/conv/seeYou.png
+    - assets/conv/thankYou.png
 
   # To add assets to your application, add an assets section, like this:
   # assets:

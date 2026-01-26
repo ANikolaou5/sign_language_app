@@ -110,6 +110,7 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
                       const SizedBox(height: 5.0),
                       Text(
                         badge.badgeDesc,
+                        textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: 12.0,
                           color: earned ? Colors.black : Colors.blueGrey,

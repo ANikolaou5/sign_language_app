@@ -49,7 +49,7 @@ class NavigationButtons extends StatelessWidget {
                   ),
                 ] else if (correctAnswer.isNotEmpty) ...[
                   Text(
-                    "Correct answer: $correctAnswer",
+                    "Correct answer:\n$correctAnswer",
                     style: TextStyle(
                       color: Colors.red.shade400,
                       fontSize: 14.0,
