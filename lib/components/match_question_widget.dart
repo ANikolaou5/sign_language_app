@@ -199,7 +199,7 @@ class MatchQuestion extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 25.0),
-        NavigationButtons(answerIndex: answerIndex, isCorrectAnswer: isCorrectAnswer, questionPoints: questionPoints, next: next,),
+        NavigationButtons(answerIndex: answerIndex, isCorrectAnswer: isCorrectAnswer, correctAnswer: '', questionPoints: questionPoints, next: next,),
       ],
     );
   }

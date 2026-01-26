@@ -102,6 +102,28 @@ flutter:
     - assets/badges/badge1.png
     - assets/badges/badge2.png
     - assets/badges/badge3.png
+    - assets/badges/badge4.png
+    - assets/badges/badge5.png
+    - assets/animals/cat.png
+    - assets/animals/dog.png
+    - assets/animals/bunny.png
+    - assets/animals/fish.png
+    - assets/animals/bird.png
+    - assets/animals/cow.png
+    - assets/animals/pig.png
+    - assets/animals/goat.png
+    - assets/animals/duck.png
+    - assets/animals/pony.png
+    - assets/animals/fox.png
+    - assets/animals/wolf.png
+    - assets/animals/bear.png
+    - assets/animals/lion.png
+    - assets/animals/deer.png
+    - assets/animals/bee.png
+    - assets/animals/fly.png
+    - assets/animals/ant.png
+    - assets/animals/moth.png
+    - assets/animals/worm.png
 
   # To add assets to your application, add an assets section, like this:
   # assets:

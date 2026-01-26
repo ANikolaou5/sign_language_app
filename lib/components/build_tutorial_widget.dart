@@ -101,7 +101,7 @@ class BuildTutorial extends StatelessWidget {
             ),
           ],
         const SizedBox(height: 15.0),
-        NavigationButtons(answerIndex: answerIndex, isCorrectAnswer: isCorrectAnswer, questionPoints: 0, next: next,),
+        NavigationButtons(answerIndex: answerIndex, isCorrectAnswer: isCorrectAnswer, correctAnswer: '', questionPoints: 0, next: next,),
       ],
     );
   }

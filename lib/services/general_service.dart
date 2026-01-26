@@ -25,7 +25,7 @@ class GeneralService {
   }
 
   // Create the options for the sign to text questions based on the lesson number.
-  List<String> createOptions(int lessonNum) {
+  List<String> createOptions(int lessonNum, int lastSignLesson) {
     List<String> options = [];
 
     if (lessonNum == 1) {

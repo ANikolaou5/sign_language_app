@@ -19,6 +19,7 @@ class BuildQuiz extends StatelessWidget {
     required this.next,
     required this.onMatch,
     required this.onTap,
+    required this.answerTextController,
   });
 
   final Quiz quiz;
@@ -32,6 +33,7 @@ class BuildQuiz extends StatelessWidget {
   final VoidCallback next;
   final Function(String, String) onMatch;
   final Function(int) onTap;
+  final TextEditingController answerTextController;
 
   @override
   Widget build(BuildContext context) {
@@ -55,6 +57,7 @@ class BuildQuiz extends StatelessWidget {
       questionPoints: questionPoints,
       next: next,
       onTap: onTap,
+      answerTextController: answerTextController,
     );
   }
 }

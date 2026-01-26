@@ -12,6 +12,7 @@ class SignToTextQuestion extends StatelessWidget {
     required this.questionPoints,
     required this.next,
     required this.onTap,
+    required this.answerTextController,
   });
 
   final Question question;
@@ -21,10 +22,12 @@ class SignToTextQuestion extends StatelessWidget {
   final int questionPoints;
   final VoidCallback next;
   final Function(int) onTap;
+  final TextEditingController answerTextController;
 
   @override
   Widget build(BuildContext context) {
     return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
         const SizedBox(height: 5.0),
         Container(
@@ -64,80 +67,105 @@ class SignToTextQuestion extends StatelessWidget {
             )
             ],
           ),
-          child: Image.asset(
-            question.questionContent,
-            height: 300,
-            fit: BoxFit.contain,
+          child: Column(
+            children: [
+              Image.asset(
+                question.questionContent,
+                height: 300,
+                fit: BoxFit.contain,
+              ),
+              if (options.isEmpty) ...[
+                TextField(
+                  controller: answerTextController,
+                  enabled: answerIndex == null,
+                  decoration: InputDecoration(
+                    labelText: answerIndex == null ? 'Type your answer...' : 'Answer submitted',
+                    border: OutlineInputBorder(),
+                    enabledBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(
+                        color: Colors.orange.shade900,
+                      ),
+                    ),
+                    focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(
+                        color: Colors.orange.shade900,
+                      ),
+                    ),
+                  ),
+                )
+              ]
+            ],
           ),
         ),
         const SizedBox(height: 25.0),
-        GridView.count(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          crossAxisCount: 3,
-          mainAxisSpacing: 10.0,
-          crossAxisSpacing: 10.0,
-          childAspectRatio: 2.0,
-          children: List.generate(options.length, (index) {
-            final selected = answerIndex == index;
+        if (options.isNotEmpty) ...[
+          GridView.count(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            crossAxisCount: 3,
+            mainAxisSpacing: 10.0,
+            crossAxisSpacing: 10.0,
+            childAspectRatio: 2.0,
+            children: List.generate(options.length, (index) {
+              final selected = answerIndex == index;
 
-            return InkWell(
-              onTap: answerIndex != null ? null : () => onTap(index),
-              child: AnimatedOpacity(
-                duration: const Duration(milliseconds: 200),
-                opacity: answerIndex == null ? 1.0 : (selected ? 1.0 : 0.6),
-                child: AnimatedContainer(
+              return InkWell(
+                onTap: answerIndex != null ? null : () => onTap(index),
+                child: AnimatedOpacity(
                   duration: const Duration(milliseconds: 200),
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    color: (answerIndex != null && options[index] == question.answer)
-                        ? Colors.green.shade100
-                        : (selected ? Colors.red.shade100 : Colors.white),
-                    borderRadius: BorderRadius.circular(15.0),
-                    border: Border.all(
+                  opacity: answerIndex == null ? 1.0 : (selected ? 1.0 : 0.6),
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
                       color: (answerIndex != null && options[index] == question.answer)
-                          ? Colors.green.shade700
-                          : (selected ? Colors.red.shade700 : Colors.orange
-                          .shade200),
-                      width: selected ? 3.0 : 1.0,
-                    ),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        options[index],
-                        style: const TextStyle(
-                          fontSize: 22.0,
-                          fontWeight: FontWeight.bold,
-                        ),
+                          ? Colors.green.shade100
+                          : (selected ? Colors.red.shade100 : Colors.white),
+                      borderRadius: BorderRadius.circular(15.0),
+                      border: Border.all(
+                        color: (answerIndex != null && options[index] == question.answer)
+                            ? Colors.green.shade700
+                            : (selected ? Colors.red.shade700 : Colors.orange
+                            .shade200),
+                        width: selected ? 3.0 : 1.0,
                       ),
-                      if (answerIndex != null &&
-                          options[index] == question.answer) ...[
-                        const SizedBox(width: 10.0),
-                        Icon(
-                          Icons.check_circle,
-                          color: Colors.green,
-                          size: 25,
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          options[index],
+                          style: const TextStyle(
+                            fontSize: 22.0,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                      ] else
-                        if (selected) ...[
+                        if (answerIndex != null && options[index] == question.answer) ...[
                           const SizedBox(width: 10.0),
                           Icon(
-                            Icons.cancel,
-                            color: Colors.red,
+                            Icons.check_circle,
+                            color: Colors.green,
                             size: 25,
                           ),
-                        ]
-                    ],
+                        ] else
+                          if (selected) ...[
+                            const SizedBox(width: 10.0),
+                            Icon(
+                              Icons.cancel,
+                              color: Colors.red,
+                              size: 25,
+                            ),
+                          ]
+                      ],
+                    ),
                   ),
                 ),
-              ),
-            );
-          }),
-        ),
+              );
+            }),
+          ),
+        ],
         const SizedBox(height: 25.0),
-        NavigationButtons(answerIndex: answerIndex, isCorrectAnswer: isCorrectAnswer, questionPoints: questionPoints, next: next,),
+        NavigationButtons(answerIndex: answerIndex, isCorrectAnswer: isCorrectAnswer, correctAnswer: question.answer, questionPoints: questionPoints, next: next,),
       ],
     );
   }

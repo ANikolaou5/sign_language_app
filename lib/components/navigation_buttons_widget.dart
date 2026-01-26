@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 
 class NavigationButtons extends StatelessWidget {
-  const NavigationButtons({super.key, required this.answerIndex, required this.isCorrectAnswer, required this.questionPoints, required this.next,});
+  const NavigationButtons({super.key, required this.answerIndex, required this.isCorrectAnswer, required this.correctAnswer, required this.questionPoints, required this.next,});
 
   final int? answerIndex;
   final bool isCorrectAnswer;
+  final String correctAnswer;
   final int questionPoints;
   final VoidCallback next;
 
@@ -41,12 +42,21 @@ class NavigationButtons extends StatelessWidget {
                   Text(
                     "You earned $questionPoints points.",
                     style: TextStyle(
-                      color: isCorrectAnswer ? Colors.green : Colors.red.shade400,
+                      color: Colors.green,
                       fontSize: 14.0,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                ],
+                ] else if (correctAnswer.isNotEmpty) ...[
+                  Text(
+                    "Correct answer: $correctAnswer",
+                    style: TextStyle(
+                      color: Colors.red.shade400,
+                      fontSize: 14.0,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ]
               ],
             ),
           ] else ...[

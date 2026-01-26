@@ -57,13 +57,20 @@ class _LearnScreenState extends State<LearnScreen> {
           .toList();
 
       lessons.sort((a, b) => a.lessonNum.compareTo(b.lessonNum));
-
       levels[levelNum] = lessons;
     }
 
+    var sortedKeys = levels.keys.toList()..sort();
+    Map<int, List<Lesson>> sortedLevels = {
+      for (var key in sortedKeys) key: levels[key]!
+    };
+    Map<int, String> sortedDescriptions = {
+      for (var key in sortedKeys) key: descriptions[key]!
+    };
+
     setState(() {
-      levelLessons = levels;
-      levelDescriptions = descriptions;
+      levelLessons = sortedLevels;
+      levelDescriptions = sortedDescriptions;
     });
   }
 

@@ -34,8 +34,10 @@ class _MaterialScreenState extends State<MaterialScreen> {
         26, (i) => 'assets/images/${String.fromCharCode(65 + i)}.png'),
     ...List.generate(10, (i) => 'assets/images/${i + 1}.png'),
   ];
+
   final GeneralService generalService = GeneralService();
   final UserService userService = UserService();
+  late TextEditingController answerTextController;
 
   List<ReadingTutorial> readingTutorials = [];
   List<Question> multipleChoiceQuestions = [];
@@ -52,6 +54,7 @@ class _MaterialScreenState extends State<MaterialScreen> {
   int? answerIndex;
   int tutorialIndex = 0;
   int score = 0;
+  int lastSignLesson = 7;
   final matchQuestionPoints = 15;
   final signToTextQuestionPoints = 5;
 
@@ -85,56 +88,60 @@ class _MaterialScreenState extends State<MaterialScreen> {
   }
 
   void _createMatchQuestions() {
-    final lessonNum = widget.lesson.lessonNum;
-    int signs = 0;
+    if (widget.lesson.lessonNum <= lastSignLesson) {
+      final lessonNum = widget.lesson.lessonNum;
+      int signs = 0;
 
-    if (lessonNum == 1) {
-      signs = 5;
-    }
-    else if (lessonNum == 2) {
-      signs = 10;
-    }
-    else if (lessonNum == 3) {
-      signs = 15;
-    }
-    else if (lessonNum == 4) {
-      signs = 20;
-    }
-    else if (lessonNum == 5) {
-      signs = 26;
-    }
-    else if (lessonNum == 6) {
-      signs = 31;
-    }
-    else if (lessonNum == 7) {
-      signs = 36;
-    }
+      if (lessonNum == 1) {
+        signs = 5;
+      }
+      else if (lessonNum == 2) {
+        signs = 10;
+      }
+      else if (lessonNum == 3) {
+        signs = 15;
+      }
+      else if (lessonNum == 4) {
+        signs = 20;
+      }
+      else if (lessonNum == 5) {
+        signs = 26;
+      }
+      else if (lessonNum == 6) {
+        signs = 31;
+      }
+      else if (lessonNum == 7) {
+        signs = 36;
+      }
 
-    final imgs = images.take(signs).toList();
-    matchQuestions.clear();
+      final imgs = images.take(signs).toList();
+      matchQuestions.clear();
 
-    for (int i = 0; i < 3; i++) {
-      final shuffledImages = List<String>.from(imgs)
-        ..shuffle();
-      final matchImages = shuffledImages.take(3).toList();
+      for (int i = 0; i < 3; i++) {
+        final shuffledImages = List<String>.from(imgs)
+          ..shuffle();
+        final matchImages = shuffledImages.take(3).toList();
 
-      final correctPairs = matchImages.map((img) {
-        return {
-          'image': img,
-          'text': img
-              .split('/')
-              .last
-              .replaceAll('.png', ''),
-        };
-      }).toList();
+        final correctPairs = matchImages.map((img) {
+          return {
+            'image': img,
+            'text': img
+                .split('/')
+                .last
+                .replaceAll('.png', ''),
+          };
+        }).toList();
 
-      final shuffledPairs = List<Map<String, String>>.from(correctPairs)
-        ..shuffle();
+        final shuffledPairs = List<Map<String, String>>.from(correctPairs)
+          ..shuffle();
 
-      matchQuestions.add({
-        'correctPairs': correctPairs,
-        'shuffledPairs': shuffledPairs,
-      });
+        matchQuestions.add({
+          'correctPairs': correctPairs,
+          'shuffledPairs': shuffledPairs,
+        });
+      }
+    } else {
+      matchQuestions.clear();
     }
   }
 
@@ -188,10 +195,14 @@ class _MaterialScreenState extends State<MaterialScreen> {
         .toList();
 
     setState(() {
-      multipleChoiceQuestions = allQuestions
-          .where((q) => q.questionType == QuestionType.multipleChoice)
-          .toList()
-        ..sort((a, b) => a.questionNum.compareTo(b.questionNum));
+      if (widget.lesson.lessonNum <= lastSignLesson) {
+        multipleChoiceQuestions = allQuestions
+            .where((q) => q.questionType == QuestionType.multipleChoice)
+            .toList()
+          ..sort((a, b) => a.questionNum.compareTo(b.questionNum));
+      } else {
+        multipleChoiceQuestions = [];
+      }
 
       signToTextQuestions = allQuestions
           .where((q) => q.questionType == QuestionType.text)
@@ -201,16 +212,6 @@ class _MaterialScreenState extends State<MaterialScreen> {
   }
 
   void _next() async {
-    // Check of readingTutorial.
-    if (tutorial) {
-      setState(() {
-        tutorial = false;
-        isCorrectAnswer = false;
-        _createPossibleAnswersMCQ();
-      });
-      return;
-    }
-
     if (isQuiz && quiz != null) {
       // Check of match question.
       if (quiz!.isMatch) {
@@ -224,15 +225,41 @@ class _MaterialScreenState extends State<MaterialScreen> {
         }
       } else {
         // Check of signToText question.
-        if (answerIndex == null) {
-          generalService.snackBar(context, 'You should select an answer!', Colors.grey.shade600);
-          return;
-        }
+        if (widget.lesson.lessonNum <= lastSignLesson) {
+          if (answerIndex == null) {
+            generalService.snackBar(context, 'You should select an answer!', Colors.grey.shade600);
+            return;
+          }
 
-        if(isCorrectAnswer){
-          setState(() {
-            score += signToTextQuestionPoints;
-          });
+          if (isCorrectAnswer) {
+            setState(() {
+              score += signToTextQuestionPoints;
+            });
+          }
+        } else {
+          if (answerIndex == null) {
+            final inputAnswer = answerTextController.text.trim().toUpperCase();
+            final correctAnswer = (quiz!.question as Question).answer
+                .toUpperCase();
+
+            if (inputAnswer.isEmpty) {
+              generalService.snackBar(
+                  context, 'You should type an answer!', Colors.grey.shade600);
+              return;
+            }
+
+            setState(() {
+              answerIndex = 1;
+
+              if (inputAnswer == correctAnswer) {
+                isCorrectAnswer = true;
+                score += signToTextQuestionPoints;
+              } else {
+                isCorrectAnswer = false;
+              }
+            });
+            return;
+          }
         }
       }
 
@@ -243,6 +270,7 @@ class _MaterialScreenState extends State<MaterialScreen> {
           answerIndex = null;
           matchedImages.clear();
           matchedTexts.clear();
+          answerTextController.clear();
         });
         return;
       } else {
@@ -332,6 +360,32 @@ class _MaterialScreenState extends State<MaterialScreen> {
       return;
     }
 
+    // Check of readingTutorial.
+    if (tutorial) {
+      if (multipleChoiceQuestions.isEmpty) {
+        // Skip the multiple choice widget.
+        if (tutorialIndex < readingTutorials.length - 1) {
+          setState(() {
+            isCorrectAnswer = false;
+            answerIndex = null;
+            tutorial = true;
+            tutorialIndex++;
+          });
+          return;
+        } else {
+          _quiz();
+          return;
+        }
+      }
+
+      setState(() {
+        tutorial = false;
+        isCorrectAnswer = false;
+        _createPossibleAnswersMCQ();
+      });
+      return;
+    }
+
     // Check of multipleChoice question.
     if (answerIndex == null) {
       generalService.snackBar(context, 'You should select an answer!', Colors.grey.shade600);
@@ -365,7 +419,6 @@ class _MaterialScreenState extends State<MaterialScreen> {
         isCorrectAnswer = false;
         answerIndex = null;
       });
-
       _quiz();
     }
   }
@@ -379,11 +432,18 @@ class _MaterialScreenState extends State<MaterialScreen> {
   void initState() {
     super.initState();
 
+    answerTextController = TextEditingController();
     _loadReadingTutorials();
     _loadQuestions();
-    options = generalService.createOptions(widget.lesson.lessonNum);
+    options = generalService.createOptions(widget.lesson.lessonNum, lastSignLesson);
     _createMatchQuestions();
     _loadBadges();
+  }
+
+  @override
+  void dispose() {
+    answerTextController.dispose();
+    super.dispose();
   }
 
   @override
@@ -516,60 +576,63 @@ class _MaterialScreenState extends State<MaterialScreen> {
                   color: Colors.orange.shade900,
                   minHeight: 8.0,
                 ),
-                Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: readingTutorials.isEmpty ? const Center(
-                    child: CircularProgressIndicator()) : SingleChildScrollView(
-                    scrollDirection: Axis.vertical,
-                    child: completed
-                      ? CompletedLesson(
-                        lessonNum: widget.lesson.lessonNum,
-                        completed: () => Navigator.pop(context),
-                        badges: badges,
-                        score: score,
-                        reviewLesson: reviewLesson,
-                        isGuest: isGuest,
-                      ) : (isQuiz
-                        ? BuildQuiz(
-                          quiz: quiz!,
-                          matchedImages: matchedImages,
-                          matchedTexts: matchedTexts,
+                Expanded(
+                  child:Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: readingTutorials.isEmpty ? const Center(
+                      child: CircularProgressIndicator()) : SingleChildScrollView(
+                      scrollDirection: Axis.vertical,
+                      child: completed
+                        ? CompletedLesson(
+                          lessonNum: widget.lesson.lessonNum,
+                          completed: () => Navigator.pop(context),
+                          badges: badges,
+                          score: score,
+                          reviewLesson: reviewLesson,
+                          isGuest: isGuest,
+                        ) : (isQuiz
+                          ? BuildQuiz(
+                            quiz: quiz!,
+                            matchedImages: matchedImages,
+                            matchedTexts: matchedTexts,
+                            answerIndex: answerIndex,
+                            isCorrectAnswer: isCorrectAnswer,
+                            options: options,
+                            generalService: generalService,
+                            questionPoints: quiz!.isMatch ? matchQuestionPoints : signToTextQuestionPoints,
+                            next: _next,
+                            onMatch: (img, txt) {
+                              setState(() {
+                                matchedImages.add(img);
+                                matchedTexts.add(txt);
+                              });
+                            },
+                            onTap: (index) {
+                              setState(() {
+                                answerIndex = index;
+                                isCorrectAnswer = (options[index] == quiz!.question.answer);
+                              });
+                            },
+                            answerTextController: answerTextController,
+                          )
+                          : BuildTutorial(
+                          lesson: widget.lesson,
+                          tutorial: tutorial,
+                          readingTutorials: readingTutorials,
+                          multipleChoiceQuestions: multipleChoiceQuestions,
+                          tutorialIndex: tutorialIndex,
+                          possibleAnswers: possibleAnswers,
                           answerIndex: answerIndex,
                           isCorrectAnswer: isCorrectAnswer,
-                          options: options,
-                          generalService: generalService,
-                          questionPoints: quiz!.isMatch ? matchQuestionPoints : signToTextQuestionPoints,
-                          next: _next,
-                          onMatch: (img, txt) {
-                            setState(() {
-                              matchedImages.add(img);
-                              matchedTexts.add(txt);
-                            });
-                          },
                           onTap: (index) {
                             setState(() {
                               answerIndex = index;
-                              isCorrectAnswer = (options[index] == quiz!.question.answer);
+                              isCorrectAnswer = (possibleAnswers[index] == multipleChoiceQuestions[tutorialIndex].answer);
                             });
                           },
+                          next: _next,
                         )
-                        : BuildTutorial(
-                        lesson: widget.lesson,
-                        tutorial: tutorial,
-                        readingTutorials: readingTutorials,
-                        multipleChoiceQuestions: multipleChoiceQuestions,
-                        tutorialIndex: tutorialIndex,
-                        possibleAnswers: possibleAnswers,
-                        answerIndex: answerIndex,
-                        isCorrectAnswer: isCorrectAnswer,
-                        onTap: (index) {
-                          setState(() {
-                            answerIndex = index;
-                            isCorrectAnswer = (possibleAnswers[index] == multipleChoiceQuestions[tutorialIndex].answer);
-                          });
-                        },
-                        next: _next,
-                      )
+                      ),
                     ),
                   ),
                 ),
