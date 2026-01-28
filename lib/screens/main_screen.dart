@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sign_language_app/screens/inference_screen.dart';
 
 import 'account_screen.dart';
 import 'home_screen.dart';
@@ -20,6 +21,7 @@ class _MainScreenState extends State<MainScreen> {
     'Learn',
     'Play',
     'Account',
+    'Inference',
   ];
 
   late List<Widget> _screens;
@@ -34,6 +36,7 @@ class _MainScreenState extends State<MainScreen> {
       // This is the entry point for your mini-game system
       GameLobbyScreen(key: const PageStorageKey('play'), changeIndex: changeIndex),
       AccountScreen(key: const PageStorageKey('account'), changeIndex: changeIndex),
+      InferenceScreen(key: const PageStorageKey('inference'), changeIndex: changeIndex),
     ];
   }
 
@@ -100,6 +103,11 @@ class _MainScreenState extends State<MainScreen> {
             icon: Icon(Icons.person_outline),
             activeIcon: Icon(Icons.person),
             label: "Account",
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.video_camera_front_outlined),
+            activeIcon: Icon(Icons.video_camera_front),
+            label: "Inference",
           ),
         ],
         currentIndex: _index,
