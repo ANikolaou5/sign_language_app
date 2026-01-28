@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import '../classes/badge_class.dart';
 
 class CompletedLesson extends StatelessWidget {
-  const CompletedLesson({super.key, required this.lessonNum, required this.completed, required this.badges, required this.score, required this.reviewLesson, required this.isGuest,});
+  const CompletedLesson({super.key, required this.readingTutorial, required this.completed, required this.badges, required this.score, required this.reviewLesson, required this.isGuest,});
 
-  final int lessonNum;
+  final int readingTutorial;
   final VoidCallback completed;
   final List<BadgeClass> badges;
   final int score;
@@ -14,13 +14,12 @@ class CompletedLesson extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    BadgeClass? earnedBadge = badges.cast<BadgeClass?>().firstWhere((b) => b?.lessonNum == lessonNum, orElse: () => null,);
+    BadgeClass? earnedBadge = badges.isNotEmpty ? badges.first : null;
     final bool earned = earnedBadge != null;
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        const SizedBox(height: 30.0),
         Icon(
           Icons.stars,
           color: Colors.orange.shade700,
@@ -36,7 +35,7 @@ class CompletedLesson extends StatelessWidget {
         ),
         const SizedBox(height: 10.0),
         Text(
-          !reviewLesson ? "You have finished Lesson $lessonNum" : "You have reviewed Lesson $lessonNum",
+          !reviewLesson ? "You have finished the reading tutorial $readingTutorial" : "You have reviewed the reading tutorial $readingTutorial",
           style: const TextStyle(fontSize: 20.0),
         ),
         const SizedBox(height: 25.0),

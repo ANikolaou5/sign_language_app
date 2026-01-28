@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 
 class NavigationButtons extends StatelessWidget {
-  const NavigationButtons({super.key, required this.answerIndex, required this.isCorrectAnswer, required this.correctAnswer, required this.questionPoints, required this.next,});
+  const NavigationButtons({super.key, required this.answerIndex, required this.isCorrectAnswer, this.check, required this.correctAnswer, required this.questionPoints, required this.next,});
 
   final int? answerIndex;
   final bool isCorrectAnswer;
+  final bool? check;
   final String correctAnswer;
   final int questionPoints;
   final VoidCallback next;
@@ -21,7 +22,7 @@ class NavigationButtons extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          if (answerIndex != null) ...[
+          if (answerIndex != null && check!) ...[
             Icon(
               isCorrectAnswer ? Icons.check_circle : Icons.cancel,
               color: isCorrectAnswer ? Colors.green : Colors.red.shade400,
@@ -71,7 +72,7 @@ class NavigationButtons extends StatelessWidget {
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12.0)),
             ),
-            child: const Text(
+            child: Text(
               'Next',
               style: TextStyle(
                 fontSize: 20.0,

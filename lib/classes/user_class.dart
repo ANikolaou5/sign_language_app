@@ -9,13 +9,14 @@ class UserClass {
   final int streakNumGoal;
   final DateTime? lastStreakDate;
   final int score;
-  final int completedLessons;
+  final int completedLevels;
 
   final int wins;
   final int draws;
   final int losses;
 
   final List<int> badges;
+  final List<int> completedLessons;
 
   UserClass({
     required this.uid,
@@ -27,11 +28,12 @@ class UserClass {
     required this.streakNumGoal,
     this.lastStreakDate,
     required this.score,
-    required this.completedLessons,
+    required this.completedLevels,
     this.wins = 0,
     this.draws = 0,
     this.losses = 0,
     this.badges = const [],
+    this.completedLessons = const [],
   });
 
   factory UserClass.fromFirebase(String username, Map<String, dynamic> data) {
@@ -42,6 +44,11 @@ class UserClass {
     List<int> dbBadges = [];
     if (learningDetails['badges'] != null) {
       dbBadges = List<int>.from(learningDetails['badges']);
+    }
+
+    List<int> dbCompletedLessons = [];
+    if (learningDetails['completedLessons'] != null) {
+      dbCompletedLessons = List<int>.from(learningDetails['completedLessons']);
     }
 
     DateTime? date;
@@ -59,11 +66,12 @@ class UserClass {
       streakNumGoal: learningDetails['streakNumGoal'] ?? 0,
       lastStreakDate: date,
       score: learningDetails['score'] ?? 0,
-      completedLessons: learningDetails['completedLessons'] ?? 0,
+      completedLevels: learningDetails['completedLevels'] ?? 0,
       wins: gameStats['wins'] ?? 0,
       draws: gameStats['draws'] ?? 0,
       losses: gameStats['losses'] ?? 0,
       badges: dbBadges,
+      completedLessons: dbCompletedLessons,
     );
   }
 }

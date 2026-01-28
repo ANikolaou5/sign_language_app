@@ -3,11 +3,12 @@ import 'package:flutter/material.dart';
 import '../classes/question_class.dart';
 
 class MultipleChoiceQuestion extends StatelessWidget {
-  const MultipleChoiceQuestion({super.key, required this.question, required this.possibleAnswers, required this.answerIndex, required this.onTap,});
+  const MultipleChoiceQuestion({super.key, required this.question, required this.possibleAnswers, required this.answerIndex, required this.check, required this.onTap,});
 
   final Question question;
   final List<String> possibleAnswers;
   final int? answerIndex;
+  final bool check;
   final Function(int) onTap;
 
   @override
@@ -35,18 +36,26 @@ class MultipleChoiceQuestion extends StatelessWidget {
             return Padding(
               padding: const EdgeInsets.all(8.0),
               child: InkWell(
-                onTap: answerIndex != null ? null : () => onTap(index),
+                onTap: check ? null : () => onTap(index),
                 child: AnimatedOpacity(
                   duration: const Duration(milliseconds: 200),
-                  opacity: answerIndex == null ? 1.0 : (selected ? 1.0 : 0.6),
+                  opacity: (answerIndex == null) ? 1.0 : (selected ? 1.0 : 0.6),
                   child: AnimatedContainer(
                     duration: const Duration(milliseconds: 200),
                     padding: const EdgeInsets.all(10.0),
                     decoration: BoxDecoration(
-                      color: (answerIndex != null && possibleAnswers[index] == correctAnswer) ? Colors.green.shade100 : (selected ? Colors.red.shade100 : Colors.white),
+                      color: !check
+                        ? (selected ? Colors.orange.shade100 : Colors.white)
+                        : (possibleAnswers[index] == correctAnswer
+                          ? Colors.green.shade100
+                          : (selected ? Colors.red.shade100 : Colors.white)),
                       borderRadius: BorderRadius.circular(15.0),
                       border: Border.all(
-                        color: (answerIndex != null && possibleAnswers[index] == correctAnswer) ? Colors.green.shade700 : (selected ? Colors.red.shade700 : Colors.orange.shade200),
+                        color: !check
+                          ? (selected ? Colors.orange.shade700 : Colors.orange.shade200)
+                          : (possibleAnswers[index] == correctAnswer
+                            ? Colors.green.shade700
+                            : (selected ? Colors.red.shade700 : Colors.orange.shade200)),
                         width: selected ? 3.0 : 1.0,
                       ),
                     ),
@@ -75,20 +84,23 @@ class MultipleChoiceQuestion extends StatelessWidget {
                           possibleAnswers[index],
                           height: 110,
                         ),
-                        if (answerIndex != null && possibleAnswers[index] == correctAnswer) ...[
+                        if (check) ...[
                           const SizedBox(width: 30.0),
-                          Icon(
-                            Icons.check_circle,
-                            color: Colors.green,
-                            size: 35,
-                          ),
-                        ] else if (selected) ...[
-                          const SizedBox(width: 30.0),
-                          Icon(
-                            Icons.cancel,
-                            color: Colors.red,
-                            size: 35,
-                          ),
+                          if (possibleAnswers[index] == correctAnswer) ...[
+                            Icon(
+                              Icons.check_circle,
+                              color: Colors.green,
+                              size: 35,
+                            ),
+                          ]
+                          else if (selected) ...[
+                            const SizedBox(width: 30.0),
+                            Icon(
+                              Icons.cancel,
+                              color: Colors.red,
+                              size: 35,
+                            ),
+                          ],
                         ],
                       ],
                     ),
@@ -98,6 +110,27 @@ class MultipleChoiceQuestion extends StatelessWidget {
             );
           }),
         ),
+        if (check) ...[
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Container(
+              padding: const EdgeInsets.all(8.0),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                border: Border.all(width: 2.0, color: Colors.orange.shade300),
+                borderRadius: BorderRadius.circular(15.0),
+              ),
+              alignment: Alignment.center,
+              child: Text(
+                'Tips:\n',
+                style: TextStyle(
+                  fontSize: 22.0,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ),
+        ],
       ],
     );
   }

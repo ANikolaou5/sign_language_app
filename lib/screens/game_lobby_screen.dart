@@ -108,7 +108,7 @@ class _GameLobbyScreenState extends State<GameLobbyScreen> {
         List<Question> selectedQuestions = [
           Question(
             questionNum: 1,
-            lessonNum: 1,
+            levelNum: 1,
             questionType: QuestionType.multipleChoice,
             question: "Which letter does this symbol sign?",
             questionContent: "assets/images/A.png",
@@ -116,7 +116,7 @@ class _GameLobbyScreenState extends State<GameLobbyScreen> {
           ),
           Question(
             questionNum: 2,
-            lessonNum: 1,
+            levelNum: 1,
             questionType: QuestionType.multipleChoice,
             question: "Which letter does this symbol sign?",
             questionContent: "assets/images/B.png",

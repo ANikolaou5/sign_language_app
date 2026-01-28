@@ -93,7 +93,7 @@ class _AccountScreenState extends State<AccountScreen> {
           'streakNumGoal' : 0,
           'lastStreakDate': '',
           'score' : 0,
-          'completedLessons' : 0,
+          'completedLevels' : 0,
         },
         'gameStats' : {
           'draws' : 0,
@@ -111,11 +111,12 @@ class _AccountScreenState extends State<AccountScreen> {
         streakNum: 0,
         streakNumGoal: 0,
         score: 0,
-        completedLessons: 0,
+        completedLevels: 0,
         draws: 0,
         losses: 0,
         wins: 0,
         badges: [],
+        completedLessons: [],
       );
 
       // Saving user info to local storage.

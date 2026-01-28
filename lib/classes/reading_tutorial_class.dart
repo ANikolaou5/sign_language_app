@@ -1,11 +1,11 @@
 class ReadingTutorial {
-  final int lessonNum;
+  final int levelNum;
   final int readingTutorial;
   final String tutorialText;
   final String tutorialImage;
 
   ReadingTutorial({
-    required this.lessonNum,
+    required this.levelNum,
     required this.readingTutorial,
     required this.tutorialText,
     required this.tutorialImage,
@@ -13,7 +13,7 @@ class ReadingTutorial {
 
   factory ReadingTutorial.fromMap(Map<String, dynamic> map) {
     return ReadingTutorial(
-      lessonNum: map['lessonNum'],
+      levelNum: map['levelNum'],
       readingTutorial: map['readingTutorial'],
       tutorialText: map['tutorialText'],
       tutorialImage: map['tutorialImage'],

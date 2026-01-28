@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../classes/lesson_class.dart';
 import '../classes/question_class.dart';
 import '../classes/reading_tutorial_class.dart';
 import 'mcq_widget.dart';
@@ -8,26 +7,26 @@ import 'navigation_buttons_widget.dart';
 class BuildTutorial extends StatelessWidget {
   const BuildTutorial({
     super.key,
-    required this.lesson,
     required this.tutorial,
-    required this.readingTutorials,
-    required this.multipleChoiceQuestions,
+    required this.readingTutorial,
+    required this.multipleChoiceQuestion,
     required this.tutorialIndex,
     required this.possibleAnswers,
     required this.answerIndex,
     required this.isCorrectAnswer,
+    required this.check,
     required this.onTap,
     required this.next,
   });
 
-  final Lesson lesson;
   final bool tutorial;
-  final List<ReadingTutorial> readingTutorials;
-  final List<Question> multipleChoiceQuestions;
+  final ReadingTutorial readingTutorial;
+  final Question? multipleChoiceQuestion;
   final int tutorialIndex;
   final List<String> possibleAnswers;
   final int? answerIndex;
   final bool isCorrectAnswer;
+  final bool check;
   final Function(int) onTap;
   final VoidCallback next;
 
@@ -36,7 +35,7 @@ class BuildTutorial extends StatelessWidget {
     return Column(
       children: [
         const SizedBox(height: 5.0),
-        Container(
+        /*Container(
           padding: const EdgeInsets.all(8.0),
           decoration: BoxDecoration(
             color: Colors.orange.shade100,
@@ -52,7 +51,7 @@ class BuildTutorial extends StatelessWidget {
             ),
           ),
         ),
-        const SizedBox(height: 15.0),
+        const SizedBox(height: 15.0),*/
         Container(
           padding: const EdgeInsets.all(8.0),
           decoration: BoxDecoration(
@@ -63,8 +62,8 @@ class BuildTutorial extends StatelessWidget {
           alignment: Alignment.center,
           child: Text(
             tutorial
-                ? readingTutorials[tutorialIndex].tutorialText
-                : multipleChoiceQuestions[tutorialIndex].question,
+              ? readingTutorial.tutorialText
+              : multipleChoiceQuestion!.question,
             style: TextStyle(
               fontSize: 20.0,
               fontWeight: FontWeight.bold,
@@ -86,22 +85,24 @@ class BuildTutorial extends StatelessWidget {
               ],
             ),
             child: Image.asset(
-              readingTutorials[tutorialIndex].tutorialImage,
+              readingTutorial.tutorialImage,
               height: 300,
               fit: BoxFit.contain,
             ),
           ),
-        ] else
-          ...[
+        ] else ...[
+          if (multipleChoiceQuestion != null) ...[
             MultipleChoiceQuestion(
-              question: multipleChoiceQuestions[tutorialIndex],
+              question: multipleChoiceQuestion!,
               possibleAnswers: possibleAnswers,
               answerIndex: answerIndex,
+              check: check,
               onTap: onTap
             ),
           ],
+        ],
         const SizedBox(height: 15.0),
-        NavigationButtons(answerIndex: answerIndex, isCorrectAnswer: isCorrectAnswer, correctAnswer: '', questionPoints: 0, next: next,),
+        NavigationButtons(answerIndex: answerIndex, isCorrectAnswer: isCorrectAnswer, check: check, correctAnswer: '', questionPoints: 0, next: next,),
       ],
     );
   }

@@ -3,8 +3,8 @@ import 'package:sign_language_app/screens/inference_screen.dart';
 
 import 'account_screen.dart';
 import 'home_screen.dart';
-import 'learn_screen.dart';
 import 'game_lobby_screen.dart';
+import 'learn_screen.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});

@@ -6,7 +6,7 @@ enum QuestionType {
 
 class Question {
   final int questionNum;
-  final int lessonNum;
+  final int levelNum;
   final QuestionType questionType;
   final String question;
   final String answer;
@@ -14,7 +14,7 @@ class Question {
 
   Question({
     required this.questionNum,
-    required this.lessonNum,
+    required this.levelNum,
     required this.questionType,
     required this.question,
     required this.answer,
@@ -24,7 +24,7 @@ class Question {
   factory Question.fromMap(Map<String, dynamic> map) {
     return Question(
       questionNum: map['questionNum'],
-      lessonNum: map['lessonNum'],
+      levelNum: map['levelNum'],
       questionType: QuestionType.values.firstWhere(
             (e) => e.name == map['type'],
       ),
@@ -37,7 +37,7 @@ class Question {
   Map<String, dynamic> toMap() {
     return {
       'questionNum': questionNum,
-      'lessonNum': lessonNum,
+      'levelNum': levelNum,
       'type': questionType.name,
       'question': question,
       'questionContent': questionContent,

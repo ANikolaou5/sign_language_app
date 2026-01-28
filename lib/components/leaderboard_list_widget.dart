@@ -26,7 +26,7 @@ class LeaderboardList extends StatelessWidget {
       elevation: ranking <= 3 ? 4.0 : 1.0,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
       child: ListTile(
-        contentPadding: const EdgeInsets.all(8.0),
+        contentPadding: const EdgeInsets.all(12.0),
         leading: Container(
           width: 40,
           height: 40,
@@ -51,7 +51,6 @@ class LeaderboardList extends StatelessWidget {
             fontWeight: FontWeight.bold,
           ),
         ),
-        subtitle: Text("Completed Lessons: ${user.completedLessons}"),
         trailing: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [

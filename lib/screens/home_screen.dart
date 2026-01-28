@@ -161,6 +161,7 @@ class _HomeScreenState extends State<HomeScreen> {
           streakNumGoal: int.tryParse(inputStreakGoal) ?? 0,
           score: user!.score,
           completedLessons: user!.completedLessons,
+          completedLevels: user!.completedLevels,
           draws: user!.draws,
           losses: user!.losses,
           wins: user!.wins,

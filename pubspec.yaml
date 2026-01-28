@@ -102,8 +102,8 @@ flutter:
     - assets/images/9.png
     - assets/images/10.png
     - assets/badges/badge1.png
-    - assets/badges/badge2.png
     - assets/badges/badge3.png
+    - assets/badges/badge2.png
     - assets/badges/badge4.png
     - assets/badges/badge5.png
     - assets/animals/cat.png

@@ -15,6 +15,9 @@ class UserService {
     final List<String> badgesList = prefs.getStringList('badges') ?? [];
     List<int> badges = badgesList.map((n) => int.parse(n)).toList();
 
+    final List<String> completedLessonsList = prefs.getStringList('completedLessons') ?? [];
+    List<int> completedLessons = completedLessonsList.map((n) => int.parse(n)).toList();
+
     String? date = prefs.getString('lastStreakDate');
     DateTime? lastStreakDate = date != null ? DateTime.tryParse(date) : null;
 
@@ -28,11 +31,12 @@ class UserService {
       streakNumGoal: prefs.getInt('streakNumGoal') ?? 0,
       lastStreakDate: lastStreakDate,
       score: prefs.getInt('score') ?? 0,
-      completedLessons: prefs.getInt('completedLessons') ?? 0,
+      completedLevels: prefs.getInt('completedLevels') ?? 0,
       draws: prefs.getInt('draws') ?? 0,
       losses: prefs.getInt('losses') ?? 0,
       wins: prefs.getInt('wins') ?? 0,
       badges: badges,
+      completedLessons: completedLessons,
     );
   }
 
@@ -48,7 +52,7 @@ class UserService {
     await prefs.setInt('streakNum', user.streakNum);
     await prefs.setInt('streakNumGoal', user.streakNumGoal);
     await prefs.setInt('score', user.score);
-    await prefs.setInt('completedLessons', user.completedLessons);
+    await prefs.setInt('completedLevels', user.completedLevels);
     await prefs.setInt('draws', user.draws);
     await prefs.setInt('losses', user.losses);
     await prefs.setInt('wins', user.wins);
@@ -61,7 +65,12 @@ class UserService {
         .map((badgeNum) => badgeNum.toString())
         .toList();
 
+    List<String> completedLessons = user.completedLessons
+        .map((completedLessonsNum) => completedLessonsNum.toString())
+        .toList();
+
     await prefs.setStringList('badges', badges);
+    await prefs.setStringList('completedLessons', completedLessons);
   }
 
   Future<UserClass?> refreshUserLocalStorage() async {
@@ -103,17 +112,32 @@ class UserService {
     return users;
   }
 
-  Future<int> loadCompletedLessons({String? username}) async {
+  Future<List<int>> loadCompletedLessons({String? username}) async {
+    if (username != null && username.isNotEmpty) {
+      final snapshot = await usersRef.child(username).child('learningDetails/completedLessons').get();
+
+      if (snapshot.exists && snapshot.value is List) {
+        return List<int>.from(snapshot.value as List);
+      }
+      return [];
+    } else {
+      final prefs = await SharedPreferences.getInstance();
+      final completedLessons = prefs.getStringList('guestCompletedLessons') ?? [];
+      return completedLessons.map((e) => int.parse(e)).toList();
+    }
+  }
+
+  Future<int> loadCompletedLevels({String? username}) async {
     if (username != null && username.isNotEmpty) {
       final DatabaseReference userRef = usersRef.child(username);
       final DataSnapshot snapshot = await userRef.get();
-      int dbCompletedLessons = snapshot.child('learningDetails/completedLessons').value as int;
+      int dbCompletedLevels = snapshot.child('learningDetails/completedLevels').value as int;
 
-      return dbCompletedLessons;
+      return dbCompletedLevels;
     } else {
       final prefs = await SharedPreferences.getInstance();
-      final completedLessons = prefs.getInt('guestCompletedLessons') ?? 0;
-      return completedLessons;
+      final completedLevels = prefs.getInt('guestCompletedLevels') ?? 0;
+      return completedLevels;
     }
   }
 
