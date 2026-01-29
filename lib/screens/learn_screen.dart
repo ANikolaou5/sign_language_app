@@ -77,7 +77,7 @@ class _LearnScreenState extends State<LearnScreen> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   const Text(
-                    "Log in for the full experience!",
+                    "Sign in for the full experience!",
                     style: TextStyle(
                       fontSize: 22.0,
                       fontWeight: FontWeight.bold,
@@ -86,7 +86,7 @@ class _LearnScreenState extends State<LearnScreen> {
                   ),
                   const SizedBox(height: 10.0),
                   const Text(
-                    "If you log in or register, you can earn points and badges, and appear on the leaderboard!",
+                    "If you sign in/sign up, you can earn points, appear on the leaderboard and unlock more features!",
                     style: TextStyle(fontSize: 18.0),
                     textAlign: TextAlign.justify,
                   ),
@@ -151,58 +151,83 @@ class _LearnScreenState extends State<LearnScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.orange.shade50,
-      body: levels.isEmpty ? const Center(child: CircularProgressIndicator()) : ListView.builder(
+      body: levels.isEmpty ? const Center(child: CircularProgressIndicator()) : Padding(
         padding: const EdgeInsets.all(10.0),
-        physics: const BouncingScrollPhysics(),
-        itemCount: levels.length,
-        itemBuilder: (context, index) {
-          final int level = levels[index]['levelNum'];
-          final String levelDesc = levels[index]['levelDesc'];
-
-          return InkWell(
-            onTap: (level > completedLevels + 1) ? null : () async {
-              await Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => MaterialScreen(level: level, levelDesc: levelDesc, username: user?.username ?? '')),
-              );
-              await _loadLearningDetails();
-            },
-            child: Card(
-              elevation: (level > completedLevels) ? 0 : 4.0,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
-              child: Container(
-                padding: const EdgeInsets.all(12.0),
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: (level <= completedLevels) ? Colors.deepOrange.shade200 : ((level > completedLevels + 1) ? Colors.grey.shade100 : Colors.white),
-                  border: (level <= completedLevels) ? null : Border.all(width: 2.0, color: Colors.orange.shade300),
-                  borderRadius: BorderRadius.circular(15.0),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    SizedBox(height: 10.0),
-                    Icon(
-                      (level > completedLevels + 1) ? Icons.lock : ((level <= completedLevels) ? Icons.check_circle : Icons.play_circle),
-                      size: 45.0,
-                      color: (level > completedLevels + 1) ? Colors.grey : ((level <= completedLevels) ? Colors.green : Colors.deepOrange.shade800),
-                    ),
-                    SizedBox(height: 8.0),
-                    Text(
-                      levels[index]['name'] ?? '',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 25.0,
-                        fontWeight: FontWeight.bold,
-                        color: (level > completedLevels + 1) ? Colors.grey : Colors.deepOrange.shade800,
-                      ),
-                    ),
-                  ],
+        child: Column(
+          children: [
+            const SizedBox(height: 10.0),
+            Container(
+              padding: const EdgeInsets.all(8.0),
+              decoration: BoxDecoration(
+                color: Colors.orange.shade100,
+                border: Border.all(width: 2.0, color: Colors.orange.shade300),
+                borderRadius: BorderRadius.circular(15.0),
+              ),
+              alignment: Alignment.center,
+              child: Text(
+                'Categories',
+                style: TextStyle(
+                  fontSize: 25.0,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
             ),
-          );
-        },
+            const SizedBox(height: 10.0),
+            Expanded(
+              child: ListView.builder(
+                physics: const BouncingScrollPhysics(),
+                itemCount: levels.length,
+                itemBuilder: (context, index) {
+                  final int level = levels[index]['levelNum'];
+                  final String levelDesc = levels[index]['levelDesc'];
+
+                  return InkWell(
+                    onTap: (level > completedLevels + 1) ? null : () async {
+                      await Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => MaterialScreen(level: level, levelDesc: levelDesc, username: user?.username ?? '')),
+                      );
+                      await _loadLearningDetails();
+                    },
+                    child: Card(
+                      elevation: (level > completedLevels) ? 0 : 4.0,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
+                      child: Container(
+                        padding: const EdgeInsets.all(15.0),
+                        decoration: BoxDecoration(
+                          color: (level <= completedLevels) ? Colors.deepOrange.shade200 : ((level > completedLevels + 1) ? Colors.grey.shade100 : Colors.white),
+                          border: (level <= completedLevels) ? null : Border.all(width: 2.0, color: Colors.orange.shade300),
+                          borderRadius: BorderRadius.circular(15.0),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            SizedBox(height: 10.0),
+                            Icon(
+                              (level > completedLevels + 1) ? Icons.lock : ((level <= completedLevels) ? Icons.check_circle : Icons.play_circle),
+                              size: 60.0,
+                              color: (level > completedLevels + 1) ? Colors.grey : ((level <= completedLevels) ? Colors.green : Colors.deepOrange.shade800),
+                            ),
+                            SizedBox(height: 8.0),
+                            Text(
+                              levels[index]['name'] ?? '',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: 27.0,
+                                fontWeight: FontWeight.bold,
+                                color: (level > completedLevels + 1) ? Colors.grey : Colors.deepOrange.shade800,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

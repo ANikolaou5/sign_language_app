@@ -6,7 +6,7 @@ enum QuestionType {
 
 class Question {
   final int questionNum;
-  final int levelNum;
+  final int? levelNum;
   final QuestionType questionType;
   final String question;
   final String answer;

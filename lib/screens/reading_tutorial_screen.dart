@@ -28,6 +28,40 @@ class _ReadingTutorialScreenState extends State<ReadingTutorialScreen> {
     ...List.generate(10, (i) => 'assets/images/${i + 1}.png'),
   ];
 
+  final List<String> convImages = [
+    'assets/conv/goodMorning.png',
+    'assets/conv/goodNight.png',
+    'assets/conv/haveAGoodDay.png',
+    'assets/conv/hello.png',
+    'assets/conv/howAreYou.png',
+    'assets/conv/iAmFine.png',
+    'assets/conv/seeYou.png',
+    'assets/conv/thankYou.png',
+  ];
+
+  final List<String> animalImages = [
+    'assets/animals/cat.png',
+    'assets/animals/dog.png',
+    'assets/animals/bunny.png',
+    'assets/animals/fish.png',
+    'assets/animals/bird.png',
+    'assets/animals/cow.png',
+    'assets/animals/pig.png',
+    'assets/animals/goat.png',
+    'assets/animals/duck.png',
+    'assets/animals/pony.png',
+    'assets/animals/fox.png',
+    'assets/animals/wolf.png',
+    'assets/animals/bear.png',
+    'assets/animals/lion.png',
+    'assets/animals/deer.png',
+    'assets/animals/bee.png',
+    'assets/animals/fly.png',
+    'assets/animals/ant.png',
+    'assets/animals/moth.png',
+    'assets/animals/worm.png',
+  ];
+
   final GeneralService generalService = GeneralService();
   final UserService userService = UserService();
 
@@ -50,8 +84,19 @@ class _ReadingTutorialScreenState extends State<ReadingTutorialScreen> {
 
   void _createPossibleAnswersMCQ() {
     final correctImage = multipleChoiceQuestion!.answer;
+    List<String> imgs;
 
-    final wrongImages = images
+    if (widget.readingTutorial.levelNum == 1 || widget.readingTutorial.levelNum == 2) {
+      imgs = images;
+    } else if (widget.readingTutorial.levelNum == 3) {
+      imgs = convImages;
+    } else if (widget.readingTutorial.levelNum == 4) {
+      imgs = animalImages;
+    } else {
+      imgs = images;
+    }
+
+    final wrongImages = imgs
         .where((img) => img != correctImage)
         .toList()
       ..shuffle();
@@ -83,8 +128,6 @@ class _ReadingTutorialScreenState extends State<ReadingTutorialScreen> {
         q.questionType == QuestionType.multipleChoice &&
         q.questionNum == widget.readingTutorial.readingTutorial
       );
-
-
     });
   }
 
@@ -93,9 +136,15 @@ class _ReadingTutorialScreenState extends State<ReadingTutorialScreen> {
       final prefs = await SharedPreferences.getInstance();
       List<String> guestCompletedLessons = prefs.getStringList('guestCompletedLessons') ?? [];
 
-      if (!guestCompletedLessons.contains(widget.readingTutorial.readingTutorial.toString())) {
-        guestCompletedLessons.add(widget.readingTutorial.readingTutorial.toString());
-        await prefs.setStringList('guestCompletedLessons', guestCompletedLessons);
+      if (guestCompletedLessons.contains(widget.readingTutorial.readingTutorial.toString())) {
+        setState(() {
+          reviewLesson = true;
+        });
+      } else {
+        if (!guestCompletedLessons.contains(widget.readingTutorial.readingTutorial.toString())) {
+          guestCompletedLessons.add(widget.readingTutorial.readingTutorial.toString());
+          await prefs.setStringList('guestCompletedLessons', guestCompletedLessons);
+        }
       }
 
       setState(() {
@@ -140,30 +189,11 @@ class _ReadingTutorialScreenState extends State<ReadingTutorialScreen> {
         }
       }
 
-      DateTime now = DateTime.now();
-      DateTime today = DateTime(now.year, now.month, now.day);
-
-      int streak = user.streakNum;
-
-      if (user.lastStreakDate != null) {
-        DateTime lastStreakDate = user.lastStreakDate!;
-        DateTime lastDate = DateTime(lastStreakDate.year, lastStreakDate.month, lastStreakDate.day);
-        int difference = today.difference(lastDate).inDays;
-
-        if (difference == 1) {
-          streak += 1;
-        } else if (difference > 1) {
-          streak = 1;
-        }
-      } else {
-        streak = 1;
-      }
-
       await userRef.update({
         'learningDetails': {
-          'streakNum': streak,
+          'streakNum': user.streakNum,
           'streakNumGoal': user.streakNumGoal,
-          'lastStreakDate': today.toIso8601String(),
+          'lastStreakDate': user.lastStreakDate,
           'score': user.score + score,
           'completedLevels': levels,
           'badges': dbBadges,
@@ -353,6 +383,7 @@ class _ReadingTutorialScreenState extends State<ReadingTutorialScreen> {
                 answerIndex: answerIndex,
                 isCorrectAnswer: isCorrectAnswer,
                 check: check,
+                questionPoints: pointsMCQ,
                 onTap: (index) {
                   if (!check) {
                     setState(() {

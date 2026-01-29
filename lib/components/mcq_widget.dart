@@ -17,18 +17,22 @@ class MultipleChoiceQuestion extends StatelessWidget {
 
     return Column(
       children: [
-        CircleAvatar(
-          radius: 32.0,
-          backgroundColor: Colors.orange.shade700,
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 15.0),
+          decoration: BoxDecoration(
+            color: Colors.orange.shade700,
+            borderRadius: BorderRadius.circular(20.0),
+          ),
           child: Text(
             question.questionContent,
-            style: TextStyle(
-              fontSize: 30.0,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              fontSize: 25.0,
               fontWeight: FontWeight.bold,
+              color: Colors.white,
             ),
           ),
         ),
-        const SizedBox(height: 5.0),
         Column(
           children: List.generate(3, (index) {
             final selected = answerIndex == index;
@@ -80,9 +84,12 @@ class MultipleChoiceQuestion extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(width: 30.0),
-                        Image.asset(
-                          possibleAnswers[index],
-                          height: 110,
+                        Expanded(
+                          child: Image.asset(
+                            possibleAnswers[index],
+                            height: 250,
+                            fit: BoxFit.contain,
+                          ),
                         ),
                         if (check) ...[
                           const SizedBox(width: 30.0),

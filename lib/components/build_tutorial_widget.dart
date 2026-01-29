@@ -15,6 +15,7 @@ class BuildTutorial extends StatelessWidget {
     required this.answerIndex,
     required this.isCorrectAnswer,
     required this.check,
+    required this.questionPoints,
     required this.onTap,
     required this.next,
   });
@@ -27,6 +28,7 @@ class BuildTutorial extends StatelessWidget {
   final int? answerIndex;
   final bool isCorrectAnswer;
   final bool check;
+  final int questionPoints;
   final Function(int) onTap;
   final VoidCallback next;
 
@@ -35,23 +37,6 @@ class BuildTutorial extends StatelessWidget {
     return Column(
       children: [
         const SizedBox(height: 5.0),
-        /*Container(
-          padding: const EdgeInsets.all(8.0),
-          decoration: BoxDecoration(
-            color: Colors.orange.shade100,
-            border: Border.all(width: 2.0, color: Colors.orange.shade300),
-            borderRadius: BorderRadius.circular(15.0),
-          ),
-          alignment: Alignment.center,
-          child: Text(
-            lesson.name,
-            style: TextStyle(
-              fontSize: 20.0,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ),
-        const SizedBox(height: 15.0),*/
         Container(
           padding: const EdgeInsets.all(8.0),
           decoration: BoxDecoration(
@@ -65,11 +50,22 @@ class BuildTutorial extends StatelessWidget {
               ? readingTutorial.tutorialText
               : multipleChoiceQuestion!.question,
             style: TextStyle(
-              fontSize: 20.0,
+              fontSize: 24.0,
               fontWeight: FontWeight.bold,
             ),
+            textAlign: TextAlign.justify,
           ),
         ),
+        const SizedBox(height: 5.0),
+        if (!tutorial) ...[
+          Text(
+            "This question is $questionPoints points",
+            style: TextStyle(
+              fontSize: 16.0,
+              color: Colors.grey.shade700,
+            ),
+          ),
+        ],
         const SizedBox(height: 10.0),
         if(tutorial) ...[
           Container(
@@ -102,7 +98,7 @@ class BuildTutorial extends StatelessWidget {
           ],
         ],
         const SizedBox(height: 15.0),
-        NavigationButtons(answerIndex: answerIndex, isCorrectAnswer: isCorrectAnswer, check: check, correctAnswer: '', questionPoints: 0, next: next,),
+        NavigationButtons(answerIndex: answerIndex, isCorrectAnswer: isCorrectAnswer, check: check, correctAnswer: '', questionPoints: questionPoints, next: next,),
       ],
     );
   }

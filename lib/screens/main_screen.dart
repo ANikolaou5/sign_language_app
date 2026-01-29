@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sign_language_app/screens/inference_screen.dart';
+import 'package:sign_language_app/screens/train_screen.dart';
 
 import 'account_screen.dart';
 import 'home_screen.dart';
@@ -19,9 +20,10 @@ class _MainScreenState extends State<MainScreen> {
   final _titles = [
     'Home',
     'Learn',
+    'Train',
     'Play',
-    'Account',
     'Inference',
+    'Account',
   ];
 
   late List<Widget> _screens;
@@ -33,10 +35,10 @@ class _MainScreenState extends State<MainScreen> {
     _screens = [
       HomeScreen(key: const PageStorageKey('home'), changeIndex: changeIndex),
       LearnScreen(key: const PageStorageKey('learn'), changeIndex: changeIndex),
-      // This is the entry point for your mini-game system
+      TrainScreen(key: const PageStorageKey('train'), changeIndex: changeIndex),
       GameLobbyScreen(key: const PageStorageKey('play'), changeIndex: changeIndex),
-      AccountScreen(key: const PageStorageKey('account'), changeIndex: changeIndex),
       InferenceScreen(key: const PageStorageKey('inference'), changeIndex: changeIndex),
+      AccountScreen(key: const PageStorageKey('account'), changeIndex: changeIndex),
     ];
   }
 
@@ -95,19 +97,24 @@ class _MainScreenState extends State<MainScreen> {
             label: "Learn",
           ),
           BottomNavigationBarItem(
+            icon: Icon(Icons.quiz_outlined),
+            activeIcon: Icon(Icons.quiz),
+            label: "Train",
+          ),
+          BottomNavigationBarItem(
             icon: Icon(Icons.sports_esports_outlined),
             activeIcon: Icon(Icons.sports_esports),
             label: "Play",
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.person_outline),
-            activeIcon: Icon(Icons.person),
-            label: "Account",
-          ),
-          BottomNavigationBarItem(
             icon: Icon(Icons.video_camera_front_outlined),
             activeIcon: Icon(Icons.video_camera_front),
             label: "Inference",
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person_outline),
+            activeIcon: Icon(Icons.person),
+            label: "Account",
           ),
         ],
         currentIndex: _index,
