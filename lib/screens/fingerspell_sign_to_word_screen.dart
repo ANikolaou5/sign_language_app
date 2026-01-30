@@ -1,6 +1,6 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-import 'package:sign_language_app/components/signToText_question_widget.dart';
+import 'package:sign_language_app/components/fingerspell_sign_to_word_widget.dart';
 
 import '../classes/question_class.dart';
 import '../classes/user_class.dart';
@@ -249,7 +249,7 @@ class _FingerspellSignToWordScreenState extends State<FingerspellSignToWordScree
                       score: score,
                       reviewLesson: false,
                       isGuest: false,
-                    ) : SignToTextQuestion(
+                    ) : FingerspellSignToWord(
                       question: finalQuestions[questionIndex],
                       check: check,
                       isCorrectAnswer: isCorrectAnswer,

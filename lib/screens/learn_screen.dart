@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sign_language_app/screens/material_screen.dart';
 
+import '../classes/reading_tutorial_class.dart';
 import '../classes/user_class.dart';
 import '../services/user_service.dart';
 
@@ -20,6 +21,8 @@ class _LearnScreenState extends State<LearnScreen> {
   UserClass? user;
   List<Map<String, dynamic>> levels = [];
   int completedLevels = 0;
+  List<int> completedLessons = [];
+  List<ReadingTutorial> readingTutorials = [];
 
   // Function to load username from local storage, when already logged in.
   Future<void> _loadUserLocalStorage() async {
@@ -32,7 +35,24 @@ class _LearnScreenState extends State<LearnScreen> {
 
   Future<void> _loadLearningDetails() async {
     completedLevels = await userService.loadCompletedLevels(username: user?.username);
+    completedLessons = await userService.loadCompletedLessons(username: user?.username);
     setState(() {});
+  }
+
+  Future<void> _loadReadingTutorials() async {
+    final ref = FirebaseDatabase.instance.ref();
+    final snapshot = await ref.child('readingTutorials').get();
+    if (!snapshot.exists || snapshot.value == null) return;
+
+    final data = Map<String, dynamic>.from(snapshot.value as Map);
+
+    setState(() {
+      readingTutorials = data.values
+          .map((value) => ReadingTutorial.fromMap(Map<String, dynamic>.from(value as Map)))
+          .toList();
+
+      readingTutorials.sort((a, b) => a.readingTutorial.compareTo(b.readingTutorial));
+    });
   }
 
   Future<void> _loadLevels() async {
@@ -143,6 +163,7 @@ class _LearnScreenState extends State<LearnScreen> {
     _loadUserLocalStorage().then((_) async {
       await _loadLevels();
       await _loadLearningDetails();
+      await _loadReadingTutorials();
       await  _loginPrompt();
     });
   }
@@ -181,11 +202,16 @@ class _LearnScreenState extends State<LearnScreen> {
                   final int level = levels[index]['levelNum'];
                   final String levelDesc = levels[index]['levelDesc'];
 
+                  final List<ReadingTutorial> levelReadingTutorials = readingTutorials.where((t) => t.levelNum == level).toList();
+                  int tutorials = levelReadingTutorials.length;
+                  int completedTutorials = levelReadingTutorials.where((t) => completedLessons.contains(t.readingTutorial)).length;
+                  double progress = tutorials > 0 ? completedTutorials / tutorials : 0.0;
+
                   return InkWell(
                     onTap: (level > completedLevels + 1) ? null : () async {
                       await Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => MaterialScreen(level: level, levelDesc: levelDesc, username: user?.username ?? '')),
+                        MaterialPageRoute(builder: (context) => MaterialScreen(levelDesc: levelDesc, readingTutorials: levelReadingTutorials, username: user?.username ?? '')),
                       );
                       await _loadLearningDetails();
                     },
@@ -202,22 +228,69 @@ class _LearnScreenState extends State<LearnScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            SizedBox(height: 10.0),
-                            Icon(
-                              (level > completedLevels + 1) ? Icons.lock : ((level <= completedLevels) ? Icons.check_circle : Icons.play_circle),
-                              size: 60.0,
-                              color: (level > completedLevels + 1) ? Colors.grey : ((level <= completedLevels) ? Colors.green : Colors.deepOrange.shade800),
+                            Row(
+                              children: [
+                                Icon(
+                                  (level > completedLevels + 1) ? Icons.lock : ((level <= completedLevels) ? Icons.check_circle : Icons.play_circle),
+                                  size: 60.0,
+                                  color: (level > completedLevels + 1) ? Colors.grey : ((level <= completedLevels) ? Colors.green : Colors.deepOrange.shade800),
+                                ),
+                                const SizedBox(width: 10.0),
+                                Text(
+                                  levels[index]['name'] ?? '',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontSize: 27.0,
+                                    fontWeight: FontWeight.bold,
+                                    color: (level > completedLevels + 1) ? Colors.grey : Colors.deepOrange.shade800,
+                                  ),
+                                ),
+                              ],
                             ),
-                            SizedBox(height: 8.0),
-                            Text(
-                              levels[index]['name'] ?? '',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                fontSize: 27.0,
-                                fontWeight: FontWeight.bold,
-                                color: (level > completedLevels + 1) ? Colors.grey : Colors.deepOrange.shade800,
+                            const SizedBox(height: 8.0),
+                            if (level <= completedLevels + 1) ...[
+                              Container(
+                                padding: const EdgeInsets.all(8.0),
+                                decoration: BoxDecoration(
+                                  color: (level <= completedLevels) ? Colors.orange.shade100 : Colors.white,
+                                  border: Border.all(width: 2.0, color: Colors.orange.shade300),
+                                  borderRadius: BorderRadius.circular(15.0),
+                                ),
+                                child: Column(
+                                  children: [
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        const Text(
+                                          " Level Progress",
+                                          style: TextStyle(
+                                            fontSize: 16.0,
+                                          ),
+                                        ),
+                                        Text(
+                                          "$completedTutorials / $tutorials ",
+                                          style: TextStyle(
+                                            fontSize: 14.0,
+                                            color: Colors.orange.shade900,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 8.0),
+                                    ClipRRect(
+                                      borderRadius: BorderRadius.circular(12.0),
+                                      child: LinearProgressIndicator(
+                                        value: progress,
+                                        backgroundColor: Colors.orange.shade100,
+                                        color: Colors.orange.shade900,
+                                        minHeight: 12.0,
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
-                            ),
+                            ],
                           ],
                         ),
                       ),

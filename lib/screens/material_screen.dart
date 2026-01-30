@@ -1,4 +1,3 @@
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:sign_language_app/screens/reading_tutorial_screen.dart';
 
@@ -7,9 +6,9 @@ import '../classes/user_class.dart';
 import '../services/user_service.dart';
 
 class MaterialScreen extends StatefulWidget {
-  const MaterialScreen({super.key, required this.level, required this.levelDesc, required this.username});
+  const MaterialScreen({super.key, required this.readingTutorials, required this.levelDesc, required this.username});
 
-  final int level;
+  final List<ReadingTutorial> readingTutorials;
   final String levelDesc;
   final String username;
 
@@ -20,7 +19,6 @@ class MaterialScreen extends StatefulWidget {
 class _MaterialScreenState extends State<MaterialScreen> {
   final UserService userService = UserService();
   UserClass? user;
-  List<ReadingTutorial> readingTutorials = [];
 
   List<int> completedLessons = [];
 
@@ -35,23 +33,6 @@ class _MaterialScreenState extends State<MaterialScreen> {
 
   Future<void> _loadLearningDetails() async {
     completedLessons = await userService.loadCompletedLessons(username: user?.username);
-    setState(() {});
-  }
-
-  Future<void> _loadReadingTutorials() async {
-    final ref = FirebaseDatabase.instance.ref();
-    final snapshot = await ref.child('readingTutorials').get();
-    if (!snapshot.exists || snapshot.value == null) return;
-
-    final data = Map<String, dynamic>.from(snapshot.value as Map);
-
-    readingTutorials = data.values
-        .map((value) =>
-        ReadingTutorial.fromMap(Map<String, dynamic>.from(value as Map)))
-        .where((tut) => tut.levelNum == widget.level)
-        .toList();
-
-    readingTutorials.sort((a, b) => a.readingTutorial.compareTo(b.readingTutorial));
     setState(() {});
   }
 
@@ -75,13 +56,16 @@ class _MaterialScreenState extends State<MaterialScreen> {
     super.initState();
 
     _loadUserLocalStorage().then((_) async {
-      await _loadReadingTutorials();
       await _loadLearningDetails();
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    int tutorials = widget.readingTutorials.length;
+    int completedTutorials = widget.readingTutorials.where((t) => completedLessons.contains(t.readingTutorial)).length;
+    double progress = tutorials > 0 ? completedTutorials / tutorials : 0.0;
+
     return Scaffold(
       backgroundColor: Colors.orange.shade50,
       appBar: AppBar(
@@ -100,7 +84,7 @@ class _MaterialScreenState extends State<MaterialScreen> {
           ),
         ),
       ),
-      body: readingTutorials.isEmpty ? const Center(child: CircularProgressIndicator()) : Padding(
+      body: widget.readingTutorials.isEmpty ? const Center(child: CircularProgressIndicator()) : Padding(
         padding: const EdgeInsets.all(10.0),
         child: Column(
           children: [
@@ -115,9 +99,51 @@ class _MaterialScreenState extends State<MaterialScreen> {
               child: Text(
                 widget.levelDesc,
                 style: TextStyle(
-                  fontSize: 20.0,
+                  fontSize: 22.0,
                   fontWeight: FontWeight.bold,
                 ),
+              ),
+            ),
+            const SizedBox(height: 10.0),
+            Container(
+              padding: const EdgeInsets.all(8.0),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                border: Border.all(width: 2.0, color: Colors.orange.shade300),
+                borderRadius: BorderRadius.circular(15.0),
+              ),
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        " Level Progress",
+                        style: TextStyle(
+                          fontSize: 18.0,
+                        ),
+                      ),
+                      Text(
+                        "$completedTutorials / $tutorials ",
+                        style: TextStyle(
+                          fontSize: 16.0,
+                          color: Colors.orange.shade900,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8.0),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(12.0),
+                    child: LinearProgressIndicator(
+                      value: progress,
+                      backgroundColor: Colors.orange.shade100,
+                      color: Colors.orange.shade900,
+                      minHeight: 12.0,
+                    ),
+                  ),
+                ],
               ),
             ),
             const SizedBox(height: 15.0),
@@ -129,10 +155,10 @@ class _MaterialScreenState extends State<MaterialScreen> {
                   crossAxisSpacing: 12.0,
                   childAspectRatio: 1.0,
                 ),
-                itemCount: readingTutorials.length,
+                itemCount: widget.readingTutorials.length,
                 itemBuilder: (context, index) {
-                  String text = _formatText(readingTutorials[index].tutorialText);
-                  bool completed = completedLessons.contains(readingTutorials[index].readingTutorial);
+                  String text = _formatText(widget.readingTutorials[index].tutorialText);
+                  bool completed = completedLessons.contains(widget.readingTutorials[index].readingTutorial);
 
                   return InkWell(
                     onTap: () async {
@@ -193,7 +219,7 @@ class _MaterialScreenState extends State<MaterialScreen> {
                                           Navigator.pop(context);
                                           await Navigator.push(
                                             context,
-                                            MaterialPageRoute(builder: (context) => ReadingTutorialScreen(readingTutorial: readingTutorials[index], username: user?.username)),
+                                            MaterialPageRoute(builder: (context) => ReadingTutorialScreen(readingTutorial: widget.readingTutorials[index], username: user?.username)),
                                           );
                                           await _loadLearningDetails();
                                         },

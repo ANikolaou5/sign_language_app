@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:sign_language_app/components/train_categories_widget.dart';
 import 'package:sign_language_app/screens/matching_screen.dart';
 import 'package:sign_language_app/screens/fingerspell_sign_to_word_screen.dart';
+import 'package:sign_language_app/screens/read_the_sign_screen.dart';
 
 import '../classes/question_class.dart';
 import '../classes/user_class.dart';
@@ -22,6 +23,7 @@ class _TrainScreenState extends State<TrainScreen> {
   UserClass? user;
 
   List<Question> signToTextQuestions = [];
+  List<Question> multipleChoiceQuestions = [];
   List<Map<String, dynamic>> matchQuestions = [];
 
   Future<void> _loadQuestions() async {
@@ -40,10 +42,12 @@ class _TrainScreenState extends State<TrainScreen> {
     setState(() {
       signToTextQuestions = allQuestions
           .where((q) => q.questionType == QuestionType.text)
-          .toList()
-        ..sort((a, b) => a.questionNum.compareTo(b.questionNum));
-    });
+          .toList();
 
+      multipleChoiceQuestions = allQuestions
+          .where((q) => q.questionType == QuestionType.multipleChoice)
+          .toList();
+    });
   }
 
   void _createMatchQuestions() {
@@ -183,7 +187,13 @@ class _TrainScreenState extends State<TrainScreen> {
             const SizedBox(height: 10.0),
             TrainCategories(
               name: "READ THE SIGN",
-              onTap: () {},
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => ReadTheSignScreen(multipleChoiceQuestions: multipleChoiceQuestions, username: user!.username),
+                  ),
+                );
+              },
             ),
             const SizedBox(height: 10.0),
             TrainCategories(

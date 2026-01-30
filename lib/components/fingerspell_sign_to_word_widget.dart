@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import '../classes/question_class.dart';
 import 'navigation_buttons_widget.dart';
 
-class SignToTextQuestion extends StatelessWidget {
-  const SignToTextQuestion({
+class FingerspellSignToWord extends StatelessWidget {
+  const FingerspellSignToWord({
     super.key,
     required this.question,
     required this.isCorrectAnswer,
@@ -37,7 +37,7 @@ class SignToTextQuestion extends StatelessWidget {
           child: Text(
             question.question,
             style: TextStyle(
-              fontSize: 24.0,
+              fontSize: 22.0,
               fontWeight: FontWeight.bold,
             ),
           ),

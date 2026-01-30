@@ -43,7 +43,7 @@ class MatchQuestion extends StatelessWidget {
           child: Text(
             'Drag each sign to its matching letter:',
             style: TextStyle(
-              fontSize: 24.0,
+              fontSize: 22.0,
               fontWeight: FontWeight.bold,
             ),
             textAlign: TextAlign.justify,
