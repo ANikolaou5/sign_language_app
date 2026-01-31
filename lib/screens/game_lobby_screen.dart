@@ -8,9 +8,7 @@ import 'mini_game_screen.dart';
 import '../classes/online_quiz.dart';
 
 class GameLobbyScreen extends StatefulWidget {
-  final Function(int) changeIndex;
-
-  const GameLobbyScreen({super.key, required this.changeIndex});
+  const GameLobbyScreen({super.key});
 
   @override
   State<GameLobbyScreen> createState() => _GameLobbyScreenState();
@@ -208,21 +206,21 @@ class _GameLobbyScreenState extends State<GameLobbyScreen> {
         .equalTo(_user!.uid)
         .get()
         .then((snapshot) {
-          if (snapshot.exists) {
-            final Map<dynamic, dynamic> result = snapshot.value as Map;
-            String username = result.keys.first.toString();
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => MiniGameScreen(
-                  myUsername: username,
-                  gameId: gameId,
-                  myUid: _user!.uid,
-                  quiz: quiz,
-                ),
-              ),
-            );
-          }
+      if (snapshot.exists) {
+        final Map<dynamic, dynamic> result = snapshot.value as Map;
+        String username = result.keys.first.toString();
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => MiniGameScreen(
+              myUsername: username,
+              gameId: gameId,
+              myUid: _user!.uid,
+              quiz: quiz,
+            ),
+          ),
+        );
+      }
     });
   }
 
@@ -233,63 +231,34 @@ class _GameLobbyScreenState extends State<GameLobbyScreen> {
       return const Center(child: CircularProgressIndicator());
     }
 
-    // If not logged in after check, show your custom message
-    if (_user == null) {
-      return _buildLoginRequired();
-    }
-
     // Normal Lobby UI
-    return Padding(
-      padding: const EdgeInsets.all(10.0),
-      child: Column(
-        children: [
-          _buildPlayerCard(),
-          const SizedBox(height: 40),
-          _buildMatchmakingSection(),
-          const Spacer(),
-          _buildLeaderboardPreview(),
-        ],
+    return Scaffold(
+      backgroundColor: Colors.orange.shade50,
+      appBar: AppBar(
+        centerTitle: true,
+        backgroundColor: Colors.transparent,
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(colors: [Colors.orange.shade500, Colors.deepOrange.shade800]),
+          ),
+        ),
+        title: const Text(
+          "Play Online",
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
       ),
-    );
-  }
-
-  Widget _buildLoginRequired() {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(32),
+      body: Padding(
+        padding: const EdgeInsets.all(10.0),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.lock_outline,
-                size: 80, color: Colors.deepOrange),
-            const SizedBox(height: 20),
-            const Text(
-              "Sign in to play online",
-              style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 10),
-            const Text(
-              "You need an account to play multiplayer matches and track your progress.",
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 30),
-            ElevatedButton(
-              onPressed: () {
-                widget.changeIndex(3);
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.deepOrange,
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 40, vertical: 14),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-              child: const Text("Go to Sign in", style: TextStyle(color: Colors.white),),
-            ),
+            _buildPlayerCard(),
+            const SizedBox(height: 40),
+            _buildMatchmakingSection(),
+            const Spacer(),
+            _buildLeaderboardPreview(),
           ],
         ),
       ),
