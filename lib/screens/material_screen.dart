@@ -3,6 +3,7 @@ import 'package:sign_language_app/screens/reading_tutorial_screen.dart';
 
 import '../classes/reading_tutorial_class.dart';
 import '../classes/user_class.dart';
+import '../services/general_service.dart';
 import '../services/user_service.dart';
 
 class MaterialScreen extends StatefulWidget {
@@ -18,6 +19,7 @@ class MaterialScreen extends StatefulWidget {
 
 class _MaterialScreenState extends State<MaterialScreen> {
   final UserService userService = UserService();
+  final GeneralService generalService = GeneralService();
   UserClass? user;
 
   List<int> completedLessons = [];
@@ -161,83 +163,18 @@ class _MaterialScreenState extends State<MaterialScreen> {
                   bool completed = completedLessons.contains(widget.readingTutorials[index].readingTutorial);
 
                   return InkWell(
-                    onTap: () async {
-                      showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return Dialog(
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
-                            child: Container(
-                              padding: const EdgeInsets.all(20.0),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(25.0),
-                                gradient: LinearGradient(colors: [Colors.orange.shade100, Colors.white],),
-                              ),
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Icon(
-                                    completed ? Icons.menu_book : Icons.play_circle,
-                                    color: Colors.orange.shade800,
-                                    size: 50,
-                                  ),
-                                  const SizedBox(height: 10.0),
-                                  Text(
-                                    completed ? 'Review reading tutorial?' : 'Start reading tutorial?',
-                                    style: const TextStyle(
-                                      fontSize: 22.0,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 10.0),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                    children: [
-                                      ElevatedButton(
-                                        style: ElevatedButton.styleFrom(
-                                          foregroundColor: Colors.white,
-                                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
-                                        ),
-                                        onPressed: () async {
-                                          Navigator.pop(context);
-                                        },
-                                        child: const Text(
-                                          "No",
-                                          style: TextStyle(
-                                            fontSize: 18.0,
-                                            color: Colors.black,
-                                          ),
-                                        ),
-                                      ),
-                                      ElevatedButton(
-                                        style: ElevatedButton.styleFrom(
-                                          backgroundColor: Colors.orange.shade700,
-                                          foregroundColor: Colors.white,
-                                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
-                                        ),
-                                        onPressed: () async {
-                                          Navigator.pop(context);
-                                          await Navigator.push(
-                                            context,
-                                            MaterialPageRoute(builder: (context) => ReadingTutorialScreen(readingTutorial: widget.readingTutorials[index], username: user?.username)),
-                                          );
-                                          await _loadLearningDetails();
-                                        },
-                                        child: const Text(
-                                          "Yes",
-                                          style: TextStyle(
-                                            fontSize: 18.0,
-                                            color: Colors.black,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
+                    onTap: () {
+                      generalService.startPrompt(
+                        context,
+                        () async {
+                          await Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => ReadingTutorialScreen(readingTutorial: widget.readingTutorials[index], username: user?.username)),
                           );
-                        }
+                          await _loadLearningDetails();
+                        },
+                        completed ? Icons.menu_book : Icons.play_circle,
+                        completed ? 'Review reading tutorial?' : 'Start reading tutorial?',
                       );
                     },
                     child: Card(

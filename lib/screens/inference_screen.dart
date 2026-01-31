@@ -1,10 +1,11 @@
-import 'dart:convert';
-import 'dart:typed_data';
 
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:sign_language_app/services/inference_service.dart';
+
+import '../classes/user_class.dart';
+import '../services/general_service.dart';
+import '../services/user_service.dart';
 
 class InferenceScreen extends StatefulWidget {
   const InferenceScreen({super.key, required this.changeIndex});
@@ -17,15 +18,33 @@ class InferenceScreen extends StatefulWidget {
 }
 
 class _InferenceScreenState extends State<InferenceScreen> {
+  final UserService userService = UserService();
+  final GeneralService generalService = GeneralService();
+  UserClass? user;
+
   late CameraController _controller;
   late Future<void> _initializeControllerFuture;
 
   bool _isSending = false;
   String _resultText = '';
 
+  // Function to load username from local storage, when already logged in.
+  Future<void> _loadUserLocalStorage() async {
+    user = await userService.loadUserLocalStorage();
+
+    if (user != null) {
+      setState(() {});
+    }
+  }
+
   @override
   void initState() {
     super.initState();
+
+    _loadUserLocalStorage().then((_) async {
+      await generalService.loginPrompt(user, context, widget.changeIndex, true);
+    });
+
     _initCamera();
   }
 

@@ -190,15 +190,10 @@ class _ReadingTutorialScreenState extends State<ReadingTutorialScreen> {
       }
 
       await userRef.update({
-        'learningDetails': {
-          'streakNum': user.streakNum,
-          'streakNumGoal': user.streakNumGoal,
-          'lastStreakDate': user.lastStreakDate,
-          'score': user.score + score,
-          'completedLevels': levels,
-          'badges': dbBadges,
-          'completedLessons': dbCompletedLessons,
-        }
+        'learningDetails/score': user.score + score,
+        'learningDetails/completedLevels': levels,
+        'learningDetails/badges': dbBadges,
+        'learningDetails/completedLessons': dbCompletedLessons,
       });
     }
 
@@ -269,78 +264,8 @@ class _ReadingTutorialScreenState extends State<ReadingTutorialScreen> {
         if (didPop) {
           return;
         }
-        return await showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return Dialog(
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
-              child: Container(
-                padding: const EdgeInsets.all(25.0),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20.0),
-                  gradient: LinearGradient(colors: [Colors.orange.shade100, Colors.white],),
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Text(
-                      'Are you sure you want to exit this reading tutorial?',
-                      style: TextStyle(
-                        fontSize: 22.0,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 10.0),
-                    const Text(
-                      "Your progress in this reading tutorial will not be saved until you finish.",
-                      style: TextStyle(fontSize: 18.0),
-                    ),
-                    const SizedBox(height: 10.0),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.orange.shade700,
-                            foregroundColor: Colors.white,
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
-                          ),
-                          onPressed: () async {
-                            Navigator.pop(context);
-                          },
-                          child: const Text(
-                            "No",
-                            style: TextStyle(
-                              fontSize: 18.0,
-                              color: Colors.black,
-                            ),
-                          ),
-                        ),
-                        ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            foregroundColor: Colors.white,
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
-                          ),
-                          onPressed: () {
-                            Navigator.pop(context);
-                            Navigator.pop(context);
-                          },
-                          child: const Text(
-                            "Yes",
-                            style: TextStyle(
-                              fontSize: 18.0,
-                              color: Colors.black,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            );
-          }
-        );
+
+        generalService.exitPrompt(context, 'reading tutorial');
       },
       child: Scaffold(
         backgroundColor: Colors.orange.shade50,

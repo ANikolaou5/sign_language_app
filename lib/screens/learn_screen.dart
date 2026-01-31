@@ -1,10 +1,10 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sign_language_app/screens/material_screen.dart';
 
 import '../classes/reading_tutorial_class.dart';
 import '../classes/user_class.dart';
+import '../services/general_service.dart';
 import '../services/user_service.dart';
 
 class LearnScreen extends StatefulWidget {
@@ -18,6 +18,8 @@ class LearnScreen extends StatefulWidget {
 
 class _LearnScreenState extends State<LearnScreen> {
   final UserService userService = UserService();
+  final GeneralService generalService = GeneralService();
+
   UserClass? user;
   List<Map<String, dynamic>> levels = [];
   int completedLevels = 0;
@@ -75,88 +77,6 @@ class _LearnScreenState extends State<LearnScreen> {
     });
   }
 
-  Future<void> _loginPrompt() async {
-    final prefs = await SharedPreferences.getInstance();
-
-    if (user == null) {
-      bool showPrompt = prefs.getBool('showPrompt') ?? false;
-
-      if (!showPrompt) {
-        showDialog(
-          context: context,
-          barrierDismissible: true,
-          builder: (context) => Dialog(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
-            child: Container(
-              padding: const EdgeInsets.all(25.0),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20.0),
-                gradient: LinearGradient(colors: [Colors.orange.shade100, Colors.white],),
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Text(
-                    "Sign in for the full experience!",
-                    style: TextStyle(
-                      fontSize: 22.0,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 10.0),
-                  const Text(
-                    "If you sign in/sign up, you can earn points, appear on the leaderboard and unlock more features!",
-                    style: TextStyle(fontSize: 18.0),
-                    textAlign: TextAlign.justify,
-                  ),
-                  const SizedBox(height: 10.0),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.orange.shade700,
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
-                    ),
-                    onPressed: () async {
-                      await prefs.setBool('showPrompt', true);
-                      Navigator.pop(context);
-                      widget.changeIndex(3);
-                    },
-                    child: const Text(
-                      'Sign in',
-                      style: TextStyle(
-                        fontSize: 18.0,
-                        color: Colors.black,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 10.0),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
-                    ),
-                    onPressed: () async {
-                      await prefs.setBool('showPrompt', true);
-                      Navigator.pop(context);
-                    },
-                    child: const Text(
-                      'Continue as Guest',
-                      style: TextStyle(
-                        fontSize: 18.0,
-                        color: Colors.black,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        );
-      }
-    }
-  }
-
   @override
   void initState() {
     super.initState();
@@ -164,7 +84,7 @@ class _LearnScreenState extends State<LearnScreen> {
       await _loadLevels();
       await _loadLearningDetails();
       await _loadReadingTutorials();
-      await  _loginPrompt();
+      await generalService.loginPrompt(user, context, widget.changeIndex, false);
     });
   }
 

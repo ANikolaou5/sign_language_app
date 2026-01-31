@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:sign_language_app/screens/inference_screen.dart';
+import 'package:sign_language_app/screens/play_screen.dart';
 import 'package:sign_language_app/screens/train_screen.dart';
 
 import 'account_screen.dart';
 import 'home_screen.dart';
-import 'game_lobby_screen.dart';
 import 'learn_screen.dart';
 
 class MainScreen extends StatefulWidget {
@@ -36,7 +36,7 @@ class _MainScreenState extends State<MainScreen> {
       HomeScreen(key: const PageStorageKey('home'), changeIndex: changeIndex),
       LearnScreen(key: const PageStorageKey('learn'), changeIndex: changeIndex),
       TrainScreen(key: const PageStorageKey('train'), changeIndex: changeIndex),
-      GameLobbyScreen(key: const PageStorageKey('play'), changeIndex: changeIndex),
+      PlayScreen(key: const PageStorageKey('play'), changeIndex: changeIndex),
       InferenceScreen(key: const PageStorageKey('inference'), changeIndex: changeIndex),
       AccountScreen(key: const PageStorageKey('account'), changeIndex: changeIndex),
     ];

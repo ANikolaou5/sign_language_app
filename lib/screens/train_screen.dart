@@ -1,4 +1,3 @@
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:sign_language_app/components/train_categories_widget.dart';
 import 'package:sign_language_app/screens/matching_screen.dart';
@@ -7,6 +6,7 @@ import 'package:sign_language_app/screens/read_the_sign_screen.dart';
 
 import '../classes/question_class.dart';
 import '../classes/user_class.dart';
+import '../services/general_service.dart';
 import '../services/user_service.dart';
 
 class TrainScreen extends StatefulWidget {
@@ -20,57 +20,12 @@ class TrainScreen extends StatefulWidget {
 
 class _TrainScreenState extends State<TrainScreen> {
   final UserService userService = UserService();
+  final GeneralService generalService = GeneralService();
   UserClass? user;
 
   List<Question> signToTextQuestions = [];
   List<Question> multipleChoiceQuestions = [];
   List<Map<String, dynamic>> matchQuestions = [];
-
-  Future<void> _loadQuestions() async {
-    final ref = FirebaseDatabase.instance.ref();
-    final snapshot = await ref.child('questions').get();
-    if (!snapshot.exists || snapshot.value == null) return;
-
-    final data = Map<String, dynamic>.from(snapshot.value as Map);
-
-    List<Question> allQuestions = data.values
-      .map((value) =>
-      Question.fromMap(Map<String, dynamic>.from(value as Map)))
-      .where((q) => q.levelNum == null)
-      .toList();
-
-    setState(() {
-      signToTextQuestions = allQuestions
-          .where((q) => q.questionType == QuestionType.text)
-          .toList();
-
-      multipleChoiceQuestions = allQuestions
-          .where((q) => q.questionType == QuestionType.multipleChoice)
-          .toList();
-    });
-  }
-
-  void _createMatchQuestions() {
-    final List<String> wordList = ["CAT", "BOX", "ZIP", "RED", "SKY", "FUN", "LOW"];
-    matchQuestions.clear();
-
-    for (String word in wordList) {
-      List<String> chars = word.toUpperCase().split('');
-      final List<Map<String, String>> correctPairs = chars.map((char) {
-        return {
-          'image': 'assets/images/$char.png',
-          'text': char,
-        };
-      }).toList();
-
-      final List<Map<String, String>> shuffledPairs = List<Map<String, String>>.from(correctPairs)..shuffle();
-
-      matchQuestions.add({
-        'correctPairs': correctPairs,
-        'shuffledPairs': shuffledPairs,
-      });
-    }
-  }
 
   // Function to load username from local storage, when already logged in.
   Future<void> _loadUserLocalStorage() async {
@@ -81,70 +36,15 @@ class _TrainScreenState extends State<TrainScreen> {
     }
   }
 
-  Future<void> _loginPrompt() async {
-    if (user == null) {
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (context) => Dialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
-          child: Container(
-            padding: const EdgeInsets.all(25.0),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(20.0),
-              gradient: LinearGradient(colors: [Colors.orange.shade100, Colors.white],),
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Text(
-                  "Sign in for the full experience!",
-                  style: TextStyle(
-                    fontSize: 22.0,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 10.0),
-                const Text(
-                  "Sign in required for using this feature!",
-                  style: TextStyle(fontSize: 18.0),
-                  textAlign: TextAlign.justify,
-                ),
-                const SizedBox(height: 10.0),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.orange.shade700,
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
-                  ),
-                  onPressed: () {
-                    Navigator.pop(context);
-                    widget.changeIndex(5);
-                  },
-                  child: const Text(
-                    'Sign in',
-                    style: TextStyle(
-                      fontSize: 18.0,
-                      color: Colors.black,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      );
-    }
-  }
-
   @override
   void initState() {
     super.initState();
+
     _loadUserLocalStorage().then((_) async {
-      await _loginPrompt();
-      await _loadQuestions();
-      _createMatchQuestions();
+      await generalService.loginPrompt(user, context, widget.changeIndex, true);
+      signToTextQuestions = await generalService.loadSignToTextQuestions();
+      multipleChoiceQuestions = await generalService.loadMCQ();
+      matchQuestions = generalService.createMatchQuestions();
     });
   }
 
@@ -179,10 +79,11 @@ class _TrainScreenState extends State<TrainScreen> {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => MatchingScreen(matchQuestions: matchQuestions, username: user!.username),
+                  MaterialPageRoute(builder: (context) => MatchingScreen(matchQuestions: matchQuestions, username: user!.username,),
                   ),
                 );
               },
+              generalService: generalService,
             ),
             const SizedBox(height: 10.0),
             TrainCategories(
@@ -194,6 +95,7 @@ class _TrainScreenState extends State<TrainScreen> {
                   ),
                 );
               },
+              generalService: generalService,
             ),
             const SizedBox(height: 10.0),
             TrainCategories(
@@ -205,6 +107,7 @@ class _TrainScreenState extends State<TrainScreen> {
                   ),
                 );
               },
+              generalService: generalService,
             ),
           ],
         ),
