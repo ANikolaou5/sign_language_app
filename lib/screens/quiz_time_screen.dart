@@ -49,6 +49,7 @@ class _FingerspellSignToWordScreenState extends State<QuizTimeScreen> {
         appBar: AppBar(
           centerTitle: true,
           backgroundColor: Colors.transparent,
+          foregroundColor: Colors.white,
           flexibleSpace: Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
@@ -137,24 +138,23 @@ class _FingerspellSignToWordScreenState extends State<QuizTimeScreen> {
                       borderRadius: BorderRadius.circular(15.0),
                       border: Border.all(color: Colors.orange.shade300),
                     ),
-                    child: DropdownButtonHideUnderline(
-                      child: DropdownButton<String>(
-                        value: category,
-                        items: categoriesOptions.map((String option) {
-                          return DropdownMenuItem<String>(
-                            value: option,
-                            child: Text(
-                              option,
-                              style: TextStyle(
-                                fontSize: 20.0,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          );
-                        }).toList(),
-                        onChanged: (option) {
-                          setState(() => category = option!);
-                        },
+                    child: DropdownButton(
+                      value: category,
+                      items: categoriesOptions.map((String option) {
+                        return DropdownMenuItem(
+                          value: option,
+                          child: Text(option),
+                        );
+                      }).toList(),
+                      onChanged: (option) {
+                        setState(() => category = option!);
+                      },
+                      iconSize: 40.0,
+                      iconEnabledColor: Colors.orange.shade700,
+                      style: TextStyle(
+                        fontSize: 20.0,
+                        color: Colors.orange.shade700,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                   ),

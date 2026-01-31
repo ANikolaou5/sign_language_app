@@ -374,7 +374,7 @@ class _AccountScreenState extends State<AccountScreen> {
                                 style: const TextStyle(
                                   fontSize: 18.0,
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.black,
+                                  color: Colors.white,
                                 ),
                               ),
                             ),
@@ -634,7 +634,7 @@ class _AccountScreenState extends State<AccountScreen> {
                                     children: [
                                       ElevatedButton(
                                         style: ElevatedButton.styleFrom(
-                                          backgroundColor: Colors.orange.shade700,
+                                          backgroundColor: Colors.deepOrange,
                                           foregroundColor: Colors.white,
                                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
                                         ),
@@ -645,7 +645,7 @@ class _AccountScreenState extends State<AccountScreen> {
                                           "No",
                                           style: TextStyle(
                                             fontSize: 18.0,
-                                            color: Colors.black,
+                                            color: Colors.white,
                                           ),
                                         ),
                                       ),

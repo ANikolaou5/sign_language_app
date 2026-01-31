@@ -218,13 +218,13 @@ class _HomeScreenState extends State<HomeScreen> {
                           hintText: 'Streak number',
                           enabledBorder: UnderlineInputBorder(
                             borderSide: BorderSide(
-                              color: Colors.orange.shade900,
+                              color: Colors.deepOrange,
                               width: 2.0,
                             ),
                           ),
                           focusedBorder: UnderlineInputBorder(
                             borderSide: BorderSide(
-                              color: Colors.orange.shade900,
+                              color: Colors.deepOrange,
                               width: 2.0,
                             ),
                           ),
@@ -234,7 +234,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       const SizedBox(height: 10.0),
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.orange.shade700,
+                          backgroundColor: Colors.deepOrange,
                           foregroundColor: Colors.white,
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12.0)),
@@ -246,7 +246,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           "Save",
                           style: TextStyle(
                             fontSize: 18.0,
-                            color: Colors.black,
+                            color: Colors.white,
                           ),
                         ),
                       ),
@@ -334,7 +334,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Container(
                     padding: const EdgeInsets.all(15.0),
                     decoration: BoxDecoration(
-                      color: Colors.deepOrange.shade400,
+                      color: Colors.deepOrange,
                       borderRadius: BorderRadius.circular(15.0),
                     ),
                     child:Row(
@@ -345,13 +345,13 @@ class _HomeScreenState extends State<HomeScreen> {
                           style: TextStyle(
                             fontSize: 18.0,
                             fontWeight: FontWeight.bold,
-                            color: Colors.black,
+                            color: Colors.white,
                           ),
                         ),
                         Icon(
                           Icons.arrow_forward_ios,
                           size: 22.0,
-                          color: Colors.black,
+                          color: Colors.white,
                         )
                       ],
                     ),
@@ -436,13 +436,14 @@ class _HomeScreenState extends State<HomeScreen> {
                               padding: const EdgeInsets.all(10.0),
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(15.0),
-                                gradient: LinearGradient(colors: [Colors.deepOrange.shade200, Colors.deepOrange.shade400],),
+                                color: Colors.deepOrange.shade200,
                               ),
                               child: Text(
                                 "Full Leaderboard",
                                 style: TextStyle(
                                   fontSize: 16.0,
-                                  color: Colors.black,
+                                  color: Colors.deepOrange.shade800,
+                                  fontWeight: FontWeight.bold,
                                 ),
                               ),
                             ),
@@ -469,7 +470,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Container(
                     padding: const EdgeInsets.all(15.0),
                     decoration: BoxDecoration(
-                      color: Colors.deepOrange.shade400,
+                      color: Colors.deepOrange,
                       borderRadius: BorderRadius.circular(15.0),
                     ),
                     child: Row(
@@ -480,13 +481,13 @@ class _HomeScreenState extends State<HomeScreen> {
                           style: TextStyle(
                             fontSize: 18.0,
                             fontWeight: FontWeight.bold,
-                            color: Colors.black,
+                            color: Colors.white,
                           ),
                         ),
                         Icon(
                           Icons.arrow_forward_ios,
                           size: 22.0,
-                          color: Colors.black,
+                          color: Colors.white,
                         )
                       ],
                     ),

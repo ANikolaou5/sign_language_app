@@ -237,6 +237,7 @@ class _GameLobbyScreenState extends State<GameLobbyScreen> {
       appBar: AppBar(
         centerTitle: true,
         backgroundColor: Colors.transparent,
+        foregroundColor: Colors.white,
         flexibleSpace: Container(
           decoration: BoxDecoration(
             gradient: LinearGradient(colors: [Colors.orange.shade500, Colors.deepOrange.shade800]),

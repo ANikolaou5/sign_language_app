@@ -49,6 +49,7 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
       appBar: AppBar(
         centerTitle: true,
         backgroundColor: Colors.transparent,
+        foregroundColor: Colors.white,
         flexibleSpace: Container(
           decoration: BoxDecoration(
             gradient: LinearGradient(

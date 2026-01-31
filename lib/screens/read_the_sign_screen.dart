@@ -131,6 +131,7 @@ class _ReadTheSignScreenState extends State<ReadTheSignScreen> {
         appBar: AppBar(
           centerTitle: true,
           backgroundColor: Colors.transparent,
+          foregroundColor: Colors.white,
           flexibleSpace: Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(

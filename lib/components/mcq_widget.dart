@@ -20,7 +20,7 @@ class MultipleChoiceQuestion extends StatelessWidget {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 15.0),
           decoration: BoxDecoration(
-            color: Colors.orange.shade700,
+            color: Colors.deepOrange,
             borderRadius: BorderRadius.circular(20.0),
           ),
           child: Text(
@@ -70,7 +70,7 @@ class MultipleChoiceQuestion extends StatelessWidget {
                           width: 40,
                           height: 40,
                           decoration: BoxDecoration(
-                            color: selected ? Colors.orange.shade700 : Colors.grey.shade300,
+                            color: selected ? Colors.deepOrange : Colors.grey.shade300,
                             shape: BoxShape.circle,
                           ),
                           alignment: Alignment.center,
@@ -78,7 +78,7 @@ class MultipleChoiceQuestion extends StatelessWidget {
                             '${index + 1}',
                             style: TextStyle(
                               fontSize: 18.0,
-                              color: Colors.black,
+                              color: selected ? Colors.white : Colors.black,
                               fontWeight: FontWeight.bold,
                             ),
                           ),

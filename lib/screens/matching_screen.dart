@@ -88,6 +88,7 @@ class _MatchingScreenState extends State<MatchingScreen> {
         appBar: AppBar(
           centerTitle: true,
           backgroundColor: Colors.transparent,
+          foregroundColor: Colors.white,
           flexibleSpace: Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(

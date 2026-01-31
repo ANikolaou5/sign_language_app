@@ -73,6 +73,7 @@ class _MaterialScreenState extends State<MaterialScreen> {
       appBar: AppBar(
         centerTitle: true,
         backgroundColor: Colors.transparent,
+        foregroundColor: Colors.white,
         flexibleSpace: Container(
           decoration: BoxDecoration(
             gradient: LinearGradient(colors: [Colors.orange.shade500, Colors.deepOrange.shade800]),
@@ -129,7 +130,7 @@ class _MaterialScreenState extends State<MaterialScreen> {
                         "$completedTutorials / $tutorials ",
                         style: TextStyle(
                           fontSize: 16.0,
-                          color: Colors.orange.shade900,
+                          color: Colors.deepOrange,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -141,7 +142,7 @@ class _MaterialScreenState extends State<MaterialScreen> {
                     child: LinearProgressIndicator(
                       value: progress,
                       backgroundColor: Colors.orange.shade100,
-                      color: Colors.orange.shade900,
+                      color: Colors.deepOrange,
                       minHeight: 12.0,
                     ),
                   ),
@@ -191,14 +192,12 @@ class _MaterialScreenState extends State<MaterialScreen> {
                           crossAxisAlignment: CrossAxisAlignment.center,
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            if (completed) ...[
-                              Icon(
-                                Icons.check_circle,
-                                size: 35.0,
-                                color: Colors.green,
-                              ),
-                              const SizedBox(height: 5.0)
-                            ],
+                            Icon(
+                              completed ? Icons.check_circle : Icons.play_circle,
+                              size: 35.0,
+                              color: completed ? Colors.green : Colors.deepOrange,
+                            ),
+                            const SizedBox(height: 5.0),
                             Center(
                               child: Text(
                                 text,
@@ -206,7 +205,7 @@ class _MaterialScreenState extends State<MaterialScreen> {
                                 style: TextStyle(
                                   fontSize: text.length <= 2 ? 30.0 : 20.0,
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.deepOrange.shade800,
+                                  color: completed ? Colors.green : Colors.deepOrange,
                                 ),
                               ),
                             ),

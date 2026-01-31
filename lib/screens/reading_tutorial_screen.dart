@@ -272,6 +272,7 @@ class _ReadingTutorialScreenState extends State<ReadingTutorialScreen> {
         appBar: AppBar(
           centerTitle: true,
           backgroundColor: Colors.transparent,
+          foregroundColor: Colors.white,
           flexibleSpace: Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(

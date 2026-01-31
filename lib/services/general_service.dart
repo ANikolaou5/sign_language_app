@@ -163,12 +163,14 @@ class GeneralService {
                   const SizedBox(height: 10.0),
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.orange.shade700,
+                      backgroundColor: Colors.deepOrange,
                       foregroundColor: Colors.white,
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
                     ),
                     onPressed: () async {
-                      await prefs.setBool('showPrompt', true);
+                      if (!req) {
+                        await prefs.setBool('showPrompt', true);
+                      }
                       Navigator.pop(context);
                       changeIndex(5);
                     },
@@ -176,7 +178,7 @@ class GeneralService {
                       'Sign in',
                       style: TextStyle(
                         fontSize: 18.0,
-                        color: Colors.black,
+                        color: Colors.white,
                       ),
                     ),
                   ),
@@ -226,7 +228,7 @@ class GeneralService {
               children: [
                 Icon(
                   icon,
-                  color: Colors.orange.shade800,
+                  color: Colors.deepOrange,
                   size: 50,
                 ),
                 const SizedBox(height: 10.0),
@@ -260,7 +262,7 @@ class GeneralService {
                     ),
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.orange.shade700,
+                        backgroundColor: Colors.deepOrange,
                         foregroundColor: Colors.white,
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
                       ),
@@ -272,7 +274,7 @@ class GeneralService {
                         "Yes",
                         style: TextStyle(
                           fontSize: 18.0,
-                          color: Colors.black,
+                          color: Colors.white,
                         ),
                       ),
                     ),
@@ -319,7 +321,7 @@ class GeneralService {
                     children: [
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.orange.shade700,
+                          backgroundColor: Colors.deepOrange,
                           foregroundColor: Colors.white,
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
                         ),
@@ -330,7 +332,7 @@ class GeneralService {
                           "No",
                           style: TextStyle(
                             fontSize: 18.0,
-                            color: Colors.black,
+                            color: Colors.white,
                           ),
                         ),
                       ),

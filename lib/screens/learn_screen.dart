@@ -153,7 +153,7 @@ class _LearnScreenState extends State<LearnScreen> {
                                 Icon(
                                   (level > completedLevels + 1) ? Icons.lock : ((level <= completedLevels) ? Icons.check_circle : Icons.play_circle),
                                   size: 60.0,
-                                  color: (level > completedLevels + 1) ? Colors.grey : ((level <= completedLevels) ? Colors.green : Colors.deepOrange.shade800),
+                                  color: (level > completedLevels + 1) ? Colors.grey : ((level <= completedLevels) ? Colors.green : Colors.deepOrange),
                                 ),
                                 const SizedBox(width: 10.0),
                                 Text(
@@ -162,7 +162,7 @@ class _LearnScreenState extends State<LearnScreen> {
                                   style: TextStyle(
                                     fontSize: 27.0,
                                     fontWeight: FontWeight.bold,
-                                    color: (level > completedLevels + 1) ? Colors.grey : Colors.deepOrange.shade800,
+                                    color: (level > completedLevels + 1) ? Colors.grey : ((level <= completedLevels) ? Colors.green : Colors.deepOrange),
                                   ),
                                 ),
                               ],
@@ -191,7 +191,7 @@ class _LearnScreenState extends State<LearnScreen> {
                                           "$completedTutorials / $tutorials ",
                                           style: TextStyle(
                                             fontSize: 14.0,
-                                            color: Colors.orange.shade900,
+                                            color: (level > completedLevels) ? Colors.deepOrange : Colors.green,
                                             fontWeight: FontWeight.bold,
                                           ),
                                         ),
@@ -203,7 +203,7 @@ class _LearnScreenState extends State<LearnScreen> {
                                       child: LinearProgressIndicator(
                                         value: progress,
                                         backgroundColor: Colors.orange.shade100,
-                                        color: Colors.orange.shade900,
+                                        color: (level > completedLevels) ? Colors.deepOrange : Colors.green,
                                         minHeight: 12.0,
                                       ),
                                     ),

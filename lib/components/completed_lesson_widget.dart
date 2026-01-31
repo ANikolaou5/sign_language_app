@@ -22,7 +22,7 @@ class CompletedLesson extends StatelessWidget {
       children: [
         Icon(
           Icons.stars,
-          color: Colors.orange.shade700,
+          color: Colors.deepOrange,
           size: 100,
         ),
         const SizedBox(height: 20.0),
@@ -110,8 +110,7 @@ class CompletedLesson extends StatelessWidget {
         ElevatedButton(
           onPressed: () => Navigator.pop(context),
           style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.orange.shade700,
-            foregroundColor: Colors.white,
+            backgroundColor: Colors.deepOrange,
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12.0)),
             padding: const EdgeInsets.all(15.0),
@@ -121,7 +120,7 @@ class CompletedLesson extends StatelessWidget {
             style: TextStyle(
               fontSize: 22.0,
               fontWeight: FontWeight.bold,
-              color: Colors.black,
+              color: Colors.white,
             ),
           ),
         ),
