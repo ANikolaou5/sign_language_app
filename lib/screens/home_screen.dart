@@ -80,7 +80,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   children: [
                     Icon(
                       Icons.local_fire_department,
-                      color: Colors.orange.shade900,
+                      color: Colors.deepOrange,
                       size: 80.0,
                     ),
                     Text(
@@ -99,7 +99,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     const SizedBox(height: 25.0),
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.orange.shade700,
+                        backgroundColor: Colors.deepOrange,
                         foregroundColor: Colors.white,
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12.0)),
@@ -109,7 +109,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         "Start a new streak",
                         style: TextStyle(
                           fontSize: 18.0,
-                          color: Colors.black,
+                          color: Colors.white,
                         ),
                       ),
                     ),
@@ -199,6 +199,11 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
+                      Icon(
+                        Icons.local_fire_department,
+                        color: Colors.deepOrange,
+                        size: 80.0,
+                      ),
                       Text(
                         "Update your streak goal!",
                         style: const TextStyle(
@@ -206,7 +211,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      const SizedBox(height: 10.0),
+                      const SizedBox(height: 15.0),
                       TextField(
                         controller: streakGoalTextController,
                         autofocus: true,

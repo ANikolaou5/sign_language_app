@@ -79,7 +79,7 @@ class _TrainScreenState extends State<TrainScreen> {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => MatchingScreen(matchQuestions: matchQuestions, username: user!.username,),
+                  MaterialPageRoute(builder: (context) => MatchingScreen(matchQuestions: matchQuestions, username: user!.username, quiz: false, timer: false,),
                   ),
                 );
               },
@@ -91,7 +91,7 @@ class _TrainScreenState extends State<TrainScreen> {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => ReadTheSignScreen(multipleChoiceQuestions: multipleChoiceQuestions, username: user!.username),
+                  MaterialPageRoute(builder: (context) => ReadTheSignScreen(multipleChoiceQuestions: multipleChoiceQuestions, username: user!.username, quiz: false, timer: false,),
                   ),
                 );
               },
@@ -103,7 +103,7 @@ class _TrainScreenState extends State<TrainScreen> {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => FingerspellSignToWordScreen(signToTextQuestions: signToTextQuestions, username: user!.username),
+                  MaterialPageRoute(builder: (context) => FingerspellSignToWordScreen(signToTextQuestions: signToTextQuestions, username: user!.username, quiz: false, timer: false,),
                   ),
                 );
               },

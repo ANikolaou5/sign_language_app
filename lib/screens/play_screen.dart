@@ -70,17 +70,10 @@ class _PlayScreenState extends State<PlayScreen> {
             Center(
               child: InkWell(
                 onTap: () {
-                  generalService.startPrompt(
+                  Navigator.push(
                     context,
-                    () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => QuizTimeScreen(username: user!.username),
-                        ),
-                      );
-                    },
-                    Icons.sports_esports,
-                    'Start quiz?',
+                    MaterialPageRoute(builder: (context) => QuizTimeScreen(username: user!.username),
+                    ),
                   );
                 },
                 child: Card(

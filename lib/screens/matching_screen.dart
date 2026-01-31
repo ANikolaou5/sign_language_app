@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_timer_countdown/flutter_timer_countdown.dart';
 
 import '../components/completed_lesson_widget.dart';
 import '../components/match_question_widget.dart';
@@ -6,10 +7,13 @@ import '../services/general_service.dart';
 import '../services/user_service.dart';
 
 class MatchingScreen extends StatefulWidget {
-  const MatchingScreen({super.key, required this.matchQuestions, required this.username});
+  const MatchingScreen({super.key, required this.matchQuestions, required this.username, required this.quiz, required this.timer, this.difficulty,});
 
   final List<Map<String, dynamic>> matchQuestions;
   final String username;
+  final bool quiz;
+  final bool timer;
+  final String? difficulty;
 
   @override
   State<MatchingScreen> createState() => _MatchingScreenState();
@@ -31,6 +35,8 @@ class _MatchingScreenState extends State<MatchingScreen> {
   bool completed = false;
   bool isCorrectAnswer = false;
   bool check = false;
+
+  late DateTime endTime;
 
   Future<void> _complete() async {
     await generalService.complete(widget.username, score);
@@ -65,6 +71,8 @@ class _MatchingScreenState extends State<MatchingScreen> {
   @override
   void initState() {
     super.initState();
+
+    endTime = generalService.calculateEndTime(widget.matchQuestions.length, widget.difficulty);
     finalMatchQuestions = List<Map<String, dynamic>>.from(widget.matchQuestions)..shuffle();
   }
 
@@ -81,7 +89,12 @@ class _MatchingScreenState extends State<MatchingScreen> {
         if (didPop) {
           return;
         }
-        generalService.exitPrompt(context, 'training');
+
+        if (widget.quiz) {
+          generalService.exitPrompt(context, 'quiz');
+        } else {
+          generalService.exitPrompt(context, 'training');
+        }
       },
       child: Scaffold(
         backgroundColor: Colors.orange.shade50,
@@ -114,6 +127,30 @@ class _MatchingScreenState extends State<MatchingScreen> {
               color: Colors.orange.shade900,
               minHeight: 8.0,
             ),
+            if (widget.timer)...[
+              const SizedBox(height: 10.0),
+              // GeeksforGeeks (2024). Flutter Countdown Timer. [online] GeeksforGeeks.
+              // Available at: https://www.geeksforgeeks.org/flutter/flutter-countdown-timer/
+              // [Accessed 31 Jan. 2026].
+              TimerCountdown(
+                format: CountDownTimerFormat.minutesSeconds,
+                enableDescriptions: false,
+                endTime: endTime,
+                onEnd: () {
+                  _complete();
+                },
+                timeTextStyle: TextStyle(
+                  color: Colors.deepOrange.shade800,
+                  fontSize: 25.0,
+                  fontWeight: FontWeight.bold,
+                ),
+                colonsTextStyle: TextStyle(
+                  color: Colors.deepOrange.shade800,
+                  fontSize: 25.0,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.all(10.0),
@@ -133,7 +170,7 @@ class _MatchingScreenState extends State<MatchingScreen> {
                       answerIndex: answerIndex,
                       isCorrectAnswer: isCorrectAnswer,
                       check: check,
-                      questionPoints: questionPoints,
+                      questionPoints: widget.quiz ? questionPoints * 2 : questionPoints,
                       onMatch: (img, txt) {
                         setState(() {
                           matchedImages.add(img);
@@ -143,13 +180,13 @@ class _MatchingScreenState extends State<MatchingScreen> {
                             isCorrectAnswer = true;
                             answerIndex = 1;
                             check = true;
-                            score += questionPoints;
+                            score += widget.quiz ? questionPoints * 2 : questionPoints;
                           }
                         });
                       },
                       next: _next,
                       generalService: generalService,
-                    )
+                    ),
                   ),
                 ),
               ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_timer_countdown/flutter_timer_countdown.dart';
 
 import '../classes/badge_class.dart';
 import '../classes/question_class.dart';
@@ -8,10 +9,13 @@ import '../services/general_service.dart';
 import '../services/user_service.dart';
 
 class ReadTheSignScreen extends StatefulWidget {
-  const ReadTheSignScreen({super.key, required this.multipleChoiceQuestions, required this.username});
+  const ReadTheSignScreen({super.key, required this.multipleChoiceQuestions, required this.username, required this.quiz, required this.timer, this.difficulty,});
 
   final List<Question> multipleChoiceQuestions;
   final String username;
+  final bool quiz;
+  final bool timer;
+  final String? difficulty;
 
   @override
   State<ReadTheSignScreen> createState() => _ReadTheSignScreenState();
@@ -35,12 +39,16 @@ class _ReadTheSignScreenState extends State<ReadTheSignScreen> {
   bool isCorrectAnswer = false;
   bool check = false;
 
-  void _createPossibleAnswersMCQ() {
+  late DateTime endTime;
+
+  Future<void> _createPossibleAnswersMCQ() async {
     if (finalMultipleChoiceQuestions.isEmpty) return;
 
     final String correctWord = finalMultipleChoiceQuestions[questionIndex].answer;
 
-    List<String> wrongWords = widget.multipleChoiceQuestions
+    List<Question> allMCQ = await generalService.loadMCQ();
+
+    List<String> wrongWords = allMCQ
         .map((q) => q.answer)
         .where((a) => a != correctWord)
         .toList()..shuffle();
@@ -87,7 +95,7 @@ class _ReadTheSignScreenState extends State<ReadTheSignScreen> {
         }
         else {
           isCorrectAnswer = true;
-          score += pointsMCQ;
+          score += widget.quiz ? pointsMCQ * 2 : pointsMCQ;
         }
       });
       return;
@@ -107,6 +115,7 @@ class _ReadTheSignScreenState extends State<ReadTheSignScreen> {
   void initState() {
     super.initState();
 
+    endTime = generalService.calculateEndTime(widget.multipleChoiceQuestions.length, widget.difficulty);
     finalMultipleChoiceQuestions = List<Question>.from(widget.multipleChoiceQuestions)..shuffle();
     _createPossibleAnswersMCQ();
   }
@@ -124,7 +133,12 @@ class _ReadTheSignScreenState extends State<ReadTheSignScreen> {
         if (didPop) {
           return;
         }
-        generalService.exitPrompt(context, 'training');
+
+        if (widget.quiz) {
+          generalService.exitPrompt(context, 'quiz');
+        } else {
+          generalService.exitPrompt(context, 'training');
+        }
       },
       child: Scaffold(
         backgroundColor: Colors.orange.shade50,
@@ -154,6 +168,30 @@ class _ReadTheSignScreenState extends State<ReadTheSignScreen> {
               color: Colors.orange.shade900,
               minHeight: 8.0,
             ),
+            if (widget.timer)...[
+              const SizedBox(height: 10.0),
+              // GeeksforGeeks (2024). Flutter Countdown Timer. [online] GeeksforGeeks.
+              // Available at: https://www.geeksforgeeks.org/flutter/flutter-countdown-timer/
+              // [Accessed 31 Jan. 2026].
+              TimerCountdown(
+                format: CountDownTimerFormat.minutesSeconds,
+                enableDescriptions: false,
+                endTime: endTime,
+                onEnd: () {
+                  _complete();
+                },
+                timeTextStyle: TextStyle(
+                  color: Colors.deepOrange.shade800,
+                  fontSize: 25.0,
+                  fontWeight: FontWeight.bold,
+                ),
+                colonsTextStyle: TextStyle(
+                  color: Colors.deepOrange.shade800,
+                  fontSize: 25.0,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.all(10.0),
@@ -169,7 +207,7 @@ class _ReadTheSignScreenState extends State<ReadTheSignScreen> {
                     ) : ReadTheSignQuestion(
                       question: finalMultipleChoiceQuestions[questionIndex],
                       possibleAnswers: possibleAnswers,
-                      pointsMCQ: pointsMCQ,
+                      pointsMCQ: widget.quiz ? pointsMCQ * 2 : pointsMCQ,
                       answerIndex: answerIndex,
                       isCorrectAnswer: isCorrectAnswer,
                       check: check,

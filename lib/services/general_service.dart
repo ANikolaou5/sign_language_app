@@ -65,27 +65,35 @@ class GeneralService {
     return allQuestions;
   }
 
-  Future<List<Question>> loadSignToTextQuestions() async {
+  Future<List<Question>> loadSignToTextQuestions({int? numOfQuestions}) async {
     List<Question> allQuestions = await loadAllQuestions();
 
     List<Question> signToTextQuestions = allQuestions
         .where((q) => q.questionType == QuestionType.text)
         .toList();
 
+    if (numOfQuestions != null) {
+      signToTextQuestions = signToTextQuestions.take(numOfQuestions).toList();
+    }
+
     return signToTextQuestions;
   }
 
-  Future<List<Question>> loadMCQ() async {
+  Future<List<Question>> loadMCQ({int? numOfQuestions}) async {
     List<Question> allQuestions = await loadAllQuestions();
 
     List<Question> multipleChoiceQuestions = allQuestions
         .where((q) => q.questionType == QuestionType.multipleChoice)
         .toList();
 
+    if (numOfQuestions != null) {
+      multipleChoiceQuestions = multipleChoiceQuestions.take(numOfQuestions).toList();
+    }
+
     return multipleChoiceQuestions;
   }
 
-  List<Map<String, dynamic>> createMatchQuestions() {
+  List<Map<String, dynamic>> createMatchQuestions({int? numOfQuestions}) {
     List<Map<String, dynamic>> matchQuestions = [];
     final List<String> wordList = ["CAT", "BOX", "ZIP", "RED", "SKY", "FUN", "LOW"];
 
@@ -104,6 +112,10 @@ class GeneralService {
         'correctPairs': correctPairs,
         'shuffledPairs': shuffledPairs,
       });
+    }
+
+    if (numOfQuestions != null) {
+      matchQuestions = matchQuestions.take(numOfQuestions).toList();
     }
 
     return matchQuestions;
@@ -344,6 +356,9 @@ class GeneralService {
                         onPressed: () {
                           Navigator.pop(context);
                           Navigator.pop(context);
+                          if (txt == "quiz") {
+                            Navigator.pop(context);
+                          }
                         },
                         child: const Text(
                           "Yes",
@@ -393,5 +408,31 @@ class GeneralService {
       'learningDetails/lastStreakDate': today.toIso8601String(),
       'learningDetails/score': user.score + score,
     });
+  }
+
+  DateTime calculateEndTime(int length, String? difficulty) {
+    DateTime endTime = DateTime.now().add(const Duration(minutes: 2));
+
+    if (length == 3) {
+      if (difficulty == "Easy") {
+        endTime = DateTime.now().add(const Duration(minutes: 1, seconds: 00));
+      } else if (difficulty == "Hard") {
+        endTime = DateTime.now().add(const Duration(minutes: 00, seconds: 40));
+      }
+    } else if (length == 5) {
+      if (difficulty == "Easy") {
+        endTime = DateTime.now().add(const Duration(minutes: 1, seconds: 40));
+      } else if (difficulty == "Hard") {
+        endTime = DateTime.now().add(const Duration(minutes: 1, seconds: 00));
+      }
+    } else if (length == 7) {
+      if (difficulty == "Easy") {
+        endTime = DateTime.now().add(const Duration(minutes: 2, seconds: 20));
+      } else if (difficulty == "Hard") {
+        endTime = DateTime.now().add(const Duration(minutes: 1, seconds: 30));
+      }
+    }
+
+    return endTime;
   }
 }

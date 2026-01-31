@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_timer_countdown/flutter_timer_countdown.dart';
 import 'package:sign_language_app/components/fingerspell_sign_to_word_widget.dart';
 
 import '../classes/question_class.dart';
@@ -7,10 +8,13 @@ import '../services/general_service.dart';
 import '../services/user_service.dart';
 
 class FingerspellSignToWordScreen extends StatefulWidget {
-  const FingerspellSignToWordScreen({super.key, required this.signToTextQuestions, required this.username});
+  const FingerspellSignToWordScreen({super.key, required this.signToTextQuestions, required this.username, required this.quiz, required this.timer, this.difficulty,});
 
   final List<Question> signToTextQuestions;
   final String username;
+  final bool quiz;
+  final bool timer;
+  final String? difficulty;
 
   @override
   State<FingerspellSignToWordScreen> createState() => _FingerspellSignToWordScreenState();
@@ -31,6 +35,8 @@ class _FingerspellSignToWordScreenState extends State<FingerspellSignToWordScree
   bool completed = false;
   bool isCorrectAnswer = false;
   bool check = false;
+
+  late DateTime endTime;
 
   Future<void> _complete() async {
     await generalService.complete(widget.username, score);
@@ -56,7 +62,7 @@ class _FingerspellSignToWordScreenState extends State<FingerspellSignToWordScree
         check = true;
         if (inputAnswer == correctAnswer) {
           isCorrectAnswer = true;
-          score += questionPoints;
+          score += widget.quiz ? questionPoints * 2 : questionPoints;
         } else {
           isCorrectAnswer = false;
         }
@@ -80,6 +86,7 @@ class _FingerspellSignToWordScreenState extends State<FingerspellSignToWordScree
   void initState() {
     super.initState();
 
+    endTime = generalService.calculateEndTime(widget.signToTextQuestions.length, widget.difficulty);
     final shuffledQuestions = List<Question>.from(widget.signToTextQuestions)..shuffle();
     finalQuestions = shuffledQuestions.take(questionsToDisplay).toList();
     answerTextController = TextEditingController();
@@ -87,7 +94,7 @@ class _FingerspellSignToWordScreenState extends State<FingerspellSignToWordScree
 
   @override
   Widget build(BuildContext context) {
-    double progress = (questionIndex + 1) / questionsToDisplay;
+    double progress = (questionIndex + 1) / finalQuestions.length;
 
     // GaneshTamang (2024). Flutter PopScope for android back button to leave app showing black screen instead of going to home screen of android. [online] GitHub.
     // Available at: https://github.com/GaneshTamang/flast_chat_firebase_example/issues/1
@@ -98,7 +105,12 @@ class _FingerspellSignToWordScreenState extends State<FingerspellSignToWordScree
         if (didPop) {
           return;
         }
-        generalService.exitPrompt(context, 'training');
+
+        if (widget.quiz) {
+          generalService.exitPrompt(context, 'quiz');
+        } else {
+          generalService.exitPrompt(context, 'training');
+        }
       },
       child: Scaffold(
         backgroundColor: Colors.orange.shade50,
@@ -131,6 +143,30 @@ class _FingerspellSignToWordScreenState extends State<FingerspellSignToWordScree
               color: Colors.orange.shade900,
               minHeight: 8.0,
             ),
+            if (widget.timer)...[
+              const SizedBox(height: 10.0),
+              // GeeksforGeeks (2024). Flutter Countdown Timer. [online] GeeksforGeeks.
+              // Available at: https://www.geeksforgeeks.org/flutter/flutter-countdown-timer/
+              // [Accessed 31 Jan. 2026].
+              TimerCountdown(
+                format: CountDownTimerFormat.minutesSeconds,
+                enableDescriptions: false,
+                endTime: endTime,
+                onEnd: () {
+                  _complete();
+                },
+                timeTextStyle: TextStyle(
+                  color: Colors.deepOrange.shade800,
+                  fontSize: 25.0,
+                  fontWeight: FontWeight.bold,
+                ),
+                colonsTextStyle: TextStyle(
+                  color: Colors.deepOrange.shade800,
+                  fontSize: 25.0,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.all(10.0),
@@ -147,7 +183,7 @@ class _FingerspellSignToWordScreenState extends State<FingerspellSignToWordScree
                       question: finalQuestions[questionIndex],
                       check: check,
                       isCorrectAnswer: isCorrectAnswer,
-                      questionPoints: questionPoints,
+                      questionPoints: widget.quiz ? questionPoints * 2 : questionPoints,
                       next: _next,
                       answerTextController: answerTextController,
                     )
