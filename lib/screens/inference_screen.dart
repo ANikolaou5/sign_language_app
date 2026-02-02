@@ -23,10 +23,10 @@ class _InferenceScreenState extends State<InferenceScreen> {
   UserClass? user;
 
   late CameraController _controller;
-  late Future<void> _initializeControllerFuture;
+  Future<void>? _initializeControllerFuture;
 
   bool _isSending = false;
-  String _resultText = '';
+  String _resultText = 'Make a sign through your camera and press "Check" to check it.';
 
   // Function to load username from local storage, when already logged in.
   Future<void> _loadUserLocalStorage() async {
@@ -59,8 +59,12 @@ class _InferenceScreenState extends State<InferenceScreen> {
     );
 
     _initializeControllerFuture = _controller.initialize();
-    setState(() {});
+
+    if (mounted) {
+      setState(() {});
+    }
   }
+
 
   Future<void> _captureAndSend() async {
     if (_isSending) return;
@@ -86,7 +90,7 @@ class _InferenceScreenState extends State<InferenceScreen> {
         });
       } else {
         setState(() {
-          _resultText = 'No confident prediction';
+          _resultText = 'Please try again.\nThe sign you used is not recognized.';
         });
       }
     } catch (e) {
@@ -107,11 +111,13 @@ class _InferenceScreenState extends State<InferenceScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('ASL Capture')),
+      // appBar: AppBar(title: const Text('ASL Capture')),
       body: Column(
         children: [
           Expanded(
-            child: FutureBuilder(
+            child: _initializeControllerFuture == null
+                ? const Center(child: CircularProgressIndicator())
+                : FutureBuilder(
               future: _initializeControllerFuture,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.done) {
@@ -124,22 +130,27 @@ class _InferenceScreenState extends State<InferenceScreen> {
           Container(
             padding: const EdgeInsets.all(16),
             width: double.infinity,
-            color: Colors.black,
             child: Column(
               children: [
                 Text(
                   _resultText,
                   style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 22,
+                    fontSize: 18,
                   ),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 12),
-                ElevatedButton.icon(
-                  onPressed: _isSending ? null : _captureAndSend,
-                  icon: const Icon(Icons.camera),
-                  label: const Text('Capture & Analyze'),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton.icon(
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all(Colors.deepOrange),
+                      foregroundColor: MaterialStateProperty.all(Colors.white),
+                    ),
+                    onPressed: _isSending ? null : _captureAndSend,
+                    icon: const Icon(Icons.camera, size: 20,),
+                    label: const Text('Check', style: TextStyle(fontSize: 20),),
+                  ),
                 ),
               ],
             ),
