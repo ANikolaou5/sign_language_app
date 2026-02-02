@@ -154,8 +154,8 @@ class _MaterialScreenState extends State<MaterialScreen> {
               child: GridView.builder(
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 3,
-                  mainAxisSpacing: 12.0,
-                  crossAxisSpacing: 12.0,
+                  mainAxisSpacing: 10.0,
+                  crossAxisSpacing: 10.0,
                   childAspectRatio: 1.0,
                 ),
                 itemCount: widget.readingTutorials.length,
@@ -194,7 +194,7 @@ class _MaterialScreenState extends State<MaterialScreen> {
                           children: [
                             Icon(
                               completed ? Icons.check_circle : Icons.play_circle,
-                              size: 35.0,
+                              size: 32.0,
                               color: completed ? Colors.green : Colors.deepOrange,
                             ),
                             const SizedBox(height: 5.0),
@@ -203,7 +203,7 @@ class _MaterialScreenState extends State<MaterialScreen> {
                                 text,
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
-                                  fontSize: text.length <= 2 ? 30.0 : 20.0,
+                                  fontSize: text.length <= 1 ? 20.0 : 18.0,
                                   fontWeight: FontWeight.bold,
                                   color: completed ? Colors.green : Colors.deepOrange,
                                 ),

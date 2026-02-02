@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
 
 import '../classes/question_class.dart';
+import 'navigation_buttons_widget.dart';
 
-class MultipleChoiceQuestion extends StatelessWidget {
-  const MultipleChoiceQuestion({super.key, required this.question, required this.possibleAnswers, required this.answerIndex, required this.check, required this.onTap,});
+class MultipleChoiceQuestionWordsToSign extends StatelessWidget {
+  const MultipleChoiceQuestionWordsToSign({super.key, required this.question, required this.possibleAnswers, required this.pointsMCQ, required this.answerIndex, required this.isCorrectAnswer, required this.check, required this.next, required this.onTap,});
 
   final Question question;
   final List<String> possibleAnswers;
+  final int pointsMCQ;
   final int? answerIndex;
+  final bool isCorrectAnswer;
   final bool check;
+  final VoidCallback next;
   final Function(int) onTap;
 
   @override
@@ -17,6 +21,33 @@ class MultipleChoiceQuestion extends StatelessWidget {
 
     return Column(
       children: [
+        const SizedBox(height: 5.0),
+        Container(
+          padding: const EdgeInsets.all(8.0),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            border: Border.all(width: 2.0, color: Colors.orange.shade300),
+            borderRadius: BorderRadius.circular(15.0),
+          ),
+          alignment: Alignment.center,
+          child: Text(
+            question.question,
+            style: TextStyle(
+              fontSize: 22.0,
+              fontWeight: FontWeight.bold,
+            ),
+            textAlign: TextAlign.justify,
+          ),
+        ),
+        const SizedBox(height: 5.0),
+        Text(
+          "This question is $pointsMCQ points",
+          style: TextStyle(
+            fontSize: 16.0,
+            color: Colors.grey.shade700,
+          ),
+        ),
+        const SizedBox(height: 10.0),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 10.0),
           decoration: BoxDecoration(
@@ -117,27 +148,8 @@ class MultipleChoiceQuestion extends StatelessWidget {
             );
           }),
         ),
-        if (check) ...[
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Container(
-              padding: const EdgeInsets.all(8.0),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                border: Border.all(width: 2.0, color: Colors.orange.shade300),
-                borderRadius: BorderRadius.circular(15.0),
-              ),
-              alignment: Alignment.center,
-              child: Text(
-                'Tips:\n',
-                style: TextStyle(
-                  fontSize: 22.0,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ),
-        ],
+        const SizedBox(height: 25.0),
+        NavigationButtons(answerIndex: check ? 1 : null, isCorrectAnswer: isCorrectAnswer, check: check, correctAnswer: '', questionPoints: pointsMCQ, next: next,),
       ],
     );
   }

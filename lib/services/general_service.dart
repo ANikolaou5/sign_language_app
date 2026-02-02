@@ -49,7 +49,7 @@ class GeneralService {
     return options;
   }
 
-  Future<List<Question>> loadAllQuestions() async {
+  Future<List<Question>> loadAllQuestions({int? symbolsLevelNum}) async {
     final ref = FirebaseDatabase.instance.ref();
     final snapshot = await ref.child('questions').get();
     if (!snapshot.exists || snapshot.value == null) return [];
@@ -59,7 +59,7 @@ class GeneralService {
     List<Question> allQuestions = data.values
         .map((value) =>
         Question.fromMap(Map<String, dynamic>.from(value as Map)))
-        .where((q) => q.levelNum == null)
+        .where((q) => q.levelNum == symbolsLevelNum)
         .toList();
 
     return allQuestions;
@@ -91,6 +91,35 @@ class GeneralService {
     }
 
     return multipleChoiceQuestions;
+  }
+
+  Future<List<Question>> loadMCQSignToWords({int? numOfQuestions}) async {
+    List<Question> allQuestions = await loadAllQuestions();
+
+    List<Question> multipleChoiceQuestionsSignToWords = allQuestions
+        .where((q) => q.questionType == QuestionType.multipleChoiceSignToWords)
+        .toList();
+
+    if (numOfQuestions != null) {
+      multipleChoiceQuestionsSignToWords = multipleChoiceQuestionsSignToWords.take(numOfQuestions).toList();
+    }
+
+    return multipleChoiceQuestionsSignToWords;
+  }
+
+  Future<List<Question>> loadMCQWordsToSign({int? numOfQuestions}) async {
+    final int symbolsLevelNum = 5;
+    List<Question> allQuestions = await loadAllQuestions(symbolsLevelNum: symbolsLevelNum);
+
+    List<Question> multipleChoiceWordsToSign= allQuestions
+        .where((q) => q.questionType == QuestionType.multipleChoiceWordsToSign)
+        .toList();
+
+    if (numOfQuestions != null) {
+      multipleChoiceWordsToSign = multipleChoiceWordsToSign.take(numOfQuestions).toList();
+    }
+
+    return multipleChoiceWordsToSign;
   }
 
   List<Map<String, dynamic>> createMatchQuestions({int? numOfQuestions}) {

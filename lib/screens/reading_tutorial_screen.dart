@@ -31,9 +31,8 @@ class _ReadingTutorialScreenState extends State<ReadingTutorialScreen> {
   final List<String> convImages = [
     'assets/conv/goodMorning.png',
     'assets/conv/goodNight.png',
-    'assets/conv/haveAGoodDay.png',
     'assets/conv/hello.png',
-    'assets/conv/howAreYou.png',
+    'assets/conv/goodbye.png',
     'assets/conv/iAmFine.png',
     'assets/conv/seeYou.png',
     'assets/conv/thankYou.png',
@@ -60,6 +59,17 @@ class _ReadingTutorialScreenState extends State<ReadingTutorialScreen> {
     'assets/animals/ant.png',
     'assets/animals/moth.png',
     'assets/animals/worm.png',
+  ];
+
+  final List<String> symbolImages = [
+    'assets/symbols/goodbye.png',
+    'assets/symbols/hello.png',
+    'assets/symbols/iLoveYou.png',
+    'assets/symbols/no.png',
+    'assets/symbols/please.png',
+    'assets/symbols/sorry.png',
+    'assets/symbols/please.png',
+    'assets/symbols/yes.png',
   ];
 
   final GeneralService generalService = GeneralService();
@@ -92,6 +102,8 @@ class _ReadingTutorialScreenState extends State<ReadingTutorialScreen> {
       imgs = convImages;
     } else if (widget.readingTutorial.levelNum == 4) {
       imgs = animalImages;
+    } else if (widget.readingTutorial.levelNum == 5) {
+      imgs = symbolImages;
     } else {
       imgs = images;
     }
@@ -125,7 +137,7 @@ class _ReadingTutorialScreenState extends State<ReadingTutorialScreen> {
     setState(() {
       multipleChoiceQuestion = allQuestions.firstWhere(
         (q) => q.levelNum == widget.readingTutorial.levelNum &&
-        q.questionType == QuestionType.multipleChoice &&
+        (q.questionType == QuestionType.multipleChoice || q.questionType == QuestionType.multipleChoiceWordsToSign) &&
         q.questionNum == widget.readingTutorial.readingTutorial
       );
     });

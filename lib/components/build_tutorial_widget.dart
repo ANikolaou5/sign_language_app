@@ -50,7 +50,7 @@ class BuildTutorial extends StatelessWidget {
               ? readingTutorial.tutorialText
               : multipleChoiceQuestion!.question,
             style: TextStyle(
-              fontSize: 24.0,
+              fontSize: 22.0,
               fontWeight: FontWeight.bold,
             ),
             textAlign: TextAlign.justify,
@@ -82,7 +82,7 @@ class BuildTutorial extends StatelessWidget {
             ),
             child: Image.asset(
               readingTutorial.tutorialImage,
-              height: 300,
+              height: 360,
               fit: BoxFit.contain,
             ),
           ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:sign_language_app/screens/fingerspell_sign_to_word_screen.dart';
 import 'package:sign_language_app/screens/matching_screen.dart';
 import 'package:sign_language_app/screens/read_the_sign_screen.dart';
+import 'package:sign_language_app/screens/words_to_sign_screen.dart';
 
 import '../classes/question_class.dart';
 import '../services/general_service.dart';
@@ -28,9 +29,11 @@ class _FingerspellSignToWordScreenState extends State<QuizTimeScreen> {
   List<Map<String, dynamic>> matchQuestions = [];
   List<Question> multipleChoiceQuestions = [];
   List<Question> signToTextQuestions = [];
+  List<Question> multipleChoiceQuestionsWordsToSign = [];
+  List<Question> multipleChoiceQuestionsSignToWords = [];
 
   final List<String> difficultyOptions = ['Easy', 'Hard'];
-  final List<String> categoriesOptions = ['Drag & Drop', 'Read the Sign', 'Image to Word'];
+  final List<String> categoriesOptions = ['Drag & Drop', 'Read the Sign', 'Image to Word', 'Words to Sign', 'Sign to Words'];
   final List<String> timerOptions = ['ON', 'OFF'];
   final List<String> numOfQuestionsOptions = ['3', '5', '7'];
 
@@ -38,6 +41,8 @@ class _FingerspellSignToWordScreenState extends State<QuizTimeScreen> {
     matchQuestions.clear();
     multipleChoiceQuestions.clear();
     signToTextQuestions.clear();
+    multipleChoiceQuestionsWordsToSign.clear();
+    multipleChoiceQuestionsSignToWords.clear();
 
     if (category == "Drag & Drop") {
       matchQuestions = generalService.createMatchQuestions(numOfQuestions: numOfQuestions);
@@ -45,6 +50,10 @@ class _FingerspellSignToWordScreenState extends State<QuizTimeScreen> {
       multipleChoiceQuestions = await generalService.loadMCQ(numOfQuestions: numOfQuestions);
     } else if (category == "Image to Word") {
       signToTextQuestions = await generalService.loadSignToTextQuestions(numOfQuestions: numOfQuestions);
+    } else if (category == 'Words to Sign') {
+      multipleChoiceQuestionsWordsToSign = await generalService.loadMCQWordsToSign(numOfQuestions: numOfQuestions);
+    } else if (category == 'Sign to Words') {
+      multipleChoiceQuestionsSignToWords = await generalService.loadMCQSignToWords(numOfQuestions: numOfQuestions);
     }
   }
 
@@ -275,13 +284,25 @@ class _FingerspellSignToWordScreenState extends State<QuizTimeScreen> {
                         } else if (multipleChoiceQuestions.isNotEmpty) {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context) => ReadTheSignScreen(multipleChoiceQuestions: multipleChoiceQuestions, username: widget.username, quiz: true, timer: timer, difficulty: difficulty,),
+                            MaterialPageRoute(builder: (context) => ReadTheSignScreen(title: "Read the Sign", multipleChoiceQuestions: multipleChoiceQuestions, username: widget.username, quiz: true, timer: timer, difficulty: difficulty, symbols: false,),
                             ),
                           );
                         } else if (signToTextQuestions.isNotEmpty) {
                           Navigator.push(
                             context,
                             MaterialPageRoute(builder: (context) => FingerspellSignToWordScreen(signToTextQuestions: signToTextQuestions, username: widget.username, quiz: true, timer: timer, difficulty: difficulty,),
+                            ),
+                          );
+                        } else if (multipleChoiceQuestionsWordsToSign.isNotEmpty) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => WordsToSignScreen(multipleChoiceQuestions: multipleChoiceQuestionsWordsToSign, username: widget.username, quiz: true, timer: timer, difficulty: difficulty,),
+                            ),
+                          );
+                        } else if (multipleChoiceQuestionsSignToWords.isNotEmpty) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => ReadTheSignScreen(title: "Sign to Words", multipleChoiceQuestions: multipleChoiceQuestionsSignToWords, username: widget.username, quiz: true, timer: timer, difficulty: difficulty, symbols: true,),
                             ),
                           );
                         }

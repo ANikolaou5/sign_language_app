@@ -4,26 +4,24 @@ import 'package:flutter_timer_countdown/flutter_timer_countdown.dart';
 import '../classes/badge_class.dart';
 import '../classes/question_class.dart';
 import '../components/completed_lesson_widget.dart';
-import '../components/read_the_sign_widget.dart';
+import '../components/mcq_words_to_sign_widget.dart';
 import '../services/general_service.dart';
 import '../services/user_service.dart';
 
-class ReadTheSignScreen extends StatefulWidget {
-  const ReadTheSignScreen({super.key, required this.title, required this.multipleChoiceQuestions, required this.username, required this.quiz, required this.timer, this.difficulty, required this.symbols,});
+class WordsToSignScreen extends StatefulWidget {
+  const WordsToSignScreen({super.key, required this.multipleChoiceQuestions, required this.username, required this.quiz, required this.timer, this.difficulty,});
 
-  final String title;
   final List<Question> multipleChoiceQuestions;
   final String username;
   final bool quiz;
   final bool timer;
   final String? difficulty;
-  final bool symbols;
 
   @override
-  State<ReadTheSignScreen> createState() => _ReadTheSignScreenState();
+  State<WordsToSignScreen> createState() => _WordsToSignScreenState();
 }
 
-class _ReadTheSignScreenState extends State<ReadTheSignScreen> {
+class _WordsToSignScreenState extends State<WordsToSignScreen> {
   final GeneralService generalService = GeneralService();
   final UserService userService = UserService();
 
@@ -43,35 +41,36 @@ class _ReadTheSignScreenState extends State<ReadTheSignScreen> {
 
   late DateTime endTime;
 
-  Future<void> _createPossibleAnswersMCQ() async {
+  final List<String> symbolImages = [
+    'assets/symbols/goodbye.png',
+    'assets/symbols/hello.png',
+    'assets/symbols/iLoveYou.png',
+    'assets/symbols/no.png',
+    'assets/symbols/please.png',
+    'assets/symbols/sorry.png',
+    'assets/symbols/please.png',
+    'assets/symbols/yes.png',
+  ];
+
+  void _createPossibleAnswersMCQ() {
     if (finalMultipleChoiceQuestions.isEmpty) return;
 
-    final String correctWord = finalMultipleChoiceQuestions[questionIndex].answer;
+    final correctImage = finalMultipleChoiceQuestions[questionIndex].answer;
 
-    List<Question> allMCQ = [];
-    if (widget.symbols) {
-      allMCQ = await generalService.loadMCQSignToWords();
-    } else {
-      allMCQ = await generalService.loadMCQ();
-    }
+    final wrongImages = symbolImages
+        .where((img) => img != correctImage)
+        .toList()
+      ..shuffle();
 
-    List<String> wrongWords = allMCQ
-        .map((q) => q.answer)
-        .where((a) => a != correctWord)
-        .toList()..shuffle();
+    possibleAnswers = [
+      correctImage,
+      wrongImages[0],
+      wrongImages[1],
+    ]..shuffle();
 
-    setState(() {
-      possibleAnswers = [
-        correctWord,
-        wrongWords[0],
-        wrongWords[1],
-        wrongWords[4],
-      ]..shuffle();
-
-      answerIndex = null;
-      check = false;
-      isCorrectAnswer = false;
-    });
+    answerIndex = null;
+    check = false;
+    isCorrectAnswer = false;
   }
 
   Future<void> _complete() async {
@@ -159,9 +158,9 @@ class _ReadTheSignScreenState extends State<ReadTheSignScreen> {
                   colors: [Colors.orange.shade500, Colors.deepOrange.shade800]),
             ),
           ),
-          title: Text(
-            widget.title,
-            style: const TextStyle(
+          title: const Text(
+            "Words to Sign",
+            style: TextStyle(
               fontWeight: FontWeight.bold,
               color: Colors.white,
             ),
@@ -211,7 +210,7 @@ class _ReadTheSignScreenState extends State<ReadTheSignScreen> {
                       score: score,
                       reviewLesson: false,
                       isGuest: false,
-                    ) : ReadTheSignQuestion(
+                    ) : MultipleChoiceQuestionWordsToSign(
                       question: finalMultipleChoiceQuestions[questionIndex],
                       possibleAnswers: possibleAnswers,
                       pointsMCQ: widget.quiz ? pointsMCQ * 2 : pointsMCQ,

@@ -2,6 +2,8 @@ enum QuestionType {
   text,
   multipleChoice,
   match,
+  multipleChoiceWordsToSign,
+  multipleChoiceSignToWords,
 }
 
 class Question {

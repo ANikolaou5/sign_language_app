@@ -129,12 +129,19 @@ flutter:
     - assets/animals/worm.png
     - assets/conv/goodMorning.png
     - assets/conv/goodNight.png
-    - assets/conv/haveAGoodDay.png
+    - assets/conv/goodbye.png
     - assets/conv/hello.png
-    - assets/conv/howAreYou.png
     - assets/conv/iAmFine.png
     - assets/conv/seeYou.png
     - assets/conv/thankYou.png
+    - assets/symbols/goodbye.png
+    - assets/symbols/hello.png
+    - assets/symbols/iLoveYou.png
+    - assets/symbols/no.png
+    - assets/symbols/please.png
+    - assets/symbols/sorry.png
+    - assets/symbols/thankYou.png
+    - assets/symbols/yes.png
 
   # To add assets to your application, add an assets section, like this:
   # assets:
