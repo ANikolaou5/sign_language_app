@@ -53,13 +53,12 @@ class BuildTutorial extends StatelessWidget {
               fontSize: 22.0,
               fontWeight: FontWeight.bold,
             ),
-            textAlign: TextAlign.justify,
           ),
         ),
         const SizedBox(height: 5.0),
         if (!tutorial) ...[
           Text(
-            "This question is $questionPoints points",
+            "This question is worth $questionPoints points",
             style: TextStyle(
               fontSize: 16.0,
               color: Colors.grey.shade700,
@@ -93,7 +92,8 @@ class BuildTutorial extends StatelessWidget {
               possibleAnswers: possibleAnswers,
               answerIndex: answerIndex,
               check: check,
-              onTap: onTap
+              onTap: onTap,
+              tips: '',
             ),
           ],
         ],

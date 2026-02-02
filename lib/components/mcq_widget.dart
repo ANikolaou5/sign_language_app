@@ -3,13 +3,14 @@ import 'package:flutter/material.dart';
 import '../classes/question_class.dart';
 
 class MultipleChoiceQuestion extends StatelessWidget {
-  const MultipleChoiceQuestion({super.key, required this.question, required this.possibleAnswers, required this.answerIndex, required this.check, required this.onTap,});
+  const MultipleChoiceQuestion({super.key, required this.question, required this.possibleAnswers, required this.answerIndex, required this.check, required this.onTap, required this.tips,});
 
   final Question question;
   final List<String> possibleAnswers;
   final int? answerIndex;
   final bool check;
   final Function(int) onTap;
+  final String tips;
 
   @override
   Widget build(BuildContext context) {
@@ -117,7 +118,7 @@ class MultipleChoiceQuestion extends StatelessWidget {
             );
           }),
         ),
-        if (check) ...[
+        if (check && tips.isNotEmpty) ...[
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Container(

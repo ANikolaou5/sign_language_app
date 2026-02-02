@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../classes/badge_class.dart';
 
 class CompletedLesson extends StatelessWidget {
-  const CompletedLesson({super.key, this.readingTutorial, required this.completed, required this.badges, required this.score, required this.reviewLesson, required this.isGuest,});
+  const CompletedLesson({super.key, this.readingTutorial, required this.completed, required this.badges, required this.score, required this.reviewLesson, required this.isGuest, required this.timerEnd, required this.quiz,});
 
   final int? readingTutorial;
   final VoidCallback completed;
@@ -11,6 +11,8 @@ class CompletedLesson extends StatelessWidget {
   final int score;
   final bool reviewLesson;
   final bool isGuest;
+  final bool timerEnd;
+  final bool quiz;
 
   @override
   Widget build(BuildContext context) {
@@ -26,19 +28,23 @@ class CompletedLesson extends StatelessWidget {
           size: 100,
         ),
         const SizedBox(height: 20.0),
-        const Text(
-          "Congratulations!",
+        Text(
+          timerEnd ? "Time's Up!" : "Congratulations!",
           style: TextStyle(
-              fontSize: 32.0,
-              fontWeight: FontWeight.bold
+            fontSize: 32.0,
+            fontWeight: FontWeight.bold,
+            color: Colors.black,
           ),
         ),
         const SizedBox(height: 10.0),
         Text(
-          readingTutorial != null
+          quiz
+          ? (timerEnd ? "You've run out of time, but you still did great! Keep practicing to get faster!" : "You have finished this quiz")
+          : readingTutorial != null
             ? (!reviewLesson ? "You have finished the reading tutorial $readingTutorial" : "You have reviewed the reading tutorial $readingTutorial")
             : "You have finished your training",
           style: const TextStyle(fontSize: 20.0),
+          textAlign: TextAlign.center,
         ),
         const SizedBox(height: 25.0),
         if (!reviewLesson && !isGuest) ...[
@@ -108,7 +114,12 @@ class CompletedLesson extends StatelessWidget {
           const SizedBox(height: 25.0),
         ],
         ElevatedButton(
-          onPressed: () => Navigator.pop(context),
+          onPressed: () {
+            Navigator.pop(context);
+            if (quiz){
+              Navigator.pop(context);
+            }
+          },
           style: ElevatedButton.styleFrom(
             backgroundColor: Colors.deepOrange,
             shape: RoundedRectangleBorder(

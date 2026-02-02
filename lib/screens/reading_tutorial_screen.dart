@@ -311,6 +311,8 @@ class _ReadingTutorialScreenState extends State<ReadingTutorialScreen> {
                 score: score,
                 reviewLesson: reviewLesson,
                 isGuest: isGuest,
+                timerEnd: false,
+                quiz: false,
               )
               : BuildTutorial(
                 tutorial: tutorial,

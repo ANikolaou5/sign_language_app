@@ -44,7 +44,7 @@ class FingerspellSignToWord extends StatelessWidget {
         ),
         const SizedBox(height: 5.0),
         Text(
-          "This question is $questionPoints points",
+          "This question is worth $questionPoints points",
           style: TextStyle(
             fontSize: 16.0,
             color: Colors.grey.shade700,

@@ -41,17 +41,16 @@ class MatchQuestion extends StatelessWidget {
           ),
           alignment: Alignment.center,
           child: Text(
-            'Drag each sign to its matching letter:',
+            'Drag each sign to its matching letter to form the word below.',
             style: TextStyle(
               fontSize: 22.0,
               fontWeight: FontWeight.bold,
             ),
-            textAlign: TextAlign.justify,
           ),
         ),
         const SizedBox(height: 5.0),
         Text(
-          "This question is $questionPoints points",
+          "This question is worth $questionPoints points",
           style: TextStyle(
             fontSize: 16.0,
             color: Colors.grey.shade700,

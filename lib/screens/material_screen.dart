@@ -149,7 +149,21 @@ class _MaterialScreenState extends State<MaterialScreen> {
                 ],
               ),
             ),
-            const SizedBox(height: 15.0),
+            const SizedBox(height: 10.0),
+            Container(
+              padding: const EdgeInsets.all(8.0),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                border: Border.all(width: 2.0, color: Colors.orange.shade300),
+                borderRadius: BorderRadius.circular(15.0),
+              ),
+              alignment: Alignment.center,
+              child: Text(
+                "Click on one of the below options to get started",
+                style: TextStyle(fontSize: 16.0,),
+              ),
+            ),
+            const SizedBox(height: 10.0),
             Expanded(
               child: GridView.builder(
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(

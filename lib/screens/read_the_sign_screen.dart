@@ -40,6 +40,7 @@ class _ReadTheSignScreenState extends State<ReadTheSignScreen> {
   bool completed = false;
   bool isCorrectAnswer = false;
   bool check = false;
+  bool timerEnd = false;
 
   late DateTime endTime;
 
@@ -75,8 +76,10 @@ class _ReadTheSignScreenState extends State<ReadTheSignScreen> {
   }
 
   Future<void> _complete() async {
-    await generalService.complete(widget.username, score);
-    await userService.refreshUserLocalStorage();
+    if (!timerEnd) {
+      await generalService.complete(widget.username, score);
+      await userService.refreshUserLocalStorage();
+    }
 
     setState(() {
       completed = true;
@@ -175,7 +178,7 @@ class _ReadTheSignScreenState extends State<ReadTheSignScreen> {
               color: Colors.orange.shade900,
               minHeight: 8.0,
             ),
-            if (widget.timer)...[
+            if (widget.timer && !completed)...[
               const SizedBox(height: 10.0),
               // GeeksforGeeks (2024). Flutter Countdown Timer. [online] GeeksforGeeks.
               // Available at: https://www.geeksforgeeks.org/flutter/flutter-countdown-timer/
@@ -185,6 +188,9 @@ class _ReadTheSignScreenState extends State<ReadTheSignScreen> {
                 enableDescriptions: false,
                 endTime: endTime,
                 onEnd: () {
+                  setState(() {
+                    timerEnd = true;
+                  });
                   _complete();
                 },
                 timeTextStyle: TextStyle(
@@ -211,6 +217,8 @@ class _ReadTheSignScreenState extends State<ReadTheSignScreen> {
                       score: score,
                       reviewLesson: false,
                       isGuest: false,
+                      timerEnd: timerEnd,
+                      quiz: widget.quiz,
                     ) : ReadTheSignQuestion(
                       question: finalMultipleChoiceQuestions[questionIndex],
                       possibleAnswers: possibleAnswers,

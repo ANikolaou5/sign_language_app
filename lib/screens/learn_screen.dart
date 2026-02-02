@@ -128,8 +128,7 @@ class _LearnScreenState extends State<LearnScreen> {
                   double progress = tutorials > 0 ? completedTutorials / tutorials : 0.0;
 
                   return InkWell(
-                    //onTap: (level > completedLevels + 1) ? null : () async {
-                    onTap: () async {
+                    onTap: (level > completedLevels + 1) ? null : () async {
                       await Navigator.push(
                         context,
                         MaterialPageRoute(builder: (context) => MaterialScreen(levelDesc: levelDesc, readingTutorials: levelReadingTutorials, username: user?.username ?? '')),
@@ -174,7 +173,6 @@ class _LearnScreenState extends State<LearnScreen> {
                                 padding: const EdgeInsets.all(8.0),
                                 decoration: BoxDecoration(
                                   color: (level <= completedLevels) ? Colors.orange.shade100 : Colors.white,
-                                  border: Border.all(width: 2.0, color: Colors.orange.shade300),
                                   borderRadius: BorderRadius.circular(15.0),
                                 ),
                                 child: Column(

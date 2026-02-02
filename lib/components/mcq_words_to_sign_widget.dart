@@ -36,12 +36,11 @@ class MultipleChoiceQuestionWordsToSign extends StatelessWidget {
               fontSize: 22.0,
               fontWeight: FontWeight.bold,
             ),
-            textAlign: TextAlign.justify,
           ),
         ),
         const SizedBox(height: 5.0),
         Text(
-          "This question is $pointsMCQ points",
+          "This question is worth $pointsMCQ points",
           style: TextStyle(
             fontSize: 16.0,
             color: Colors.grey.shade700,
