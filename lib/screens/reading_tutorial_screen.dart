@@ -279,59 +279,61 @@ class _ReadingTutorialScreenState extends State<ReadingTutorialScreen> {
 
         generalService.exitPrompt(context, 'reading tutorial');
       },
-      child: Scaffold(
-        backgroundColor: Colors.orange.shade50,
-        appBar: AppBar(
-          centerTitle: true,
-          backgroundColor: Colors.transparent,
-          foregroundColor: Colors.white,
-          flexibleSpace: Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                  colors: [Colors.orange.shade500, Colors.deepOrange.shade800]),
+      child: SafeArea(
+        child: Scaffold(
+          backgroundColor: Colors.orange.shade50,
+          appBar: AppBar(
+            centerTitle: true,
+            backgroundColor: Colors.transparent,
+            foregroundColor: Colors.white,
+            flexibleSpace: Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                    colors: [Colors.orange.shade500, Colors.deepOrange.shade800]),
+              ),
+            ),
+            title: const Text(
+              "Reading Tutorials",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
             ),
           ),
-          title: const Text(
-            "Reading Tutorials",
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
-          ),
-        ),
-        body: Padding(
-          padding: const EdgeInsets.all(10.0),
-          child: SingleChildScrollView(
-            scrollDirection: Axis.vertical,
-            child: Center(
-              child: completed ? CompletedLesson(
-                readingTutorial: widget.readingTutorial.readingTutorial,
-                completed: () => Navigator.pop(context),
-                badges: badges,
-                score: score,
-                reviewLesson: reviewLesson,
-                isGuest: isGuest,
-                timerEnd: false,
-                quiz: false,
-              )
-              : BuildTutorial(
-                tutorial: tutorial,
-                readingTutorial: widget.readingTutorial,
-                multipleChoiceQuestion: multipleChoiceQuestion,
-                tutorialIndex: tutorialIndex,
-                possibleAnswers: possibleAnswers,
-                answerIndex: answerIndex,
-                isCorrectAnswer: isCorrectAnswer,
-                check: check,
-                questionPoints: pointsMCQ,
-                onTap: (index) {
-                  if (!check) {
-                    setState(() {
-                      answerIndex = index;
-                    });
-                  }
-                },
-                next: _next,
+          body: Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: SingleChildScrollView(
+              scrollDirection: Axis.vertical,
+              child: Center(
+                child: completed ? CompletedLesson(
+                  readingTutorial: widget.readingTutorial.readingTutorial,
+                  completed: () => Navigator.pop(context),
+                  badges: badges,
+                  score: score,
+                  reviewLesson: reviewLesson,
+                  isGuest: isGuest,
+                  timerEnd: false,
+                  quiz: false,
+                )
+                : BuildTutorial(
+                  tutorial: tutorial,
+                  readingTutorial: widget.readingTutorial,
+                  multipleChoiceQuestion: multipleChoiceQuestion,
+                  tutorialIndex: tutorialIndex,
+                  possibleAnswers: possibleAnswers,
+                  answerIndex: answerIndex,
+                  isCorrectAnswer: isCorrectAnswer,
+                  check: check,
+                  questionPoints: pointsMCQ,
+                  onTap: (index) {
+                    if (!check) {
+                      setState(() {
+                        answerIndex = index;
+                      });
+                    }
+                  },
+                  next: _next,
+                ),
               ),
             ),
           ),

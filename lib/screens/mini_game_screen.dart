@@ -138,144 +138,146 @@ class _MiniGameScreenState extends State<MiniGameScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("Multiplayer Match"),
-        backgroundColor: Colors.deepOrange,
-        foregroundColor: Colors.white,
-      ),
-      body: StreamBuilder<DatabaseEvent>(
-        stream: _gameService.gameStream,
-        builder: (context, snapshot) {
-          if (snapshot.hasError) return Center(child: Text("Error: ${snapshot.error}"));
-          if (!snapshot.hasData || snapshot.data!.snapshot.value == null) {
-            return const Center(child: CircularProgressIndicator());
-          }
-
-          final data = Map<String, dynamic>.from(snapshot.data!.snapshot.value as Map);
-
-          final List<dynamic> questionsData = data['quiz_data'] ?? [];
-          final int currentIndex = data['current_index'] ?? 0;
-          final String answeredBy = data['question_answered_by'] ?? "";
-
-          if (answeredBy != "") {
-            _triggerAutoProgression(currentIndex);
-          }
-
-          // 1. Identify which player is "Me" and which is "Opponent"
-          Map<String, dynamic> myData = {};
-          Map<String, dynamic> opponentData = {"score": 0};
-
-          if (data['player_1'] != null && data['player_1']['uid'] == widget.myUid) {
-            // I am player 1
-            myData = Map<String, dynamic>.from(data['player_1'] as Map);
-            if (data['player_2'] != null) {
-              opponentData = Map<String, dynamic>.from(data['player_2'] as Map);
+    return SafeArea(
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text("Multiplayer Match"),
+          backgroundColor: Colors.deepOrange,
+          foregroundColor: Colors.white,
+        ),
+        body: StreamBuilder<DatabaseEvent>(
+          stream: _gameService.gameStream,
+          builder: (context, snapshot) {
+            if (snapshot.hasError) return Center(child: Text("Error: ${snapshot.error}"));
+            if (!snapshot.hasData || snapshot.data!.snapshot.value == null) {
+              return const Center(child: CircularProgressIndicator());
             }
-          } else if (data['player_2'] != null && data['player_2']['uid'] == widget.myUid) {
-            // I am player 2
-            myData = Map<String, dynamic>.from(data['player_2'] as Map);
-            if (data['player_1'] != null) {
-              opponentData = Map<String, dynamic>.from(data['player_1'] as Map);
+
+            final data = Map<String, dynamic>.from(snapshot.data!.snapshot.value as Map);
+
+            final List<dynamic> questionsData = data['quiz_data'] ?? [];
+            final int currentIndex = data['current_index'] ?? 0;
+            final String answeredBy = data['question_answered_by'] ?? "";
+
+            if (answeredBy != "") {
+              _triggerAutoProgression(currentIndex);
             }
-          }
 
-          // --- Game End Check ---
-          if (currentIndex >= questionsData.length && questionsData.isNotEmpty) {
-            final myFinalScore = myData['score'] ?? 0;
-            final opponentFinalScore = opponentData['score'] ?? 0;
+            // 1. Identify which player is "Me" and which is "Opponent"
+            Map<String, dynamic> myData = {};
+            Map<String, dynamic> opponentData = {"score": 0};
 
-            // Trigger reward processing
-            _processGameRewards(myFinalScore, opponentFinalScore);
+            if (data['player_1'] != null && data['player_1']['uid'] == widget.myUid) {
+              // I am player 1
+              myData = Map<String, dynamic>.from(data['player_1'] as Map);
+              if (data['player_2'] != null) {
+                opponentData = Map<String, dynamic>.from(data['player_2'] as Map);
+              }
+            } else if (data['player_2'] != null && data['player_2']['uid'] == widget.myUid) {
+              // I am player 2
+              myData = Map<String, dynamic>.from(data['player_2'] as Map);
+              if (data['player_1'] != null) {
+                opponentData = Map<String, dynamic>.from(data['player_1'] as Map);
+              }
+            }
 
-            return _buildResultsScreen(myFinalScore, opponentFinalScore);
-          }
+            // --- Game End Check ---
+            if (currentIndex >= questionsData.length && questionsData.isNotEmpty) {
+              final myFinalScore = myData['score'] ?? 0;
+              final opponentFinalScore = opponentData['score'] ?? 0;
 
-          if (questionsData.isEmpty) return const Center(child: Text("Loading questions..."));
+              // Trigger reward processing
+              _processGameRewards(myFinalScore, opponentFinalScore);
 
-          final currentMap = Map<String, dynamic>.from(questionsData[currentIndex]);
-          final currentQuestion = Question.fromMap(currentMap);
+              return _buildResultsScreen(myFinalScore, opponentFinalScore);
+            }
 
-          return SingleChildScrollView(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              children: [
-                _buildScoreboard(myData['score'] ?? 0, opponentData['score'] ?? 0),
-                const SizedBox(height: 20),
-                Text(
-                  "Question ${currentIndex + 1} of ${questionsData.length}",
-                  style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.grey),
-                ),
-                const SizedBox(height: 10),
-                Text(
-                  currentQuestion.question,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
-                ),
-                const SizedBox(height: 20),
-                Container(
-                  height: 250,
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(15),
-                    boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 10)],
+            if (questionsData.isEmpty) return const Center(child: Text("Loading questions..."));
+
+            final currentMap = Map<String, dynamic>.from(questionsData[currentIndex]);
+            final currentQuestion = Question.fromMap(currentMap);
+
+            return SingleChildScrollView(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                children: [
+                  _buildScoreboard(myData['score'] ?? 0, opponentData['score'] ?? 0),
+                  const SizedBox(height: 20),
+                  Text(
+                    "Question ${currentIndex + 1} of ${questionsData.length}",
+                    style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.grey),
                   ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(15),
-                    child: Image.asset(
-                      currentQuestion.questionContent,
-                      fit: BoxFit.contain,
+                  const SizedBox(height: 10),
+                  Text(
+                    currentQuestion.question,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+                  ),
+                  const SizedBox(height: 20),
+                  Container(
+                    height: 250,
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(15),
+                      boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 10)],
                     ),
-                  ),
-                ),
-                const SizedBox(height: 30),
-                if (answeredBy == "") ...[
-                  TextField(
-                    controller: _answerController,
-                    autofocus: true,
-                    decoration: InputDecoration(
-                      hintText: "Type the sign here...",
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                      filled: true,
-                      fillColor: Colors.grey.shade100,
-                      suffixIcon: IconButton(
-                        icon: const Icon(Icons.send, color: Colors.deepOrange),
-                        onPressed: () => _handleAnswer(_answerController.text, currentQuestion.answer),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(15),
+                      child: Image.asset(
+                        currentQuestion.questionContent,
+                        fit: BoxFit.contain,
                       ),
                     ),
-                    onSubmitted: (val) => _handleAnswer(val, currentQuestion.answer),
                   ),
-                ] else ...[
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      color: answeredBy == widget.myUid ? Colors.green.shade50 : Colors.red.shade50,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Column(
-                      children: [
-                        Text(
-                          answeredBy == widget.myUid ? "YOU got it! 🎉" : "Opponent got it! 💨",
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: answeredBy == widget.myUid ? Colors.green : Colors.red,
-                          ),
+                  const SizedBox(height: 30),
+                  if (answeredBy == "") ...[
+                    TextField(
+                      controller: _answerController,
+                      autofocus: true,
+                      decoration: InputDecoration(
+                        hintText: "Type the sign here...",
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                        filled: true,
+                        fillColor: Colors.grey.shade100,
+                        suffixIcon: IconButton(
+                          icon: const Icon(Icons.send, color: Colors.deepOrange),
+                          onPressed: () => _handleAnswer(_answerController.text, currentQuestion.answer),
                         ),
-                        const SizedBox(height: 5),
-                        // Added text to clarify that the game might be a draw regardless of speed
-                        const Text("Wait for the next round...", style: TextStyle(fontSize: 12, color: Colors.grey)),
-                        Text("Answer: ${currentQuestion.answer}", style: const TextStyle(fontSize: 16)),
-                      ],
+                      ),
+                      onSubmitted: (val) => _handleAnswer(val, currentQuestion.answer),
                     ),
-                  ),
+                  ] else ...[
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        color: answeredBy == widget.myUid ? Colors.green.shade50 : Colors.red.shade50,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Column(
+                        children: [
+                          Text(
+                            answeredBy == widget.myUid ? "YOU got it! 🎉" : "Opponent got it! 💨",
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: answeredBy == widget.myUid ? Colors.green : Colors.red,
+                            ),
+                          ),
+                          const SizedBox(height: 5),
+                          // Added text to clarify that the game might be a draw regardless of speed
+                          const Text("Wait for the next round...", style: TextStyle(fontSize: 12, color: Colors.grey)),
+                          Text("Answer: ${currentQuestion.answer}", style: const TextStyle(fontSize: 16)),
+                        ],
+                      ),
+                    ),
+                  ],
                 ],
-              ],
-            ),
-          );
-        },
+              ),
+            );
+          },
+        ),
       ),
     );
   }

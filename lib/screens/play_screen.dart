@@ -43,119 +43,121 @@ class _PlayScreenState extends State<PlayScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.orange.shade50,
-      body: Padding(
-        padding: const EdgeInsets.all(10.0),
-        child: Column(
-          children: [
-            const SizedBox(height: 10.0),
-            Container(
-              padding: const EdgeInsets.all(8.0),
-              decoration: BoxDecoration(
-                color: Colors.orange.shade100,
-                border: Border.all(width: 2.0, color: Colors.orange.shade300),
-                borderRadius: BorderRadius.circular(15.0),
-              ),
-              alignment: Alignment.center,
-              child: Text(
-                'Categories',
-                style: TextStyle(
-                  fontSize: 25.0,
-                  fontWeight: FontWeight.bold,
+    return SafeArea(
+      child: Scaffold(
+        backgroundColor: Colors.orange.shade50,
+        body: Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: Column(
+            children: [
+              const SizedBox(height: 10.0),
+              Container(
+                padding: const EdgeInsets.all(8.0),
+                decoration: BoxDecoration(
+                  color: Colors.orange.shade100,
+                  border: Border.all(width: 2.0, color: Colors.orange.shade300),
+                  borderRadius: BorderRadius.circular(15.0),
                 ),
-              ),
-            ),
-            const SizedBox(height: 10.0),
-            Container(
-              padding: const EdgeInsets.all(8.0),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                border: Border.all(width: 2.0, color: Colors.orange.shade300),
-                borderRadius: BorderRadius.circular(15.0),
-              ),
-              alignment: Alignment.center,
-              child: Text(
-                "Click on one of the below options to get started",
-                style: TextStyle(fontSize: 16.0,),
-              ),
-            ),
-            const SizedBox(height: 10.0),
-            Center(
-              child: InkWell(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => QuizTimeScreen(username: user!.username),
-                    ),
-                  );
-                },
-                child: Card(
-                  elevation: 4.0,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
-                  child: Container(
-                    padding: const EdgeInsets.all(49.0),
-                    decoration: BoxDecoration(
-                      color: Colors.deepOrange.shade200,
-                      border: Border.all(width: 2.0, color: Colors.orange.shade300),
-                      borderRadius: BorderRadius.circular(15.0),
-                    ),
-                    alignment: Alignment.center,
-                    child: Text(
-                      "QUIZ TIME",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 26.0,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.deepOrange.shade800,
-                      ),
-                    ),
+                alignment: Alignment.center,
+                child: Text(
+                  'Categories',
+                  style: TextStyle(
+                    fontSize: 25.0,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
               ),
-            ),
-            const SizedBox(height: 10.0),
-            Center(
-              child: InkWell(
-                onTap: () {
-                  generalService.startPrompt(
-                    context,
-                    () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => GameLobbyScreen(),
+              const SizedBox(height: 10.0),
+              Container(
+                padding: const EdgeInsets.all(8.0),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  border: Border.all(width: 2.0, color: Colors.orange.shade300),
+                  borderRadius: BorderRadius.circular(15.0),
+                ),
+                alignment: Alignment.center,
+                child: Text(
+                  "Click on one of the below options to get started",
+                  style: TextStyle(fontSize: 16.0,),
+                ),
+              ),
+              const SizedBox(height: 10.0),
+              Center(
+                child: InkWell(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => QuizTimeScreen(username: user!.username),
+                      ),
+                    );
+                  },
+                  child: Card(
+                    elevation: 4.0,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
+                    child: Container(
+                      padding: const EdgeInsets.all(49.0),
+                      decoration: BoxDecoration(
+                        color: Colors.deepOrange.shade200,
+                        border: Border.all(width: 2.0, color: Colors.orange.shade300),
+                        borderRadius: BorderRadius.circular(15.0),
+                      ),
+                      alignment: Alignment.center,
+                      child: Text(
+                        "QUIZ TIME",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 26.0,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.deepOrange.shade800,
                         ),
-                      );
-                    },
-                    Icons.sports_esports,
-                    'Start playing online?',
-                  );
-                },
-                child: Card(
-                  elevation: 4.0,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
-                  child: Container(
-                    padding: const EdgeInsets.all(49.0),
-                    decoration: BoxDecoration(
-                      color: Colors.deepOrange.shade200,
-                      border: Border.all(width: 2.0, color: Colors.orange.shade300),
-                      borderRadius: BorderRadius.circular(15.0),
-                    ),
-                    alignment: Alignment.center,
-                    child: Text(
-                      "PLAY ONLINE",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 26.0,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.deepOrange.shade800,
                       ),
                     ),
                   ),
                 ),
               ),
-            ),
-          ],
+              const SizedBox(height: 10.0),
+              Center(
+                child: InkWell(
+                  onTap: () {
+                    generalService.startPrompt(
+                      context,
+                      () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => GameLobbyScreen(),
+                          ),
+                        );
+                      },
+                      Icons.sports_esports,
+                      'Start playing online?',
+                    );
+                  },
+                  child: Card(
+                    elevation: 4.0,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
+                    child: Container(
+                      padding: const EdgeInsets.all(49.0),
+                      decoration: BoxDecoration(
+                        color: Colors.deepOrange.shade200,
+                        border: Border.all(width: 2.0, color: Colors.orange.shade300),
+                        borderRadius: BorderRadius.circular(15.0),
+                      ),
+                      alignment: Alignment.center,
+                      child: Text(
+                        "PLAY ONLINE",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 26.0,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.deepOrange.shade800,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

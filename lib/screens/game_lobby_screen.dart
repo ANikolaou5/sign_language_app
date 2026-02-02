@@ -4,6 +4,9 @@ import 'package:firebase_database/firebase_database.dart';
 import 'dart:async';
 
 import '../classes/question_class.dart';
+import '../classes/user_class.dart';
+import '../services/general_service.dart';
+import '../services/user_service.dart';
 import 'mini_game_screen.dart';
 import '../classes/online_quiz.dart';
 
@@ -15,11 +18,16 @@ class GameLobbyScreen extends StatefulWidget {
 }
 
 class _GameLobbyScreenState extends State<GameLobbyScreen> {
+  final UserService userService = UserService();
+  final GeneralService generalService = GeneralService();
+  UserClass? dbUser;
+  List<UserClass> dbUsers = [];
+
   bool _isSearching = false;
   User? _user;
   String? _currentGameId;
   StreamSubscription? _matchSubscription;
-
+  String ranking = '';
   bool _isAuthLoading = true;
 
   late final DatabaseReference _gamesRef;
@@ -44,6 +52,40 @@ class _GameLobbyScreenState extends State<GameLobbyScreen> {
         _isAuthLoading = false;
       });
     });
+
+    _loadUserLocalStorage().then((_) async {
+      List<UserClass> users = await userService.loadTopUsersBasedOnWins(3);
+
+      if (mounted) {
+        setState(() {
+          dbUsers = users;
+        });
+      }
+    });
+  }
+
+  // Function to load username from local storage, when already logged in.
+  Future<void> _loadUserLocalStorage() async {
+    dbUser = await userService.loadUserLocalStorage();
+
+    if (dbUser != null) {
+      setState(() {
+        ranking = _ranking(dbUser!.wins);
+      });
+    }
+  }
+
+  //  Function to calculate ranking based on total wins.
+  String _ranking(int wins) {
+    if (wins >= 150) return "Gold III";
+    if (wins >= 125) return "Gold II";
+    if (wins >= 100) return "Gold I";
+    if (wins >= 80) return "Silver III";
+    if (wins >= 60) return "Silver II";
+    if (wins >= 40) return "Silver I";
+    if (wins >= 20) return "Bronze III";
+    if (wins >= 10) return "Bronze II";
+    return "Bronze I";
   }
 
   // Inside _findMatch in GameLobbyScreen.dart
@@ -227,40 +269,42 @@ class _GameLobbyScreenState extends State<GameLobbyScreen> {
   @override
   Widget build(BuildContext context) {
     // Show a spinner while we check if the user is logged in
-    if (_isAuthLoading) {
+    if (_isAuthLoading || dbUser == null) {
       return const Center(child: CircularProgressIndicator());
     }
 
     // Normal Lobby UI
-    return Scaffold(
-      backgroundColor: Colors.orange.shade50,
-      appBar: AppBar(
-        centerTitle: true,
-        backgroundColor: Colors.transparent,
-        foregroundColor: Colors.white,
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(colors: [Colors.orange.shade500, Colors.deepOrange.shade800]),
+    return SafeArea(
+      child: Scaffold(
+        backgroundColor: Colors.orange.shade50,
+        appBar: AppBar(
+          centerTitle: true,
+          backgroundColor: Colors.transparent,
+          foregroundColor: Colors.white,
+          flexibleSpace: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(colors: [Colors.orange.shade500, Colors.deepOrange.shade800]),
+            ),
+          ),
+          title: const Text(
+            "Play Online",
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
           ),
         ),
-        title: const Text(
-          "Play Online",
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
+        body: Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: Column(
+            children: [
+              _buildPlayerCard(),
+              const SizedBox(height: 40),
+              _buildMatchmakingSection(),
+              const Spacer(),
+              _buildLeaderboardPreview(),
+            ],
           ),
-        ),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(10.0),
-        child: Column(
-          children: [
-            _buildPlayerCard(),
-            const SizedBox(height: 40),
-            _buildMatchmakingSection(),
-            const Spacer(),
-            _buildLeaderboardPreview(),
-          ],
         ),
       ),
     );
@@ -284,13 +328,13 @@ class _GameLobbyScreenState extends State<GameLobbyScreen> {
           const SizedBox(width: 15),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: const [
-              Text(
+            children: [
+              const Text(
                 "Player Stats",
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
-              Text("Total Wins: 12"),
-              Text("Rank: Gold III"),
+              Text("Total Wins: ${dbUser!.wins}"),
+              Text("Rank: $ranking"),
             ],
           )
         ],
@@ -350,35 +394,76 @@ class _GameLobbyScreenState extends State<GameLobbyScreen> {
   }
 
   Widget _buildLeaderboardPreview() {
-    return Container(
-      height: 200,
-      width: double.infinity,
-      decoration: BoxDecoration(
-        color: Colors.grey.shade100,
-        borderRadius:
-        const BorderRadius.vertical(top: Radius.circular(30)),
-      ),
-      child: const Column(
-        children: [
-          Padding(
-            padding: EdgeInsets.all(15),
-            child: Text(
-              "Top Players Today",
-              style: TextStyle(fontWeight: FontWeight.bold),
+    return Card(
+      elevation: 4.0,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
+      child: Container(
+        padding: const EdgeInsets.all(10.0),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(15.0),
+          gradient: LinearGradient(colors: [Colors.orange.shade100, Colors.white],),
+        ),
+        child: Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  "Top 3 Players",
+                  style: TextStyle(
+                    fontSize: 22.0,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Icon(
+                  Icons.workspace_premium,
+                  color: Colors.orange.shade900,
+                  size: 35.0,
+                ),
+              ],
             ),
-          ),
-          ListTile(
-            leading: Text("1st"),
-            title: Text("Sarah_Signs"),
-            trailing: Text("2,450 pts"),
-          ),
-          ListTile(
-            leading: Text("2nd"),
-            title: Text("User_992"),
-            trailing: Text("2,100 pts"),
-          ),
-        ],
-      ),
+            const Divider(height: 35.0),
+            Column(
+              children: dbUsers.map((user) {
+                return Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(10.0),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        shape: BoxShape.circle,
+                      ),
+                      child: Text(
+                        "${dbUsers.indexOf(user) + 1}",
+                        style: TextStyle(
+                          fontSize: 20.0,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.orange.shade900,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 15.0),
+                    Expanded(
+                      child: Text(
+                        user.username,
+                        style: const TextStyle(fontSize: 16.0),
+                      ),
+                    ),
+                    Text(
+                      "${user.wins} wins ",
+                      style: TextStyle(
+                        fontSize: 18.0,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.orange.shade900,
+                      ),
+                    ),
+                  ],
+                );
+              }).toList(),
+            ),
+          ],
+        ),
+      )
     );
   }
 }

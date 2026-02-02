@@ -150,96 +150,98 @@ class _ReadTheSignScreenState extends State<ReadTheSignScreen> {
           generalService.exitPrompt(context, 'training');
         }
       },
-      child: Scaffold(
-        backgroundColor: Colors.orange.shade50,
-        appBar: AppBar(
-          centerTitle: true,
-          backgroundColor: Colors.transparent,
-          foregroundColor: Colors.white,
-          flexibleSpace: Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                  colors: [Colors.orange.shade500, Colors.deepOrange.shade800]),
-            ),
-          ),
-          title: Text(
-            widget.title,
-            style: const TextStyle(
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
-          ),
-        ),
-        body: Column(
-          children: [
-            LinearProgressIndicator(
-              value: progress,
-              backgroundColor: Colors.orange.shade100,
-              color: Colors.orange.shade900,
-              minHeight: 8.0,
-            ),
-            if (widget.timer && !completed)...[
-              const SizedBox(height: 10.0),
-              // GeeksforGeeks (2024). Flutter Countdown Timer. [online] GeeksforGeeks.
-              // Available at: https://www.geeksforgeeks.org/flutter/flutter-countdown-timer/
-              // [Accessed 31 Jan. 2026].
-              TimerCountdown(
-                format: CountDownTimerFormat.minutesSeconds,
-                enableDescriptions: false,
-                endTime: endTime,
-                onEnd: () {
-                  setState(() {
-                    timerEnd = true;
-                  });
-                  _complete();
-                },
-                timeTextStyle: TextStyle(
-                  color: Colors.deepOrange.shade800,
-                  fontSize: 25.0,
-                  fontWeight: FontWeight.bold,
-                ),
-                colonsTextStyle: TextStyle(
-                  color: Colors.deepOrange.shade800,
-                  fontSize: 25.0,
-                  fontWeight: FontWeight.bold,
-                ),
+      child: SafeArea(
+        child: Scaffold(
+          backgroundColor: Colors.orange.shade50,
+          appBar: AppBar(
+            centerTitle: true,
+            backgroundColor: Colors.transparent,
+            foregroundColor: Colors.white,
+            flexibleSpace: Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                    colors: [Colors.orange.shade500, Colors.deepOrange.shade800]),
               ),
-            ],
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: SingleChildScrollView(
-                  scrollDirection: Axis.vertical,
-                  child: Center(
-                    child: completed ? CompletedLesson(
-                      completed: () => Navigator.pop(context),
-                      badges: badges,
-                      score: score,
-                      reviewLesson: false,
-                      isGuest: false,
-                      timerEnd: timerEnd,
-                      quiz: widget.quiz,
-                    ) : ReadTheSignQuestion(
-                      question: finalMultipleChoiceQuestions[questionIndex],
-                      possibleAnswers: possibleAnswers,
-                      pointsMCQ: widget.quiz ? pointsMCQ * 2 : pointsMCQ,
-                      answerIndex: answerIndex,
-                      isCorrectAnswer: isCorrectAnswer,
-                      check: check,
-                      onTap: (index) {
-                        if (!check) {
-                          setState(() {
-                            answerIndex = index;
-                          });
-                        }
-                      },
-                      next: _next,
+            ),
+            title: Text(
+              widget.title,
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+          ),
+          body: Column(
+            children: [
+              LinearProgressIndicator(
+                value: progress,
+                backgroundColor: Colors.orange.shade100,
+                color: Colors.orange.shade900,
+                minHeight: 8.0,
+              ),
+              if (widget.timer && !completed)...[
+                const SizedBox(height: 10.0),
+                // GeeksforGeeks (2024). Flutter Countdown Timer. [online] GeeksforGeeks.
+                // Available at: https://www.geeksforgeeks.org/flutter/flutter-countdown-timer/
+                // [Accessed 31 Jan. 2026].
+                TimerCountdown(
+                  format: CountDownTimerFormat.minutesSeconds,
+                  enableDescriptions: false,
+                  endTime: endTime,
+                  onEnd: () {
+                    setState(() {
+                      timerEnd = true;
+                    });
+                    _complete();
+                  },
+                  timeTextStyle: TextStyle(
+                    color: Colors.deepOrange.shade800,
+                    fontSize: 25.0,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  colonsTextStyle: TextStyle(
+                    color: Colors.deepOrange.shade800,
+                    fontSize: 25.0,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.vertical,
+                    child: Center(
+                      child: completed ? CompletedLesson(
+                        completed: () => Navigator.pop(context),
+                        badges: badges,
+                        score: score,
+                        reviewLesson: false,
+                        isGuest: false,
+                        timerEnd: timerEnd,
+                        quiz: widget.quiz,
+                      ) : ReadTheSignQuestion(
+                        question: finalMultipleChoiceQuestions[questionIndex],
+                        possibleAnswers: possibleAnswers,
+                        pointsMCQ: widget.quiz ? pointsMCQ * 2 : pointsMCQ,
+                        answerIndex: answerIndex,
+                        isCorrectAnswer: isCorrectAnswer,
+                        check: check,
+                        onTap: (index) {
+                          if (!check) {
+                            setState(() {
+                              answerIndex = index;
+                            });
+                          }
+                        },
+                        next: _next,
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

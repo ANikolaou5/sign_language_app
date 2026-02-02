@@ -56,72 +56,74 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        elevation: 0,
-        backgroundColor: Colors.transparent,
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Colors.orange.shade500, Colors.deepOrange.shade800],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
+    return SafeArea(
+      child: Scaffold(
+        appBar: AppBar(
+          centerTitle: true,
+          elevation: 0,
+          backgroundColor: Colors.transparent,
+          flexibleSpace: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Colors.orange.shade500, Colors.deepOrange.shade800],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+            ),
+          ),
+          title: Text(
+            _titles[_index],
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
             ),
           ),
         ),
-        title: Text(
-          _titles[_index],
-          style: const TextStyle(
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
+        /*body: IndexedStack(
+          index: _index,
+          children: _screens,
+        ),*/
+        body: Center(child: _screens.elementAt(_index)),
+        bottomNavigationBar: BottomNavigationBar(
+          type: BottomNavigationBarType.fixed,
+          items: const <BottomNavigationBarItem>[
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home_outlined),
+              activeIcon: Icon(Icons.home),
+              label: "Home",
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.menu_book_outlined),
+              activeIcon: Icon(Icons.menu_book),
+              label: "Learn",
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.quiz_outlined),
+              activeIcon: Icon(Icons.quiz),
+              label: "Train",
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.sports_esports_outlined),
+              activeIcon: Icon(Icons.sports_esports),
+              label: "Play",
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.video_camera_front_outlined),
+              activeIcon: Icon(Icons.video_camera_front),
+              label: "Live test",
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.person_outline),
+              activeIcon: Icon(Icons.person),
+              label: "Account",
+            ),
+          ],
+          currentIndex: _index,
+          selectedItemColor: Colors.deepOrange.shade800,
+          unselectedItemColor: Colors.grey,
+          showUnselectedLabels: true,
+          onTap: _onTap,
         ),
-      ),
-      /*body: IndexedStack(
-        index: _index,
-        children: _screens,
-      ),*/
-      body: Center(child: _screens.elementAt(_index)),
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home_outlined),
-            activeIcon: Icon(Icons.home),
-            label: "Home",
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.menu_book_outlined),
-            activeIcon: Icon(Icons.menu_book),
-            label: "Learn",
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.quiz_outlined),
-            activeIcon: Icon(Icons.quiz),
-            label: "Train",
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.sports_esports_outlined),
-            activeIcon: Icon(Icons.sports_esports),
-            label: "Play",
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.video_camera_front_outlined),
-            activeIcon: Icon(Icons.video_camera_front),
-            label: "Live test",
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person_outline),
-            activeIcon: Icon(Icons.person),
-            label: "Account",
-          ),
-        ],
-        currentIndex: _index,
-        selectedItemColor: Colors.deepOrange.shade800,
-        unselectedItemColor: Colors.grey,
-        showUnselectedLabels: true,
-        onTap: _onTap,
       ),
     );
   }

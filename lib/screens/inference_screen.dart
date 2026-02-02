@@ -110,52 +110,54 @@ class _InferenceScreenState extends State<InferenceScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      // appBar: AppBar(title: const Text('ASL Capture')),
-      body: Column(
-        children: [
-          Expanded(
-            child: _initializeControllerFuture == null
-                ? const Center(child: CircularProgressIndicator())
-                : FutureBuilder(
-              future: _initializeControllerFuture,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.done) {
-                  return CameraPreview(_controller);
-                }
-                return const Center(child: CircularProgressIndicator());
-              },
+    return SafeArea(
+      child: Scaffold(
+        // appBar: AppBar(title: const Text('ASL Capture')),
+        body: Column(
+          children: [
+            Expanded(
+              child: _initializeControllerFuture == null
+                  ? const Center(child: CircularProgressIndicator())
+                  : FutureBuilder(
+                future: _initializeControllerFuture,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.done) {
+                    return CameraPreview(_controller);
+                  }
+                  return const Center(child: CircularProgressIndicator());
+                },
+              ),
             ),
-          ),
-          Container(
-            padding: const EdgeInsets.all(16),
-            width: double.infinity,
-            child: Column(
-              children: [
-                Text(
-                  _resultText,
-                  style: const TextStyle(
-                    fontSize: 18,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 12),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton.icon(
-                    style: ButtonStyle(
-                      backgroundColor: MaterialStateProperty.all(Colors.deepOrange),
-                      foregroundColor: MaterialStateProperty.all(Colors.white),
+            Container(
+              padding: const EdgeInsets.all(16),
+              width: double.infinity,
+              child: Column(
+                children: [
+                  Text(
+                    _resultText,
+                    style: const TextStyle(
+                      fontSize: 18,
                     ),
-                    onPressed: _isSending ? null : _captureAndSend,
-                    icon: const Icon(Icons.camera, size: 20,),
-                    label: const Text('Check', style: TextStyle(fontSize: 20),),
+                    textAlign: TextAlign.center,
                   ),
-                ),
-              ],
+                  const SizedBox(height: 12),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton.icon(
+                      style: ButtonStyle(
+                        backgroundColor: MaterialStateProperty.all(Colors.deepOrange),
+                        foregroundColor: MaterialStateProperty.all(Colors.white),
+                      ),
+                      onPressed: _isSending ? null : _captureAndSend,
+                      icon: const Icon(Icons.camera, size: 20,),
+                      label: const Text('Check', style: TextStyle(fontSize: 20),),
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

@@ -32,7 +32,8 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return SafeArea(
+      child: Scaffold(
         backgroundColor: Colors.orange.shade50,
         appBar: AppBar(
           centerTitle: true,
@@ -63,6 +64,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
             },
           ),
         )
+      ),
     );
   }
 }

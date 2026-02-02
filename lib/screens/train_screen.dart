@@ -55,106 +55,108 @@ class _TrainScreenState extends State<TrainScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.orange.shade50,
-      body: Padding(
-        padding: const EdgeInsets.all(10.0),
-        child: SingleChildScrollView(
-          scrollDirection: Axis.vertical,
-          child: Column(
-            children: [
-              const SizedBox(height: 10.0),
-              Container(
-                padding: const EdgeInsets.all(8.0),
-                decoration: BoxDecoration(
-                  color: Colors.orange.shade100,
-                  border: Border.all(width: 2.0, color: Colors.orange.shade300),
-                  borderRadius: BorderRadius.circular(15.0),
-                ),
-                alignment: Alignment.center,
-                child: Text(
-                  'Categories',
-                  style: TextStyle(
-                    fontSize: 25.0,
-                    fontWeight: FontWeight.bold,
+    return SafeArea(
+      child: Scaffold(
+        backgroundColor: Colors.orange.shade50,
+        body: Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: SingleChildScrollView(
+            scrollDirection: Axis.vertical,
+            child: Column(
+              children: [
+                const SizedBox(height: 10.0),
+                Container(
+                  padding: const EdgeInsets.all(8.0),
+                  decoration: BoxDecoration(
+                    color: Colors.orange.shade100,
+                    border: Border.all(width: 2.0, color: Colors.orange.shade300),
+                    borderRadius: BorderRadius.circular(15.0),
+                  ),
+                  alignment: Alignment.center,
+                  child: Text(
+                    'Categories',
+                    style: TextStyle(
+                      fontSize: 25.0,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
-              ),
-              const SizedBox(height: 10.0),
-              Container(
-                padding: const EdgeInsets.all(8.0),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  border: Border.all(width: 2.0, color: Colors.orange.shade300),
-                  borderRadius: BorderRadius.circular(15.0),
+                const SizedBox(height: 10.0),
+                Container(
+                  padding: const EdgeInsets.all(8.0),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    border: Border.all(width: 2.0, color: Colors.orange.shade300),
+                    borderRadius: BorderRadius.circular(15.0),
+                  ),
+                  alignment: Alignment.center,
+                  child: Text(
+                    "Click on one of the below options to get started",
+                    style: TextStyle(fontSize: 16.0,),
+                  ),
                 ),
-                alignment: Alignment.center,
-                child: Text(
-                  "Click on one of the below options to get started",
-                  style: TextStyle(fontSize: 16.0,),
+                const SizedBox(height: 10.0),
+                TrainCategories(
+                  name: "DRAG & DROP TO FINGERSPELL",
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => MatchingScreen(matchQuestions: matchQuestions, username: user!.username, quiz: false, timer: false,),
+                      ),
+                    );
+                  },
+                  generalService: generalService,
                 ),
-              ),
-              const SizedBox(height: 10.0),
-              TrainCategories(
-                name: "DRAG & DROP TO FINGERSPELL",
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => MatchingScreen(matchQuestions: matchQuestions, username: user!.username, quiz: false, timer: false,),
-                    ),
-                  );
-                },
-                generalService: generalService,
-              ),
-              const SizedBox(height: 10.0),
-              TrainCategories(
-                name: "READ THE SIGN",
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => ReadTheSignScreen(title: "Read the Sign",multipleChoiceQuestions: multipleChoiceQuestions, username: user!.username, quiz: false, timer: false, symbols: false,),
-                    ),
-                  );
-                },
-                generalService: generalService,
-              ),
-              const SizedBox(height: 10.0),
-              TrainCategories(
-                name: "FINGERSPELL IMAGE TO WORD",
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => FingerspellSignToWordScreen(signToTextQuestions: signToTextQuestions, username: user!.username, quiz: false, timer: false,),
-                    ),
-                  );
-                },
-                generalService: generalService,
-              ),
-              const SizedBox(height: 10.0),
-              TrainCategories(
-                name: "WORDS TO SIGN",
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => WordsToSignScreen(multipleChoiceQuestions: multipleChoiceQuestionsWordsToSign, username: user!.username, quiz: false, timer: false,),
-                    ),
-                  );
-                },
-                generalService: generalService,
-              ),
-              const SizedBox(height: 10.0),
-              TrainCategories(
-                name: "SIGN TO WORDS",
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => ReadTheSignScreen(title: "Sign to Words", multipleChoiceQuestions: multipleChoiceQuestionsSignToWords, username: user!.username, quiz: false, timer: false, symbols: true,),
-                    ),
-                  );
-                },
-                generalService: generalService,
-              ),
-            ],
+                const SizedBox(height: 10.0),
+                TrainCategories(
+                  name: "READ THE SIGN",
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => ReadTheSignScreen(title: "Read the Sign",multipleChoiceQuestions: multipleChoiceQuestions, username: user!.username, quiz: false, timer: false, symbols: false,),
+                      ),
+                    );
+                  },
+                  generalService: generalService,
+                ),
+                const SizedBox(height: 10.0),
+                TrainCategories(
+                  name: "FINGERSPELL IMAGE TO WORD",
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => FingerspellSignToWordScreen(signToTextQuestions: signToTextQuestions, username: user!.username, quiz: false, timer: false,),
+                      ),
+                    );
+                  },
+                  generalService: generalService,
+                ),
+                const SizedBox(height: 10.0),
+                TrainCategories(
+                  name: "WORDS TO SIGN",
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => WordsToSignScreen(multipleChoiceQuestions: multipleChoiceQuestionsWordsToSign, username: user!.username, quiz: false, timer: false,),
+                      ),
+                    );
+                  },
+                  generalService: generalService,
+                ),
+                const SizedBox(height: 10.0),
+                TrainCategories(
+                  name: "SIGN TO WORDS",
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => ReadTheSignScreen(title: "Sign to Words", multipleChoiceQuestions: multipleChoiceQuestionsSignToWords, username: user!.username, quiz: false, timer: false, symbols: true,),
+                      ),
+                    );
+                  },
+                  generalService: generalService,
+                ),
+              ],
+            ),
           ),
         ),
       ),

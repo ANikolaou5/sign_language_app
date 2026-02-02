@@ -99,107 +99,109 @@ class _MatchingScreenState extends State<MatchingScreen> {
           generalService.exitPrompt(context, 'training');
         }
       },
-      child: Scaffold(
-        backgroundColor: Colors.orange.shade50,
-        appBar: AppBar(
-          centerTitle: true,
-          backgroundColor: Colors.transparent,
-          foregroundColor: Colors.white,
-          flexibleSpace: Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                  colors: [Colors.orange.shade500, Colors.deepOrange.shade800]),
-            ),
-          ),
-          title: const Text(
-            "Drag & Drop to Fingerspell",
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
-          ),
-        ),
-        body: Column(
-          children: [
-            // Flutter.dev. (2024). LinearProgressIndicator class - material library - Dart API. [online]
-            // Available at: https://api.flutter.dev/flutter/material/LinearProgressIndicator-class.html
-            // [Accessed 16 Jan. 2026].
-            LinearProgressIndicator(
-              value: progress,
-              backgroundColor: Colors.orange.shade100,
-              color: Colors.orange.shade900,
-              minHeight: 8.0,
-            ),
-            if (widget.timer && !completed)...[
-              const SizedBox(height: 10.0),
-              // GeeksforGeeks (2024). Flutter Countdown Timer. [online] GeeksforGeeks.
-              // Available at: https://www.geeksforgeeks.org/flutter/flutter-countdown-timer/
-              // [Accessed 31 Jan. 2026].
-              TimerCountdown(
-                format: CountDownTimerFormat.minutesSeconds,
-                enableDescriptions: false,
-                endTime: endTime,
-                onEnd: () {
-                  setState(() {
-                    timerEnd = true;
-                  });
-                  _complete();
-                },
-                timeTextStyle: TextStyle(
-                  color: Colors.deepOrange.shade800,
-                  fontSize: 25.0,
-                  fontWeight: FontWeight.bold,
-                ),
-                colonsTextStyle: TextStyle(
-                  color: Colors.deepOrange.shade800,
-                  fontSize: 25.0,
-                  fontWeight: FontWeight.bold,
-                ),
+      child: SafeArea(
+        child: Scaffold(
+          backgroundColor: Colors.orange.shade50,
+          appBar: AppBar(
+            centerTitle: true,
+            backgroundColor: Colors.transparent,
+            foregroundColor: Colors.white,
+            flexibleSpace: Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                    colors: [Colors.orange.shade500, Colors.deepOrange.shade800]),
               ),
-            ],
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: SingleChildScrollView(
-                  scrollDirection: Axis.vertical,
-                  child: Center(
-                    child: completed ? CompletedLesson(
-                      completed: () => Navigator.pop(context),
-                      badges: [],
-                      score: score,
-                      reviewLesson: false,
-                      isGuest: false,
-                      timerEnd: timerEnd,
-                      quiz: widget.quiz,
-                    ) : MatchQuestion(
-                      question: finalMatchQuestions[questionIndex],
-                      matchedImages: matchedImages,
-                      matchedTexts: matchedTexts,
-                      answerIndex: answerIndex,
-                      isCorrectAnswer: isCorrectAnswer,
-                      check: check,
-                      questionPoints: widget.quiz ? questionPoints * 2 : questionPoints,
-                      onMatch: (img, txt) {
-                        setState(() {
-                          matchedImages.add(img);
-                          matchedTexts.add(txt);
+            ),
+            title: const Text(
+              "Drag & Drop to Fingerspell",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+          ),
+          body: Column(
+            children: [
+              // Flutter.dev. (2024). LinearProgressIndicator class - material library - Dart API. [online]
+              // Available at: https://api.flutter.dev/flutter/material/LinearProgressIndicator-class.html
+              // [Accessed 16 Jan. 2026].
+              LinearProgressIndicator(
+                value: progress,
+                backgroundColor: Colors.orange.shade100,
+                color: Colors.orange.shade900,
+                minHeight: 8.0,
+              ),
+              if (widget.timer && !completed)...[
+                const SizedBox(height: 10.0),
+                // GeeksforGeeks (2024). Flutter Countdown Timer. [online] GeeksforGeeks.
+                // Available at: https://www.geeksforgeeks.org/flutter/flutter-countdown-timer/
+                // [Accessed 31 Jan. 2026].
+                TimerCountdown(
+                  format: CountDownTimerFormat.minutesSeconds,
+                  enableDescriptions: false,
+                  endTime: endTime,
+                  onEnd: () {
+                    setState(() {
+                      timerEnd = true;
+                    });
+                    _complete();
+                  },
+                  timeTextStyle: TextStyle(
+                    color: Colors.deepOrange.shade800,
+                    fontSize: 25.0,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  colonsTextStyle: TextStyle(
+                    color: Colors.deepOrange.shade800,
+                    fontSize: 25.0,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.vertical,
+                    child: Center(
+                      child: completed ? CompletedLesson(
+                        completed: () => Navigator.pop(context),
+                        badges: [],
+                        score: score,
+                        reviewLesson: false,
+                        isGuest: false,
+                        timerEnd: timerEnd,
+                        quiz: widget.quiz,
+                      ) : MatchQuestion(
+                        question: finalMatchQuestions[questionIndex],
+                        matchedImages: matchedImages,
+                        matchedTexts: matchedTexts,
+                        answerIndex: answerIndex,
+                        isCorrectAnswer: isCorrectAnswer,
+                        check: check,
+                        questionPoints: widget.quiz ? questionPoints * 2 : questionPoints,
+                        onMatch: (img, txt) {
+                          setState(() {
+                            matchedImages.add(img);
+                            matchedTexts.add(txt);
 
-                          if (matchedImages.length == finalMatchQuestions[questionIndex]['correctPairs'].length) {
-                            isCorrectAnswer = true;
-                            answerIndex = 1;
-                            check = true;
-                            score += widget.quiz ? questionPoints * 2 : questionPoints;
-                          }
-                        });
-                      },
-                      next: _next,
-                      generalService: generalService,
+                            if (matchedImages.length == finalMatchQuestions[questionIndex]['correctPairs'].length) {
+                              isCorrectAnswer = true;
+                              answerIndex = 1;
+                              check = true;
+                              score += widget.quiz ? questionPoints * 2 : questionPoints;
+                            }
+                          });
+                        },
+                        next: _next,
+                        generalService: generalService,
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

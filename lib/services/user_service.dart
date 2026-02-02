@@ -90,7 +90,22 @@ class UserService {
     return null;
   }
 
-  // Function to load all users from the Realtime database.
+  // Function to load all users from the Realtime database sorted based on the wins of "Play Online".
+  Future<List<UserClass>> loadUsersBasedOnWins() async {
+    final snapshot = await usersRef.get();
+    if (!snapshot.exists) return [];
+
+    final data = Map<String, dynamic>.from(snapshot.value as Map);
+
+    final users = data.entries.map((entry) {
+      return UserClass.fromFirebase(entry.key, Map<String, dynamic>.from(entry.value as Map));
+    }).toList();
+
+    users.sort((b, a) => a.wins.compareTo(b.wins));
+    return users;
+  }
+
+  // Function to load all users from the Realtime database sorted based on the score.
   Future<List<UserClass>> loadUsers() async {
     final snapshot = await usersRef.get();
     if (!snapshot.exists) return [];
@@ -108,6 +123,13 @@ class UserService {
   // Function to load top users from the Realtime database for the leaderboard.
   Future<List<UserClass>> loadTopUsers(int num) async {
     List<UserClass> users = await loadUsers();
+    users = users.take(num).toList();
+    return users;
+  }
+
+  // Function to load top users from the Realtime database for the leaderboard of "Play Online".
+  Future<List<UserClass>> loadTopUsersBasedOnWins(int num) async {
+    List<UserClass> users = await loadUsersBasedOnWins();
     users = users.take(num).toList();
     return users;
   }
