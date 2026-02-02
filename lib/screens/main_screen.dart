@@ -22,7 +22,7 @@ class _MainScreenState extends State<MainScreen> {
     'Learn',
     'Train',
     'Play',
-    'Inference',
+    'Live test',
     'Account',
   ];
 
@@ -37,7 +37,7 @@ class _MainScreenState extends State<MainScreen> {
       LearnScreen(key: const PageStorageKey('learn'), changeIndex: changeIndex),
       TrainScreen(key: const PageStorageKey('train'), changeIndex: changeIndex),
       PlayScreen(key: const PageStorageKey('play'), changeIndex: changeIndex),
-      InferenceScreen(key: const PageStorageKey('inference'), changeIndex: changeIndex),
+      InferenceScreen(key: const PageStorageKey('camera_checker'), changeIndex: changeIndex),
       AccountScreen(key: const PageStorageKey('account'), changeIndex: changeIndex),
     ];
   }
@@ -109,7 +109,7 @@ class _MainScreenState extends State<MainScreen> {
           BottomNavigationBarItem(
             icon: Icon(Icons.video_camera_front_outlined),
             activeIcon: Icon(Icons.video_camera_front),
-            label: "Inference",
+            label: "Live test",
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person_outline),
