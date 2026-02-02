@@ -182,16 +182,12 @@ class _MiniGameScreenState extends State<MiniGameScreen> {
 
           // --- Game End Check ---
           if (currentIndex >= questionsData.length && questionsData.isNotEmpty) {
-            // Check if someone JUST answered the last question
-            // If so, wait a moment for the score update to arrive before showing results
-            if (answeredBy != "") {
-              return const Center(child: Text("Calculating final scores..."));
-            }
-
             final myFinalScore = myData['score'] ?? 0;
             final opponentFinalScore = opponentData['score'] ?? 0;
 
+            // Trigger reward processing
             _processGameRewards(myFinalScore, opponentFinalScore);
+
             return _buildResultsScreen(myFinalScore, opponentFinalScore);
           }
 
@@ -261,7 +257,7 @@ class _MiniGameScreenState extends State<MiniGameScreen> {
                     child: Column(
                       children: [
                         Text(
-                          answeredBy == widget.myUid ? "YOU WERE FIRST! 🎉" : "OPPONENT GOT IT! 💨",
+                          answeredBy == widget.myUid ? "YOU got it! 🎉" : "Opponent got it! 💨",
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
@@ -269,6 +265,8 @@ class _MiniGameScreenState extends State<MiniGameScreen> {
                           ),
                         ),
                         const SizedBox(height: 5),
+                        // Added text to clarify that the game might be a draw regardless of speed
+                        const Text("Wait for the next round...", style: TextStyle(fontSize: 12, color: Colors.grey)),
                         Text("Answer: ${currentQuestion.answer}", style: const TextStyle(fontSize: 16)),
                       ],
                     ),
