@@ -184,78 +184,84 @@ class _HomeScreenState extends State<HomeScreen> {
           barrierDismissible: false,
           builder: (context) => StatefulBuilder(
             builder: (context, setDialogState) {
-              return Dialog(
-                shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(15.0)),
-                child: Container(
-                  padding: const EdgeInsets.all(20.0),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(25.0),
-                    gradient: LinearGradient(colors: [
-                      Colors.orange.shade100,
-                      Colors.white
-                    ],),
-                  ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Icons.local_fire_department,
-                        color: Colors.deepOrange,
-                        size: 80.0,
-                      ),
-                      Text(
-                        "Update your streak goal!",
-                        style: const TextStyle(
-                          fontSize: 22.0,
-                          fontWeight: FontWeight.bold,
+              return PopScope(
+                canPop: false,
+                onPopInvokedWithResult: (didPop, result) {
+                  if (didPop) return;
+                },
+                child:Dialog(
+                  shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15.0)),
+                  child: Container(
+                    padding: const EdgeInsets.all(20.0),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(25.0),
+                      gradient: LinearGradient(colors: [
+                        Colors.orange.shade100,
+                        Colors.white
+                      ],),
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.local_fire_department,
+                          color: Colors.deepOrange,
+                          size: 80.0,
                         ),
-                      ),
-                      const SizedBox(height: 15.0),
-                      TextField(
-                        controller: streakGoalTextController,
-                        autofocus: true,
-                        keyboardType: TextInputType.number,
-                        inputFormatters: [
-                          FilteringTextInputFormatter.digitsOnly,
-                        ],
-                        decoration: InputDecoration(
-                          hintText: 'Streak number',
-                          enabledBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(
-                              color: Colors.deepOrange,
-                              width: 2.0,
+                        Text(
+                          "Update your streak goal!",
+                          style: const TextStyle(
+                            fontSize: 22.0,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 15.0),
+                        TextField(
+                          controller: streakGoalTextController,
+                          autofocus: true,
+                          keyboardType: TextInputType.number,
+                          inputFormatters: [
+                            FilteringTextInputFormatter.digitsOnly,
+                          ],
+                          decoration: InputDecoration(
+                            hintText: 'Streak number',
+                            enabledBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(
+                                color: Colors.deepOrange,
+                                width: 2.0,
+                              ),
+                            ),
+                            focusedBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(
+                                color: Colors.deepOrange,
+                                width: 2.0,
+                              ),
                             ),
                           ),
-                          focusedBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(
-                              color: Colors.deepOrange,
-                              width: 2.0,
+                        ),
+                        if (errorMessage != null) Text(errorMessage!, style: const TextStyle(color: Colors.red,)),
+                        const SizedBox(height: 10.0),
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.deepOrange,
+                            foregroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12.0)),
+                          ),
+                          onPressed: () async {
+                            await _updateStreakNumGoal(setDialogState);
+                          },
+                          child: const Text(
+                            "Save",
+                            style: TextStyle(
+                              fontSize: 18.0,
+                              color: Colors.white,
                             ),
                           ),
                         ),
-                      ),
-                      if (errorMessage != null) Text(errorMessage!, style: const TextStyle(color: Colors.red,)),
-                      const SizedBox(height: 10.0),
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.deepOrange,
-                          foregroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12.0)),
-                        ),
-                        onPressed: () async {
-                          await _updateStreakNumGoal(setDialogState);
-                        },
-                        child: const Text(
-                          "Save",
-                          style: TextStyle(
-                            fontSize: 18.0,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               );

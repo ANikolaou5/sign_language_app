@@ -176,74 +176,80 @@ class GeneralService {
         showDialog(
           context: context,
           barrierDismissible: !req,
-          builder: (context) => Dialog(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
-            child: Container(
-              padding: const EdgeInsets.all(25.0),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20.0),
-                gradient: LinearGradient(colors: [Colors.orange.shade100, Colors.white],),
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Text(
-                    "Sign in for the full experience!",
-                    style: TextStyle(
-                      fontSize: 22.0,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 10.0),
-                  Text(
-                    req ? "Sign in required for using this feature!" : "If you sign in/sign up, you can earn points, appear on the leaderboard and unlock more features!",
-                    style: TextStyle(fontSize: 18.0),
-                    textAlign: TextAlign.justify,
-                  ),
-                  const SizedBox(height: 10.0),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.deepOrange,
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
-                    ),
-                    onPressed: () async {
-                      if (!req) {
-                        await prefs.setBool('showPrompt', true);
-                      }
-                      Navigator.pop(context);
-                      changeIndex(5);
-                    },
-                    child: const Text(
-                      'Sign in',
+          builder: (context) => PopScope(
+            canPop: !req,
+            onPopInvokedWithResult: (didPop, result) {
+              if (didPop) return;
+            },
+            child: Dialog(
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
+              child: Container(
+                padding: const EdgeInsets.all(25.0),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20.0),
+                  gradient: LinearGradient(colors: [Colors.orange.shade100, Colors.white],),
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Text(
+                      "Sign in for the full experience!",
                       style: TextStyle(
-                        fontSize: 18.0,
-                        color: Colors.white,
+                        fontSize: 22.0,
+                        fontWeight: FontWeight.bold,
                       ),
+                      textAlign: TextAlign.center,
                     ),
-                  ),
-                  const SizedBox(height: 10.0),
-                  if (!req) ...[
+                    const SizedBox(height: 10.0),
+                    Text(
+                      req ? "Sign in required for using this feature!" : "If you sign in/sign up, you can earn points, appear on the leaderboard and unlock more features!",
+                      style: TextStyle(fontSize: 18.0),
+                      textAlign: TextAlign.justify,
+                    ),
+                    const SizedBox(height: 10.0),
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.deepOrange,
                         foregroundColor: Colors.white,
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
                       ),
                       onPressed: () async {
-                        await prefs.setBool('showPrompt', true);
+                        if (!req) {
+                          await prefs.setBool('showPrompt', true);
+                        }
                         Navigator.pop(context);
+                        changeIndex(5);
                       },
                       child: const Text(
-                        'Continue as Guest',
+                        'Sign in',
                         style: TextStyle(
                           fontSize: 18.0,
-                          color: Colors.black,
+                          color: Colors.white,
                         ),
                       ),
                     ),
+                    const SizedBox(height: 10.0),
+                    if (!req) ...[
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
+                        ),
+                        onPressed: () async {
+                          await prefs.setBool('showPrompt', true);
+                          Navigator.pop(context);
+                        },
+                        child: const Text(
+                          'Continue as Guest',
+                          style: TextStyle(
+                            fontSize: 18.0,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ),
+                    ],
                   ],
-                ],
+                ),
               ),
             ),
           ),
