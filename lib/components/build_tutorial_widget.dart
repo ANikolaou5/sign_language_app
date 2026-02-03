@@ -1,10 +1,13 @@
+import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 import '../classes/question_class.dart';
 import '../classes/reading_tutorial_class.dart';
 import 'mcq_widget.dart';
 import 'navigation_buttons_widget.dart';
 
-class BuildTutorial extends StatelessWidget {
+class BuildTutorial extends StatefulWidget {
   const BuildTutorial({
     super.key,
     required this.tutorial,
@@ -33,6 +36,34 @@ class BuildTutorial extends StatelessWidget {
   final VoidCallback next;
 
   @override
+  State<BuildTutorial> createState() => _BuildTutorialState();
+}
+
+class _BuildTutorialState extends State<BuildTutorial> {
+
+  late WebViewController controller;
+  double _webviewHeight = 100;
+
+  @override
+  void initState() {
+    controller = WebViewController()
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..setBackgroundColor(Colors.orange.shade50)
+      ..setNavigationDelegate(
+        NavigationDelegate(
+          onPageFinished: (String url) async {
+            await Future.delayed(const Duration(milliseconds: 100));
+
+            // 2. Call the resize function
+            _updateWebViewHeight();
+          },
+        ),
+      )
+      ..loadFlutterAsset('assets/content/A.html');
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Column(
       children: [
@@ -46,9 +77,9 @@ class BuildTutorial extends StatelessWidget {
           ),
           alignment: Alignment.center,
           child: Text(
-            tutorial
-              ? readingTutorial.tutorialText
-              : multipleChoiceQuestion!.question,
+            widget.tutorial
+              ? widget.readingTutorial.tutorialText
+              : widget.multipleChoiceQuestion!.question,
             style: TextStyle(
               fontSize: 22.0,
               fontWeight: FontWeight.bold,
@@ -56,9 +87,9 @@ class BuildTutorial extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 5.0),
-        if (!tutorial) ...[
+        if (!widget.tutorial) ...[
           Text(
-            "This question is worth $questionPoints points",
+            "This question is worth ${widget.questionPoints} points",
             style: TextStyle(
               fontSize: 16.0,
               color: Colors.grey.shade700,
@@ -66,7 +97,7 @@ class BuildTutorial extends StatelessWidget {
           ),
         ],
         const SizedBox(height: 10.0),
-        if(tutorial) ...[
+        if(widget.tutorial) ...[
           Container(
             padding: const EdgeInsets.all(12.0),
             decoration: BoxDecoration(
@@ -80,26 +111,60 @@ class BuildTutorial extends StatelessWidget {
               ],
             ),
             child: Image.asset(
-              readingTutorial.tutorialImage,
+              widget.readingTutorial.tutorialImage,
               height: 360,
               fit: BoxFit.contain,
             ),
           ),
+
+          SizedBox(height: 20,),
+
+          //WebView
+          SizedBox(
+            height: _webviewHeight,
+            child: WebViewWidget(
+              controller: controller,
+            ),
+          ),
+
         ] else ...[
-          if (multipleChoiceQuestion != null) ...[
+          if (widget.multipleChoiceQuestion != null) ...[
             MultipleChoiceQuestion(
-              question: multipleChoiceQuestion!,
-              possibleAnswers: possibleAnswers,
-              answerIndex: answerIndex,
-              check: check,
-              onTap: onTap,
+              question: widget.multipleChoiceQuestion!,
+              possibleAnswers: widget.possibleAnswers,
+              answerIndex: widget.answerIndex,
+              check: widget.check,
+              onTap: widget.onTap,
               tips: '',
             ),
           ],
         ],
         const SizedBox(height: 15.0),
-        NavigationButtons(answerIndex: answerIndex, isCorrectAnswer: isCorrectAnswer, check: check, correctAnswer: '', questionPoints: questionPoints, next: next,),
+        NavigationButtons(answerIndex: widget.answerIndex, isCorrectAnswer: widget.isCorrectAnswer, check: widget.check, correctAnswer: '', questionPoints: widget.questionPoints, next: widget.next,),
       ],
     );
   }
+
+  // Helper function to calculate and update height
+  Future<void> _updateWebViewHeight() async {
+    try {
+      // Get the scroll height (content height)
+      final result = await controller.runJavaScriptReturningResult(
+          'document.documentElement.scrollHeight');
+
+      // Strip non-numeric characters to get a clean double.
+      String cleanResult = result.toString().replaceAll(RegExp(r'[^0-9.]'), '');
+
+      double? height = double.tryParse(cleanResult);
+
+      if (height != null && height > 0) {
+        setState(() {
+          _webviewHeight = height + 20;
+        });
+      }
+    } catch (e) {
+      debugPrint("Error calculating WebView height: $e");
+    }
+  }
+
 }

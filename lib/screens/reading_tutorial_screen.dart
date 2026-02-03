@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -303,6 +305,7 @@ class _ReadingTutorialScreenState extends State<ReadingTutorialScreen> {
           body: Padding(
             padding: const EdgeInsets.all(10.0),
             child: SingleChildScrollView(
+              key: ValueKey(Random().nextInt(1000000).toString()),
               scrollDirection: Axis.vertical,
               child: Center(
                 child: completed ? CompletedLesson(
@@ -316,6 +319,7 @@ class _ReadingTutorialScreenState extends State<ReadingTutorialScreen> {
                   quiz: false,
                 )
                 : BuildTutorial(
+                  key: ValueKey(widget.readingTutorial.tutorialText),
                   tutorial: tutorial,
                   readingTutorial: widget.readingTutorial,
                   multipleChoiceQuestion: multipleChoiceQuestion,

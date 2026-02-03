@@ -42,6 +42,7 @@ dependencies:
   http: ^1.6.0
   camera: ^0.11.3
   flutter_timer_countdown: ^1.0.7
+  webview_flutter: ^4.13.1
 
 dev_dependencies:
   flutter_test:
@@ -143,6 +144,7 @@ flutter:
     - assets/symbols/sorry.png
     - assets/symbols/thankYou.png
     - assets/symbols/yes.png
+    - assets/content/
 
   # To add assets to your application, add an assets section, like this:
   # assets:
