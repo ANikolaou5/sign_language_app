@@ -92,7 +92,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     const SizedBox(height: 15.0),
                     const Text(
-                      "It's been a while since your last lesson. Your streak has reset to 0, but don't give up!",
+                      "It's been a while since your last training/quiz. Your streak has reset to 0, but don't give up!",
                       textAlign: TextAlign.justify,
                       style: TextStyle(fontSize: 18.0),
                     ),

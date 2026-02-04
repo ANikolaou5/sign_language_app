@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sign_language_app/screens/about_screen.dart';
 import 'package:sign_language_app/screens/inference_screen.dart';
 import 'package:sign_language_app/screens/play_screen.dart';
 import 'package:sign_language_app/screens/train_screen.dart';
@@ -78,6 +79,21 @@ class _MainScreenState extends State<MainScreen> {
               color: Colors.white,
             ),
           ),
+          actions: [
+            IconButton(
+              icon: const Icon(
+                Icons.info_outline,
+                color: Colors.white,
+                size: 30.0,
+              ),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const AboutScreen()),
+                );
+              },
+            ),
+          ],
         ),
         /*body: IndexedStack(
           index: _index,

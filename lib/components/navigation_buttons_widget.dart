@@ -61,7 +61,14 @@ class NavigationButtons extends StatelessWidget {
               ],
             ),
           ] else ...[
-            const Expanded(child: SizedBox()),
+            Text(
+              "Press 'Next' to continue...",
+              style: TextStyle(
+                color: Colors.grey,
+                fontSize: 18.0,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ],
           const SizedBox(width: 10.0),
           ElevatedButton(
