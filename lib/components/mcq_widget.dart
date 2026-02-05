@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 
 import '../classes/question_class.dart';
 
 class MultipleChoiceQuestion extends StatelessWidget {
-  const MultipleChoiceQuestion({super.key, required this.question, required this.possibleAnswers, required this.answerIndex, required this.check, required this.onTap, required this.tips,});
+  const MultipleChoiceQuestion({super.key, required this.question, required this.possibleAnswers, required this.answerIndex, required this.check, required this.onTap, required this.tips, required this.controller, required this.webviewHeight,});
 
   final Question question;
   final List<String> possibleAnswers;
@@ -11,6 +12,8 @@ class MultipleChoiceQuestion extends StatelessWidget {
   final bool check;
   final Function(int) onTap;
   final String tips;
+  final WebViewController controller;
+  final double webviewHeight;
 
   @override
   Widget build(BuildContext context) {
@@ -118,7 +121,7 @@ class MultipleChoiceQuestion extends StatelessWidget {
             );
           }),
         ),
-        if (check && tips.isNotEmpty) ...[
+        if (check && tips.isNotEmpty && possibleAnswers[answerIndex!] != correctAnswer) ...[
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Container(
@@ -129,12 +132,24 @@ class MultipleChoiceQuestion extends StatelessWidget {
                 borderRadius: BorderRadius.circular(15.0),
               ),
               alignment: Alignment.center,
-              child: Text(
-                'Tips:\n',
-                style: TextStyle(
-                  fontSize: 22.0,
-                  fontWeight: FontWeight.bold,
-                ),
+              child: Column(
+                children: [
+                  const SizedBox(height: 10.0),
+                  Text(
+                    'Tips:',
+                    style: TextStyle(
+                      fontSize: 22.0,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 10.0),
+                  SizedBox(
+                    height: webviewHeight,
+                    child: WebViewWidget(
+                      controller: controller,
+                    ),
+                  ),
+                ],
               ),
             ),
           ),

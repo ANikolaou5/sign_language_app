@@ -152,7 +152,42 @@ flutter:
     - assets/symbols/sorry.png
     - assets/symbols/thankYou.png
     - assets/symbols/yes.png
-    - assets/content/
+    - assets/content/A.html
+    - assets/content/B.html
+    - assets/content/C.html
+    - assets/content/D.html
+    - assets/content/E.html
+    - assets/content/F.html
+    - assets/content/G.html
+    - assets/content/H.html
+    - assets/content/I.html
+    - assets/content/J.html
+    - assets/content/K.html
+    - assets/content/L.html
+    - assets/content/M.html
+    - assets/content/N.html
+    - assets/content/O.html
+    - assets/content/P.html
+    - assets/content/Q.html
+    - assets/content/R.html
+    - assets/content/S.html
+    - assets/content/T.html
+    - assets/content/U.html
+    - assets/content/V.html
+    - assets/content/W.html
+    - assets/content/X.html
+    - assets/content/Y.html
+    - assets/content/Z.html
+    - assets/content/1.html
+    - assets/content/2.html
+    - assets/content/3.html
+    - assets/content/4.html
+    - assets/content/5.html
+    - assets/content/6.html
+    - assets/content/7.html
+    - assets/content/8.html
+    - assets/content/9.html
+    - assets/content/10.html
     - assets/logos/logo1.png
     - assets/logos/logo2.png
 

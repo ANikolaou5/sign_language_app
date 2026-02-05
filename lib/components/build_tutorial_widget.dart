@@ -46,20 +46,22 @@ class _BuildTutorialState extends State<BuildTutorial> {
 
   @override
   void initState() {
-    controller = WebViewController()
-      ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      ..setBackgroundColor(Colors.orange.shade50)
-      ..setNavigationDelegate(
-        NavigationDelegate(
-          onPageFinished: (String url) async {
-            await Future.delayed(const Duration(milliseconds: 100));
+    if (widget.readingTutorial.webviewFile != null) {
+      controller = WebViewController()
+        ..setJavaScriptMode(JavaScriptMode.unrestricted)
+        ..setBackgroundColor(Colors.orange.shade50)
+        ..setNavigationDelegate(
+          NavigationDelegate(
+            onPageFinished: (String url) async {
+              await Future.delayed(const Duration(milliseconds: 100));
 
-            // 2. Call the resize function
-            _updateWebViewHeight();
-          },
-        ),
-      )
-      ..loadFlutterAsset('assets/content/A.html');
+              // 2. Call the resize function
+              _updateWebViewHeight();
+            },
+          ),
+        )
+        ..loadFlutterAsset(widget.readingTutorial.webviewFile!);
+    }
     super.initState();
   }
 
@@ -116,17 +118,16 @@ class _BuildTutorialState extends State<BuildTutorial> {
               fit: BoxFit.contain,
             ),
           ),
-
-          SizedBox(height: 20,),
-
-          //WebView
-          SizedBox(
-            height: _webviewHeight,
-            child: WebViewWidget(
-              controller: controller,
+          if (widget.readingTutorial.webviewFile != null) ...[
+            SizedBox(height: 20.0,),
+            //WebView
+            SizedBox(
+              height: _webviewHeight,
+              child: WebViewWidget(
+                controller: controller,
+              ),
             ),
-          ),
-
+          ],
         ] else ...[
           if (widget.multipleChoiceQuestion != null) ...[
             MultipleChoiceQuestion(
@@ -135,7 +136,9 @@ class _BuildTutorialState extends State<BuildTutorial> {
               answerIndex: widget.answerIndex,
               check: widget.check,
               onTap: widget.onTap,
-              tips: '',
+              tips: widget.readingTutorial.webviewFile ?? '',
+              controller: controller,
+              webviewHeight: _webviewHeight,
             ),
           ],
         ],
