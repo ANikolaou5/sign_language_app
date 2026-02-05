@@ -318,26 +318,28 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
                 const SizedBox(height: 15.0),
-                Card(
-                  elevation: 4.0,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
-                  child: Container(
-                    padding: const EdgeInsets.all(10.0),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(15.0),
-                      gradient: LinearGradient(colors: [Colors.orange.shade100, Colors.white],),
+                if (user != null) ...[
+                  Card(
+                    elevation: 4.0,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
+                    child: Container(
+                      padding: const EdgeInsets.all(10.0),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(15.0),
+                        gradient: LinearGradient(colors: [Colors.orange.shade100, Colors.white],),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          ProgressItem(text: "Streak", num: user?.streakNum ?? 0, icon: Icons.local_fire_department),
+                          ProgressItem(text: "Streak Goal", num: user?.streakNumGoal ?? 0, icon: Icons.tour),
+                          ProgressItem(text: "Score", num: user?.score ?? 0, icon: Icons.emoji_events),
+                        ],
+                      )
                     ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        ProgressItem(text: "Streak", num: user?.streakNum ?? 0, icon: Icons.local_fire_department),
-                        ProgressItem(text: "Streak Goal", num: user?.streakNumGoal ?? 0, icon: Icons.tour),
-                        ProgressItem(text: "Score", num: user?.score ?? 0, icon: Icons.emoji_events),
-                      ],
-                    )
                   ),
-                ),
-                const SizedBox(height: 10.0),
+                  const SizedBox(height: 10.0),
+                ],
                 Card(
                   elevation: 4.0,
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
