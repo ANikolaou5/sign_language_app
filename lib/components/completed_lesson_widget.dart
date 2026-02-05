@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../classes/badge_class.dart';
 
 class CompletedLesson extends StatelessWidget {
-  const CompletedLesson({super.key, this.readingTutorial, required this.completed, required this.badges, required this.score, required this.reviewLesson, required this.isGuest, required this.timerEnd, required this.quiz,});
+  const CompletedLesson({super.key, this.readingTutorial, required this.completed, required this.badges, required this.score, required this.reviewLesson, required this.isGuest, required this.timerEnd, required this.quiz, required this.streakUpdate, required this.streak,});
 
   final int? readingTutorial;
   final VoidCallback completed;
@@ -13,11 +13,25 @@ class CompletedLesson extends StatelessWidget {
   final bool isGuest;
   final bool timerEnd;
   final bool quiz;
+  final bool streakUpdate;
+  final int? streak;
 
   @override
   Widget build(BuildContext context) {
     BadgeClass? earnedBadge = badges.isNotEmpty ? badges.first : null;
     final bool earned = earnedBadge != null;
+
+    String txt = '';
+
+    if (streakUpdate) {
+      if (streak == 5) {
+        txt = '2';
+      } else if (streak == 10) {
+        txt = '3';
+      } else if (streak == 15) {
+        txt = '4';
+      }
+    }
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -108,6 +122,24 @@ class CompletedLesson extends StatelessWidget {
                     color: Colors.orange.shade700,
                   ),
                 ),
+                if (txt != '') ...[
+                  const SizedBox(height: 10.0),
+                  Container(
+                    padding: const EdgeInsets.all(10.0),
+                    decoration: BoxDecoration(
+                      color: Colors.deepOrange,
+                      borderRadius: BorderRadius.circular(15.0),
+                    ),
+                    child: Text(
+                      "x$txt Streak Bonus",
+                      style: const TextStyle(
+                        fontSize: 14.0,
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
               ],
             ),
           ),

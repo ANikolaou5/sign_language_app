@@ -90,7 +90,6 @@ class _AccountScreenState extends State<AccountScreen> {
         },
         'learningDetails' : {
           'streakNum' : 0,
-          'streakNumGoal' : 0,
           'lastStreakDate': '',
           'score' : 0,
           'completedLevels' : 0,
@@ -109,7 +108,6 @@ class _AccountScreenState extends State<AccountScreen> {
         email: inputEmail,
         username: inputUsername,
         streakNum: 0,
-        streakNumGoal: 0,
         score: 0,
         completedLevels: 0,
         draws: 0,
@@ -450,7 +448,6 @@ class _AccountScreenState extends State<AccountScreen> {
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
                             ProgressItem(text: "Streak", num: user?.streakNum ?? 0),
-                            ProgressItem(text: "Streak Goal", num: user?.streakNumGoal ?? 0),
                             ProgressItem(text: "Score", num: user?.score ?? 0),
                           ],
                         ),

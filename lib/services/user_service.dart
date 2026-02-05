@@ -28,7 +28,6 @@ class UserService {
       surname: prefs.getString('surname'),
       email: prefs.getString('email'),
       streakNum: prefs.getInt('streakNum') ?? 0,
-      streakNumGoal: prefs.getInt('streakNumGoal') ?? 0,
       lastStreakDate: lastStreakDate,
       score: prefs.getInt('score') ?? 0,
       completedLevels: prefs.getInt('completedLevels') ?? 0,
@@ -50,7 +49,6 @@ class UserService {
     if (user.surname != null) await prefs.setString('surname', user.surname!);
     if (user.email != null) await prefs.setString('email', user.email!);
     await prefs.setInt('streakNum', user.streakNum);
-    await prefs.setInt('streakNumGoal', user.streakNumGoal);
     await prefs.setInt('score', user.score);
     await prefs.setInt('completedLevels', user.completedLevels);
     await prefs.setInt('draws', user.draws);

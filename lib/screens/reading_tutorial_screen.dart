@@ -317,6 +317,8 @@ class _ReadingTutorialScreenState extends State<ReadingTutorialScreen> {
                   isGuest: isGuest,
                   timerEnd: false,
                   quiz: false,
+                  streak: null,
+                  streakUpdate: false,
                 )
                 : BuildTutorial(
                   key: ValueKey(widget.readingTutorial.tutorialText),

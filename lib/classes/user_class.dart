@@ -6,7 +6,6 @@ class UserClass {
   final String? email;
 
   final int streakNum;
-  final int streakNumGoal;
   final DateTime? lastStreakDate;
   final int score;
   final int completedLevels;
@@ -25,7 +24,6 @@ class UserClass {
     this.surname,
     this.email,
     required this.streakNum,
-    required this.streakNumGoal,
     this.lastStreakDate,
     required this.score,
     required this.completedLevels,
@@ -63,7 +61,6 @@ class UserClass {
       surname: accountDetails['surname'],
       email: accountDetails['email'],
       streakNum: learningDetails['streakNum'] ?? 0,
-      streakNumGoal: learningDetails['streakNumGoal'] ?? 0,
       lastStreakDate: date,
       score: learningDetails['score'] ?? 0,
       completedLevels: learningDetails['completedLevels'] ?? 0,

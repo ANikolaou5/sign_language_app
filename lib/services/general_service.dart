@@ -413,7 +413,7 @@ class GeneralService {
     );
   }
 
-  Future<void> complete(String username, int score) async {
+  Future<int> complete(String username, int score) async {
     final DatabaseReference usersRef = FirebaseDatabase.instance.ref().child('users');
     final userRef = usersRef.child(username);
     final DataSnapshot snapshot = await userRef.get();
@@ -423,14 +423,23 @@ class GeneralService {
     DateTime today = DateTime(now.year, now.month, now.day);
 
     int streak = user.streakNum;
+    int difference = 0;
 
     if (user.lastStreakDate != null) {
       DateTime lastStreakDate = user.lastStreakDate!;
       DateTime lastDate = DateTime(lastStreakDate.year, lastStreakDate.month, lastStreakDate.day);
-      int difference = today.difference(lastDate).inDays;
+      difference = today.difference(lastDate).inDays;
 
       if (difference == 1) {
         streak += 1;
+
+        if (streak == 5) {
+          score *= 2;
+        } else if (streak == 10) {
+          score *= 3;
+        } else if (streak == 15) {
+          score *= 4;
+        }
       } else if (difference > 1) {
         streak = 1;
       }
@@ -443,6 +452,8 @@ class GeneralService {
       'learningDetails/lastStreakDate': today.toIso8601String(),
       'learningDetails/score': user.score + score,
     });
+
+    return difference;
   }
 
   DateTime calculateEndTime(int length, String? difficulty) {

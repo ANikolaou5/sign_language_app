@@ -18,7 +18,7 @@ class ProgressItem extends StatelessWidget {
             color: Colors.orange.shade900,
             size: 60.0,
           ),
-          const SizedBox(height: 15.0),
+          const SizedBox(height: 5.0),
         ],
         Text(
           num.toString(),

@@ -1,6 +1,9 @@
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_timer_countdown/flutter_timer_countdown.dart';
+import 'package:sign_language_app/classes/badge_class.dart';
 
+import '../classes/user_class.dart';
 import '../components/completed_lesson_widget.dart';
 import '../components/match_question_widget.dart';
 import '../services/general_service.dart';
@@ -23,14 +26,17 @@ class _MatchingScreenState extends State<MatchingScreen> {
   final GeneralService generalService = GeneralService();
   final UserService userService = UserService();
   late List<Map<String, dynamic>> finalMatchQuestions;
+  late UserClass? user;
 
   Set<String> matchedImages = {};
   Set<String> matchedTexts = {};
+  List<BadgeClass> badges = [];
 
   final int questionPoints = 30;
   int score = 0;
   int questionIndex = 0;
   int? answerIndex;
+  int difference = 0;
 
   bool completed = false;
   bool isCorrectAnswer = false;
@@ -40,10 +46,39 @@ class _MatchingScreenState extends State<MatchingScreen> {
   late DateTime endTime;
 
   Future<void> _complete() async {
+    List<int> dbBadges = List<int>.from(user!.badges);
+
     if (!timerEnd) {
-      await generalService.complete(widget.username, score);
-      await userService.refreshUserLocalStorage();
+      difference = await generalService.complete(widget.username, score);
+      user = await userService.refreshUserLocalStorage();
     }
+
+    final badgesSnapshot = await FirebaseDatabase.instance.ref().child('badges').get();
+
+    if (badgesSnapshot.exists) {
+      final Map<dynamic, dynamic> badgesMap = badgesSnapshot.value as Map;
+      badges.clear();
+
+      for (var entry in badgesMap.entries) {
+        final data = Map<String, dynamic>.from(entry.value as Map);
+
+        if (data['streak'] == user!.streakNum) {
+          int badgeNum = data['badgeNum'] as int;
+
+          if (!dbBadges.contains(badgeNum)) {
+            dbBadges.add(badgeNum);
+            badges.add(BadgeClass.fromMap(data));
+          }
+        }
+      }
+    }
+
+    final DatabaseReference usersRef = FirebaseDatabase.instance.ref().child('users');
+    final userRef = usersRef.child(widget.username);
+
+    await userRef.update({
+      'learningDetails/badges': dbBadges,
+    });
 
     setState(() {
       completed = true;
@@ -71,10 +106,19 @@ class _MatchingScreenState extends State<MatchingScreen> {
     }
   }
 
+  Future<void> _loadUser() async {
+    final currentUser = await userService.refreshUserLocalStorage();
+
+    setState(() {
+      user = currentUser;
+    });
+  }
+
   @override
   void initState() {
     super.initState();
 
+    _loadUser();
     endTime = generalService.calculateEndTime(widget.matchQuestions.length, widget.difficulty);
     finalMatchQuestions = List<Map<String, dynamic>>.from(widget.matchQuestions)..shuffle();
   }
@@ -166,12 +210,14 @@ class _MatchingScreenState extends State<MatchingScreen> {
                     child: Center(
                       child: completed ? CompletedLesson(
                         completed: () => Navigator.pop(context),
-                        badges: [],
+                        badges: badges,
                         score: score,
                         reviewLesson: false,
                         isGuest: false,
                         timerEnd: timerEnd,
                         quiz: widget.quiz,
+                        streak: user?.streakNum,
+                        streakUpdate: difference == 1 ? true : false,
                       ) : MatchQuestion(
                         question: finalMatchQuestions[questionIndex],
                         matchedImages: matchedImages,

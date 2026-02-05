@@ -1,8 +1,10 @@
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_timer_countdown/flutter_timer_countdown.dart';
 
 import '../classes/badge_class.dart';
 import '../classes/question_class.dart';
+import '../classes/user_class.dart';
 import '../components/completed_lesson_widget.dart';
 import '../components/read_the_sign_widget.dart';
 import '../services/general_service.dart';
@@ -26,6 +28,7 @@ class ReadTheSignScreen extends StatefulWidget {
 class _ReadTheSignScreenState extends State<ReadTheSignScreen> {
   final GeneralService generalService = GeneralService();
   final UserService userService = UserService();
+  late UserClass? user;
 
   List<Question> finalMultipleChoiceQuestions = [];
   List<String> possibleAnswers = [];
@@ -36,6 +39,7 @@ class _ReadTheSignScreenState extends State<ReadTheSignScreen> {
   int questionIndex = 0;
   int score = 0;
   final int pointsMCQ = 10;
+  int difference = 0;
 
   bool completed = false;
   bool isCorrectAnswer = false;
@@ -76,10 +80,39 @@ class _ReadTheSignScreenState extends State<ReadTheSignScreen> {
   }
 
   Future<void> _complete() async {
+    List<int> dbBadges = List<int>.from(user!.badges);
+
     if (!timerEnd) {
-      await generalService.complete(widget.username, score);
-      await userService.refreshUserLocalStorage();
+      difference = await generalService.complete(widget.username, score);
+      user = await userService.refreshUserLocalStorage();
     }
+
+    final badgesSnapshot = await FirebaseDatabase.instance.ref().child('badges').get();
+
+    if (badgesSnapshot.exists) {
+      final Map<dynamic, dynamic> badgesMap = badgesSnapshot.value as Map;
+      badges.clear();
+
+      for (var entry in badgesMap.entries) {
+        final data = Map<String, dynamic>.from(entry.value as Map);
+
+        if (data['streak'] == user!.streakNum) {
+          int badgeNum = data['badgeNum'] as int;
+
+          if (!dbBadges.contains(badgeNum)) {
+            dbBadges.add(badgeNum);
+            badges.add(BadgeClass.fromMap(data));
+          }
+        }
+      }
+    }
+
+    final DatabaseReference usersRef = FirebaseDatabase.instance.ref().child('users');
+    final userRef = usersRef.child(widget.username);
+
+    await userRef.update({
+      'learningDetails/badges': dbBadges,
+    });
 
     setState(() {
       completed = true;
@@ -220,6 +253,8 @@ class _ReadTheSignScreenState extends State<ReadTheSignScreen> {
                         isGuest: false,
                         timerEnd: timerEnd,
                         quiz: widget.quiz,
+                        streak: user?.streakNum,
+                        streakUpdate: difference == 1 ? true : false,
                       ) : ReadTheSignQuestion(
                         question: finalMultipleChoiceQuestions[questionIndex],
                         possibleAnswers: possibleAnswers,

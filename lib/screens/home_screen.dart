@@ -123,155 +123,6 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  Future<void> _updateStreakNumGoal(StateSetter setDialogState) async {
-    if (user == null) return;
-
-    String inputStreakGoal = streakGoalTextController.text.trim();
-
-    setDialogState(() {
-      if (int.tryParse(inputStreakGoal) == null ||
-          int.tryParse(inputStreakGoal)! <= 0) {
-        errorMessage = "Please enter a number greater than 0.";
-      } else if (int.tryParse(inputStreakGoal)! <= user!.streakNumGoal) {
-        errorMessage =
-        "Your new goal must be higher than your current goal (${user!
-            .streakNumGoal}).";
-      } else {
-        errorMessage = null;
-      }
-    });
-
-    if (errorMessage == null) {
-      final userRef = usersRef.child(user!.username).child('learningDetails');
-
-      await userRef.update({
-        'streakNumGoal': int.tryParse(inputStreakGoal) ?? 0,
-      });
-
-      setState(() {
-        userService.refreshUserLocalStorage();
-
-        user = UserClass(
-          uid: user!.uid,
-          username: user!.username,
-          name: user!.name,
-          surname: user!.surname,
-          email: user!.email,
-          streakNum: user!.streakNum,
-          streakNumGoal: int.tryParse(inputStreakGoal) ?? 0,
-          score: user!.score,
-          completedLessons: user!.completedLessons,
-          completedLevels: user!.completedLevels,
-          draws: user!.draws,
-          losses: user!.losses,
-          wins: user!.wins,
-          badges: user!.badges,
-        );
-      });
-
-      Navigator.pop(context);
-    }
-  }
-
-  // Function to load the learning details of the user from the Realtime database.
-  Future<void> _checkStreakGoal() async {
-    if (user == null) return;
-
-    if (user!.streakNum >= user!.streakNumGoal) {
-      Future.delayed(Duration.zero, () {
-        showDialog(
-          context: context,
-          barrierDismissible: false,
-          builder: (context) => StatefulBuilder(
-            builder: (context, setDialogState) {
-              return PopScope(
-                canPop: false,
-                onPopInvokedWithResult: (didPop, result) {
-                  if (didPop) return;
-                },
-                child:Dialog(
-                  shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(15.0)),
-                  child: Container(
-                    padding: const EdgeInsets.all(20.0),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(25.0),
-                      gradient: LinearGradient(colors: [
-                        Colors.orange.shade100,
-                        Colors.white
-                      ],),
-                    ),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          Icons.local_fire_department,
-                          color: Colors.deepOrange,
-                          size: 80.0,
-                        ),
-                        Text(
-                          "Update your streak goal!",
-                          style: const TextStyle(
-                            fontSize: 22.0,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 15.0),
-                        TextField(
-                          controller: streakGoalTextController,
-                          autofocus: true,
-                          keyboardType: TextInputType.number,
-                          inputFormatters: [
-                            FilteringTextInputFormatter.digitsOnly,
-                          ],
-                          decoration: InputDecoration(
-                            hintText: 'Streak number',
-                            enabledBorder: UnderlineInputBorder(
-                              borderSide: BorderSide(
-                                color: Colors.deepOrange,
-                                width: 2.0,
-                              ),
-                            ),
-                            focusedBorder: UnderlineInputBorder(
-                              borderSide: BorderSide(
-                                color: Colors.deepOrange,
-                                width: 2.0,
-                              ),
-                            ),
-                          ),
-                        ),
-                        if (errorMessage != null) Text(errorMessage!, style: const TextStyle(color: Colors.red,)),
-                        const SizedBox(height: 10.0),
-                        ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.deepOrange,
-                            foregroundColor: Colors.white,
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12.0)),
-                          ),
-                          onPressed: () async {
-                            await _updateStreakNumGoal(setDialogState);
-                          },
-                          child: const Text(
-                            "Save",
-                            style: TextStyle(
-                              fontSize: 18.0,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              );
-            }
-          ),
-        );
-      });
-    }
-  }
-
   // Function to load top users from the Realtime database for the leaderboard.
   Future<void> _loadTopUsers() async {
     users = await userService.loadTopUsers(3);
@@ -286,7 +137,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
     _loadUserLocalStorage().then((_) async {
       await _resetStreakNum();
-      await _checkStreakGoal();
       await _loadTopUsers();
     });
   }
@@ -332,7 +182,6 @@ class _HomeScreenState extends State<HomeScreen> {
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
                           ProgressItem(text: "Streak", num: user?.streakNum ?? 0, icon: Icons.local_fire_department),
-                          ProgressItem(text: "Streak Goal", num: user?.streakNumGoal ?? 0, icon: Icons.tour),
                           ProgressItem(text: "Score", num: user?.score ?? 0, icon: Icons.emoji_events),
                         ],
                       )
