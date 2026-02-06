@@ -144,7 +144,7 @@ class _WordsToSignScreenState extends State<WordsToSignScreen> {
       await userRef.update({
         'learningDetails/score': user!.score + newScore,
         'learningDetails/badges': dbBadges,
-        'learningDetails/trainCounts/wordsToSignQCount': dbQuizCount,
+        'learningDetails/quizCounts/wordsToSignQCount': dbQuizCount,
       });
     } else {
       await userRef.update({
@@ -196,22 +196,27 @@ class _WordsToSignScreenState extends State<WordsToSignScreen> {
     }
   }
 
-  Future<void> _loadUser() async {
-    final currentUser = await userService.refreshUserLocalStorage();
+  // Function to load username from local storage, when already logged in.
+  Future<void> _loadUserLocalStorage() async {
+    user = await userService.loadUserLocalStorage();
 
-    setState(() {
-      user = currentUser;
-    });
+    if (user != null) {
+      setState(() {});
+    }
   }
 
   @override
   void initState() {
     super.initState();
 
-    _loadUser();
-    endTime = generalService.calculateEndTime(widget.multipleChoiceQuestions.length, widget.difficulty);
-    finalMultipleChoiceQuestions = List<Question>.from(widget.multipleChoiceQuestions)..shuffle();
-    _createPossibleAnswersMCQ();
+    _loadUserLocalStorage().then((_) async {
+      endTime = generalService.calculateEndTime(
+          widget.multipleChoiceQuestions.length, widget.difficulty);
+      finalMultipleChoiceQuestions =
+      List<Question>.from(widget.multipleChoiceQuestions)
+        ..shuffle();
+      _createPossibleAnswersMCQ();
+    });
   }
 
   @override

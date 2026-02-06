@@ -108,7 +108,7 @@ class _MatchingScreenState extends State<MatchingScreen> {
       await userRef.update({
         'learningDetails/score': user!.score + newScore,
         'learningDetails/badges': dbBadges,
-        'learningDetails/trainCounts/dragAndDropQCount': dbQuizCount,
+        'learningDetails/quizCounts/dragAndDropQCount': dbQuizCount,
       });
     } else {
       await userRef.update({
@@ -146,21 +146,26 @@ class _MatchingScreenState extends State<MatchingScreen> {
     }
   }
 
-  Future<void> _loadUser() async {
-    final currentUser = await userService.refreshUserLocalStorage();
+  // Function to load username from local storage, when already logged in.
+  Future<void> _loadUserLocalStorage() async {
+    user = await userService.loadUserLocalStorage();
 
-    setState(() {
-      user = currentUser;
-    });
+    if (user != null) {
+      setState(() {});
+    }
   }
 
   @override
   void initState() {
     super.initState();
 
-    _loadUser();
-    endTime = generalService.calculateEndTime(widget.matchQuestions.length, widget.difficulty);
-    finalMatchQuestions = List<Map<String, dynamic>>.from(widget.matchQuestions)..shuffle();
+    _loadUserLocalStorage().then((_) async {
+      endTime = generalService.calculateEndTime(
+          widget.matchQuestions.length, widget.difficulty);
+      finalMatchQuestions =
+      List<Map<String, dynamic>>.from(widget.matchQuestions)
+        ..shuffle();
+    });
   }
 
   @override

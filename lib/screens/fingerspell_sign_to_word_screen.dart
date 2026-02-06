@@ -28,7 +28,7 @@ class _FingerspellSignToWordScreenState extends State<FingerspellSignToWordScree
   final UserService userService = UserService();
   late TextEditingController answerTextController;
   late List<Question> finalQuestions;
-  late UserClass? user;
+  UserClass? user;
   List<BadgeClass> badges = [];
 
   final int questionPoints = 20;
@@ -110,7 +110,7 @@ class _FingerspellSignToWordScreenState extends State<FingerspellSignToWordScree
       await userRef.update({
         'learningDetails/score': user!.score + newScore,
         'learningDetails/badges': dbBadges,
-        'learningDetails/trainCounts/imgToWordQCount': dbQuizCount,
+        'learningDetails/quizCounts/imgToWordQCount': dbQuizCount,
       });
     } else {
       await userRef.update({
@@ -162,23 +162,27 @@ class _FingerspellSignToWordScreenState extends State<FingerspellSignToWordScree
     }
   }
 
-  Future<void> _loadUser() async {
-    final currentUser = await userService.refreshUserLocalStorage();
+  // Function to load username from local storage, when already logged in.
+  Future<void> _loadUserLocalStorage() async {
+    user = await userService.loadUserLocalStorage();
 
-    setState(() {
-      user = currentUser;
-    });
+    if (user != null) {
+      setState(() {});
+    }
   }
 
   @override
   void initState() {
     super.initState();
 
-    _loadUser();
-    endTime = generalService.calculateEndTime(widget.signToTextQuestions.length, widget.difficulty);
-    final shuffledQuestions = List<Question>.from(widget.signToTextQuestions)..shuffle();
-    finalQuestions = shuffledQuestions.take(questionsToDisplay).toList();
-    answerTextController = TextEditingController();
+    _loadUserLocalStorage().then((_) async {
+      endTime = generalService.calculateEndTime(
+          widget.signToTextQuestions.length, widget.difficulty);
+      final shuffledQuestions = List<Question>.from(widget.signToTextQuestions)
+        ..shuffle();
+      finalQuestions = shuffledQuestions.take(questionsToDisplay).toList();
+      answerTextController = TextEditingController();
+    });
   }
 
   @override

@@ -41,11 +41,13 @@ class BuildTutorial extends StatefulWidget {
 
 class _BuildTutorialState extends State<BuildTutorial> {
 
-  late WebViewController controller;
+  late WebViewController controller = WebViewController();
   double _webviewHeight = 100;
 
   @override
   void initState() {
+    super.initState();
+
     if (widget.readingTutorial.webviewFile != null) {
       controller = WebViewController()
         ..setJavaScriptMode(JavaScriptMode.unrestricted)
@@ -62,7 +64,6 @@ class _BuildTutorialState extends State<BuildTutorial> {
         )
         ..loadFlutterAsset(widget.readingTutorial.webviewFile!);
     }
-    super.initState();
   }
 
   @override
