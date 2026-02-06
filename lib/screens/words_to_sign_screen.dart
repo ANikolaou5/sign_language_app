@@ -36,6 +36,7 @@ class _WordsToSignScreenState extends State<WordsToSignScreen> {
   int? answerIndex;
   int questionIndex = 0;
   int score = 0;
+  late int newScore;
   final int pointsMCQ = 10;
   int difference = 0;
 
@@ -43,6 +44,7 @@ class _WordsToSignScreenState extends State<WordsToSignScreen> {
   bool isCorrectAnswer = false;
   bool check = false;
   bool timerEnd = false;
+  bool newBadge = false;
 
   late DateTime endTime;
 
@@ -86,7 +88,13 @@ class _WordsToSignScreenState extends State<WordsToSignScreen> {
       user = await userService.refreshUserLocalStorage();
     }
 
-    final badgesSnapshot = await FirebaseDatabase.instance.ref().child('badges').get();
+    int dbTrainCount = user!.wordsToSignTCount + 1;
+    int dbQuizCount = user!.wordsToSignQCount + 1;
+    newScore = score;
+    final badgesSnapshot = await FirebaseDatabase.instance
+        .ref()
+        .child('badges')
+        .get();
 
     if (badgesSnapshot.exists) {
       final Map<dynamic, dynamic> badgesMap = badgesSnapshot.value as Map;
@@ -101,6 +109,29 @@ class _WordsToSignScreenState extends State<WordsToSignScreen> {
           if (!dbBadges.contains(badgeNum)) {
             dbBadges.add(badgeNum);
             badges.add(BadgeClass.fromMap(data));
+            newBadge = true;
+          }
+        }
+
+        if (widget.quiz) {
+          if (data['wordsToSignQCount'] == dbQuizCount) {
+            int badgeNum = data['badgeNum'] as int;
+
+            if (!dbBadges.contains(badgeNum)) {
+              dbBadges.add(badgeNum);
+              badges.add(BadgeClass.fromMap(data));
+              newBadge = true;
+            }
+          }
+        } else {
+          if (data['wordsToSignTCount'] == dbTrainCount) {
+            int badgeNum = data['badgeNum'] as int;
+
+            if (!dbBadges.contains(badgeNum)) {
+              dbBadges.add(badgeNum);
+              badges.add(BadgeClass.fromMap(data));
+              newBadge = true;
+            }
           }
         }
       }
@@ -109,9 +140,21 @@ class _WordsToSignScreenState extends State<WordsToSignScreen> {
     final DatabaseReference usersRef = FirebaseDatabase.instance.ref().child('users');
     final userRef = usersRef.child(widget.username);
 
-    await userRef.update({
-      'learningDetails/badges': dbBadges,
-    });
+    if (widget.quiz) {
+      await userRef.update({
+        'learningDetails/score': user!.score + newScore,
+        'learningDetails/badges': dbBadges,
+        'learningDetails/trainCounts/wordsToSignQCount': dbQuizCount,
+      });
+    } else {
+      await userRef.update({
+        'learningDetails/score': user!.score + newScore,
+        'learningDetails/badges': dbBadges,
+        'learningDetails/trainCounts/wordsToSignTCount': dbTrainCount,
+      });
+    }
+
+    user = await userService.refreshUserLocalStorage();
 
     setState(() {
       completed = true;
@@ -153,10 +196,19 @@ class _WordsToSignScreenState extends State<WordsToSignScreen> {
     }
   }
 
+  Future<void> _loadUser() async {
+    final currentUser = await userService.refreshUserLocalStorage();
+
+    setState(() {
+      user = currentUser;
+    });
+  }
+
   @override
   void initState() {
     super.initState();
 
+    _loadUser();
     endTime = generalService.calculateEndTime(widget.multipleChoiceQuestions.length, widget.difficulty);
     finalMultipleChoiceQuestions = List<Question>.from(widget.multipleChoiceQuestions)..shuffle();
     _createPossibleAnswersMCQ();
@@ -247,6 +299,7 @@ class _WordsToSignScreenState extends State<WordsToSignScreen> {
                       child: completed ? CompletedLesson(
                         completed: () => Navigator.pop(context),
                         badges: badges,
+                        newBadge: newBadge,
                         score: score,
                         reviewLesson: false,
                         isGuest: false,

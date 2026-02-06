@@ -67,63 +67,89 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
         ),
         body: Padding(
           padding: const EdgeInsets.all(10.0),
-          child: badges.isEmpty ? const Center(child: CircularProgressIndicator())
-            : GridView.builder(
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                mainAxisSpacing: 12.0,
-                crossAxisSpacing: 12.0,
-                childAspectRatio: 1.0,
+          child: badges.isEmpty ? const Center(child: CircularProgressIndicator()) : Column(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8.0),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  border: Border.all(width: 2.0, color: Colors.orange.shade300),
+                  borderRadius: BorderRadius.circular(15.0),
+                ),
+                alignment: Alignment.center,
+                child: Text(
+                  "Scroll to see your badges",
+                  style: TextStyle(fontSize: 16.0,),
+                ),
               ),
-              itemCount: badges.length,
-              itemBuilder: (context, index) {
-                final badge = badges[index];
-                final bool earned = user?.badges.contains(badge.badgeNum) ?? false;
+              const SizedBox(height: 10.0),
+              Expanded(
+                child: ListView.builder(
+                physics: const BouncingScrollPhysics(),
+                itemCount: badges.length,
+                  itemBuilder: (context, index) {
+                    final badge = badges[index];
+                    final bool earned = user?.badges.contains(badge.badgeNum) ?? false;
 
-                return Opacity(
-                  opacity: earned ? 1.0 : 0.6,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.deepOrange,),
-                      borderRadius: BorderRadius.circular(15.0),
-                      gradient: LinearGradient(colors: [Colors.orange.shade100, Colors.white],),
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        ColorFiltered(
-                          colorFilter: earned
-                            ? const ColorFilter.mode(Colors.transparent, BlendMode.multiply)
-                            : ColorFilter.mode(Colors.grey.shade300, BlendMode.saturation),
-                          child: Image.asset(
-                            badge.badgeImage,
-                            height: 110,
-                          ),
+                    return Opacity(
+                      opacity: earned ? 1.0 : 0.6,
+                      child: Container(
+                        margin: const EdgeInsets.only(bottom: 10.0),
+                        padding: const EdgeInsets.all(15.0),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.deepOrange,),
+                          borderRadius: BorderRadius.circular(15.0),
+                          gradient: LinearGradient(colors: [Colors.orange.shade100, Colors.white],),
                         ),
-                        const SizedBox(height: 10.0),
-                        Text(
-                          badge.badgeName,
-                          style: TextStyle(
-                            fontSize: 18.0,
-                            color: earned ? Colors.deepOrange.shade900 : Colors.grey,
-                            fontWeight: FontWeight.bold,
-                          ),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            ColorFiltered(
+                              colorFilter: earned
+                                ? const ColorFilter.mode(Colors.transparent, BlendMode.multiply)
+                                : ColorFilter.mode(Colors.grey.shade200, BlendMode.saturation),
+                              child: Image.asset(
+                                badge.badgeImage,
+                                height: 100,
+                                width: 100,
+                                fit: BoxFit.contain,
+                              ),
+                            ),
+                            const SizedBox(width: 10.0),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    badge.badgeName,
+                                    style: TextStyle(
+                                      fontSize: 20.0,
+                                      color: earned ? Colors.deepOrange.shade900 : Colors.grey.shade700,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 5.0),
+                                  Text(
+                                    badge.badgeDesc,
+                                    softWrap: true,
+                                    style: TextStyle(
+                                      fontSize: 14.0,
+                                      color: earned ? Colors.black87 : Colors.blueGrey,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
                         ),
-                        const SizedBox(height: 5.0),
-                        Text(
-                          badge.badgeDesc,
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 12.0,
-                            color: earned ? Colors.black : Colors.blueGrey,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              },
-            ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

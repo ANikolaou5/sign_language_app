@@ -34,6 +34,16 @@ class UserService {
       draws: prefs.getInt('draws') ?? 0,
       losses: prefs.getInt('losses') ?? 0,
       wins: prefs.getInt('wins') ?? 0,
+      dragAndDropQCount: prefs.getInt('dragAndDropQCount') ?? 0,
+      imgToWordQCount: prefs.getInt('imgToWordQCount') ?? 0,
+      readTheSignQCount: prefs.getInt('readTheSignQCount') ?? 0,
+      signToWordsQCount: prefs.getInt('signToWordsQCount') ?? 0,
+      wordsToSignQCount: prefs.getInt('wordsToSignQCount') ?? 0,
+      dragAndDropTCount: prefs.getInt('dragAndDropTCount') ?? 0,
+      imgToWordTCount: prefs.getInt('imgToWordTCount') ?? 0,
+      readTheSignTCount: prefs.getInt('readTheSignTCount') ?? 0,
+      signToWordsTCount: prefs.getInt('signToWordsTCount') ?? 0,
+      wordsToSignTCount: prefs.getInt('wordsToSignTCount') ?? 0,
       badges: badges,
       completedLessons: completedLessons,
     );
@@ -54,6 +64,16 @@ class UserService {
     await prefs.setInt('draws', user.draws);
     await prefs.setInt('losses', user.losses);
     await prefs.setInt('wins', user.wins);
+    await prefs.setInt('dragAndDropQCount', user.dragAndDropQCount);
+    await prefs.setInt('imgToWordQCount', user.imgToWordQCount);
+    await prefs.setInt('readTheSignQCount', user.readTheSignQCount);
+    await prefs.setInt('signToWordsQCount', user.signToWordsQCount);
+    await prefs.setInt('wordsToSignQCount', user.wordsToSignQCount);
+    await prefs.setInt('dragAndDropTCount', user.dragAndDropTCount);
+    await prefs.setInt('imgToWordTCount', user.imgToWordTCount);
+    await prefs.setInt('readTheSignTCount', user.readTheSignTCount);
+    await prefs.setInt('signToWordsTCount', user.signToWordsTCount);
+    await prefs.setInt('wordsToSignTCount', user.wordsToSignTCount);
 
     if (user.lastStreakDate != null) {
       await prefs.setString('lastStreakDate', user.lastStreakDate!.toIso8601String());

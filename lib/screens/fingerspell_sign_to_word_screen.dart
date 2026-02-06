@@ -34,6 +34,7 @@ class _FingerspellSignToWordScreenState extends State<FingerspellSignToWordScree
   final int questionPoints = 20;
   final int questionsToDisplay = 7;
   int score = 0;
+  late int newScore;
   int questionIndex = 0;
   int? answerIndex;
   int difference = 0;
@@ -42,6 +43,7 @@ class _FingerspellSignToWordScreenState extends State<FingerspellSignToWordScree
   bool isCorrectAnswer = false;
   bool check = false;
   bool timerEnd = false;
+  bool newBadge = false;
   late DateTime endTime;
 
   Future<void> _complete() async {
@@ -52,7 +54,13 @@ class _FingerspellSignToWordScreenState extends State<FingerspellSignToWordScree
       user = await userService.refreshUserLocalStorage();
     }
 
-    final badgesSnapshot = await FirebaseDatabase.instance.ref().child('badges').get();
+    int dbTrainCount = user!.imgToWordTCount + 1;
+    int dbQuizCount = user!.imgToWordQCount + 1;
+    newScore = score;
+    final badgesSnapshot = await FirebaseDatabase.instance
+        .ref()
+        .child('badges')
+        .get();
 
     if (badgesSnapshot.exists) {
       final Map<dynamic, dynamic> badgesMap = badgesSnapshot.value as Map;
@@ -67,6 +75,29 @@ class _FingerspellSignToWordScreenState extends State<FingerspellSignToWordScree
           if (!dbBadges.contains(badgeNum)) {
             dbBadges.add(badgeNum);
             badges.add(BadgeClass.fromMap(data));
+            newBadge = true;
+          }
+        }
+
+        if (widget.quiz) {
+          if (data['imgToWordQCount'] == dbQuizCount) {
+            int badgeNum = data['badgeNum'] as int;
+
+            if (!dbBadges.contains(badgeNum)) {
+              dbBadges.add(badgeNum);
+              badges.add(BadgeClass.fromMap(data));
+              newBadge = true;
+            }
+          }
+        } else {
+          if (data['imgToWordTCount'] == dbTrainCount) {
+            int badgeNum = data['badgeNum'] as int;
+
+            if (!dbBadges.contains(badgeNum)) {
+              dbBadges.add(badgeNum);
+              badges.add(BadgeClass.fromMap(data));
+              newBadge = true;
+            }
           }
         }
       }
@@ -75,9 +106,21 @@ class _FingerspellSignToWordScreenState extends State<FingerspellSignToWordScree
     final DatabaseReference usersRef = FirebaseDatabase.instance.ref().child('users');
     final userRef = usersRef.child(widget.username);
 
-    await userRef.update({
-      'learningDetails/badges': dbBadges,
-    });
+    if (widget.quiz) {
+      await userRef.update({
+        'learningDetails/score': user!.score + newScore,
+        'learningDetails/badges': dbBadges,
+        'learningDetails/trainCounts/imgToWordQCount': dbQuizCount,
+      });
+    } else {
+      await userRef.update({
+        'learningDetails/score': user!.score + newScore,
+        'learningDetails/badges': dbBadges,
+        'learningDetails/trainCounts/imgToWordTCount': dbTrainCount,
+      });
+    }
+
+    user = await userService.refreshUserLocalStorage();
 
     setState(() {
       completed = true;
@@ -119,10 +162,19 @@ class _FingerspellSignToWordScreenState extends State<FingerspellSignToWordScree
     }
   }
 
+  Future<void> _loadUser() async {
+    final currentUser = await userService.refreshUserLocalStorage();
+
+    setState(() {
+      user = currentUser;
+    });
+  }
+
   @override
   void initState() {
     super.initState();
 
+    _loadUser();
     endTime = generalService.calculateEndTime(widget.signToTextQuestions.length, widget.difficulty);
     final shuffledQuestions = List<Question>.from(widget.signToTextQuestions)..shuffle();
     finalQuestions = shuffledQuestions.take(questionsToDisplay).toList();
@@ -217,6 +269,7 @@ class _FingerspellSignToWordScreenState extends State<FingerspellSignToWordScree
                       child: completed ? CompletedLesson(
                         completed: () => Navigator.pop(context),
                         badges: badges,
+                        newBadge: newBadge,
                         score: score,
                         reviewLesson: false,
                         isGuest: false,

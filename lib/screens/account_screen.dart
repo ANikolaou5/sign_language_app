@@ -93,6 +93,20 @@ class _AccountScreenState extends State<AccountScreen> {
           'lastStreakDate': '',
           'score' : 0,
           'completedLevels' : 0,
+          'quizCounts' : {
+            "dragAndDropQCount": 0,
+            "imgToWordQCount": 0,
+            "readTheSignQCount": 0,
+            "signToWordsQCount": 0,
+            "wordsToSignQCount": 0,
+          },
+          'trainCounts' : {
+            "dragAndDropTCount": 0,
+            "imgToWordTCount": 0,
+            "readTheSignTCount": 0,
+            "signToWordsTCount": 0,
+            "wordsToSignTCount": 0,
+          }
         },
         'gameStats' : {
           'draws' : 0,
@@ -113,6 +127,16 @@ class _AccountScreenState extends State<AccountScreen> {
         draws: 0,
         losses: 0,
         wins: 0,
+        dragAndDropQCount: 0,
+        imgToWordQCount: 0,
+        readTheSignQCount: 0,
+        signToWordsQCount: 0,
+        wordsToSignQCount: 0,
+        dragAndDropTCount: 0,
+        imgToWordTCount: 0,
+        readTheSignTCount: 0,
+        signToWordsTCount: 0,
+        wordsToSignTCount: 0,
         badges: [],
         completedLessons: [],
       );

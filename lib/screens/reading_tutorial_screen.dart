@@ -85,6 +85,7 @@ class _ReadingTutorialScreenState extends State<ReadingTutorialScreen> {
   int? answerIndex;
   int tutorialIndex = 0;
   int score = 0;
+  int newScore = 0;
   final int pointsMCQ = 10;
 
   bool tutorial = true;
@@ -93,6 +94,7 @@ class _ReadingTutorialScreenState extends State<ReadingTutorialScreen> {
   bool reviewLesson = false;
   bool isGuest = false;
   bool check = false;
+  bool newBadge = false;
 
   void _createPossibleAnswersMCQ() {
     final correctImage = multipleChoiceQuestion!.answer;
@@ -198,13 +200,22 @@ class _ReadingTutorialScreenState extends State<ReadingTutorialScreen> {
             if (!dbBadges.contains(badgeNum)) {
               dbBadges.add(badgeNum);
               badges.add(BadgeClass.fromMap(data));
+              newScore = score * 2;
+              newBadge = true;
             }
           }
         }
       }
 
+      int finalScore;
+      if (newScore > 0) {
+        finalScore = user.score + newScore;
+      } else {
+        finalScore = user.score + score;
+      }
+
       await userRef.update({
-        'learningDetails/score': user.score + score,
+        'learningDetails/score': finalScore,
         'learningDetails/completedLevels': levels,
         'learningDetails/badges': dbBadges,
         'learningDetails/completedLessons': dbCompletedLessons,
@@ -312,6 +323,7 @@ class _ReadingTutorialScreenState extends State<ReadingTutorialScreen> {
                   readingTutorial: widget.readingTutorial.readingTutorial,
                   completed: () => Navigator.pop(context),
                   badges: badges,
+                  newBadge: newBadge,
                   score: score,
                   reviewLesson: reviewLesson,
                   isGuest: isGuest,

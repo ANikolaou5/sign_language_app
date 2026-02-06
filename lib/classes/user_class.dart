@@ -14,6 +14,17 @@ class UserClass {
   final int draws;
   final int losses;
 
+  final int dragAndDropQCount;
+  final int imgToWordQCount;
+  final int readTheSignQCount;
+  final int signToWordsQCount;
+  final int wordsToSignQCount;
+  final int dragAndDropTCount;
+  final int imgToWordTCount;
+  final int readTheSignTCount;
+  final int signToWordsTCount;
+  final int wordsToSignTCount;
+
   final List<int> badges;
   final List<int> completedLessons;
 
@@ -30,6 +41,16 @@ class UserClass {
     this.wins = 0,
     this.draws = 0,
     this.losses = 0,
+    required this.dragAndDropQCount,
+    required this.imgToWordQCount,
+    required  this.readTheSignQCount,
+    required this.signToWordsQCount,
+    required this.wordsToSignQCount,
+    required this.dragAndDropTCount,
+    required this.imgToWordTCount,
+    required this.readTheSignTCount,
+    required this.signToWordsTCount,
+    required this.wordsToSignTCount,
     this.badges = const [],
     this.completedLessons = const [],
   });
@@ -38,6 +59,8 @@ class UserClass {
     final learningDetails = data['learningDetails'] ?? {};
     final accountDetails = data['accountDetails'] ?? {};
     final gameStats = data['gameStats'] ?? {};
+    final quizCounts = learningDetails['quizCounts'] ?? {};
+    final trainCounts = learningDetails['trainCounts'] ?? {};
 
     List<int> dbBadges = [];
     if (learningDetails['badges'] != null) {
@@ -67,6 +90,16 @@ class UserClass {
       wins: gameStats['wins'] ?? 0,
       draws: gameStats['draws'] ?? 0,
       losses: gameStats['losses'] ?? 0,
+      dragAndDropQCount: quizCounts['dragAndDropQCount'] ?? 0,
+      imgToWordQCount: quizCounts['imgToWordQCount'] ?? 0,
+      readTheSignQCount: quizCounts['readTheSignQCount'] ?? 0,
+      signToWordsQCount: quizCounts['signToWordsQCount'] ?? 0,
+      wordsToSignQCount: quizCounts['wordsToSignQCount'] ?? 0,
+      dragAndDropTCount: trainCounts['dragAndDropTCount'] ?? 0,
+      imgToWordTCount: trainCounts['imgToWordTCount'] ?? 0,
+      readTheSignTCount: trainCounts['readTheSignTCount'] ?? 0,
+      signToWordsTCount: trainCounts['signToWordsTCount'] ?? 0,
+      wordsToSignTCount: trainCounts['wordsToSignTCount'] ?? 0,
       badges: dbBadges,
       completedLessons: dbCompletedLessons,
     );

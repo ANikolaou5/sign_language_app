@@ -3,11 +3,12 @@ import 'package:flutter/material.dart';
 import '../classes/badge_class.dart';
 
 class CompletedLesson extends StatelessWidget {
-  const CompletedLesson({super.key, this.readingTutorial, required this.completed, required this.badges, required this.score, required this.reviewLesson, required this.isGuest, required this.timerEnd, required this.quiz, required this.streakUpdate, required this.streak,});
+  const CompletedLesson({super.key, this.readingTutorial, required this.completed, required this.badges, required this.newBadge, required this.score, required this.reviewLesson, required this.isGuest, required this.timerEnd, required this.quiz, required this.streakUpdate, required this.streak,});
 
   final int? readingTutorial;
   final VoidCallback completed;
   final List<BadgeClass> badges;
+  final bool newBadge;
   final int score;
   final bool reviewLesson;
   final bool isGuest;
@@ -21,15 +22,15 @@ class CompletedLesson extends StatelessWidget {
     BadgeClass? earnedBadge = badges.isNotEmpty ? badges.first : null;
     final bool earned = earnedBadge != null;
 
-    String txt = '';
+    String streakTxt = '';
 
     if (streakUpdate) {
       if (streak == 5) {
-        txt = '2';
+        streakTxt = '2';
       } else if (streak == 10) {
-        txt = '3';
+        streakTxt = '3';
       } else if (streak == 15) {
-        txt = '4';
+        streakTxt = '4';
       }
     }
 
@@ -43,7 +44,8 @@ class CompletedLesson extends StatelessWidget {
         ),
         const SizedBox(height: 20.0),
         Text(
-          timerEnd ? "Time's Up!" : "Congratulations!",
+          timerEnd ? "Time's Up!" : (score == 0 ? "Good effort, practice makes perfect!" : "Congratulations!"),
+          textAlign: TextAlign.center,
           style: TextStyle(
             fontSize: 32.0,
             fontWeight: FontWeight.bold,
@@ -101,48 +103,68 @@ class CompletedLesson extends StatelessWidget {
             ),
             const SizedBox(height: 15.0),
           ],
-          Container(
-            padding: const EdgeInsets.all(20.0),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(15.0),
-              border: Border.all(color: Colors.orange.shade300),
-            ),
-            child: Column(
-              children: [
-                Text(
-                  "Score earned",
-                  style: TextStyle(fontSize: 20.0,),
-                ),
-                Text(
-                  "$score points",
-                  style: TextStyle(
-                    fontSize: 25.0,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.orange.shade700,
+          if (!isGuest) ...[
+            Container(
+              padding: const EdgeInsets.all(20.0),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(15.0),
+                border: Border.all(color: Colors.orange.shade300),
+              ),
+              child: Column(
+                children: [
+                  Text(
+                    "Score earned",
+                    style: TextStyle(fontSize: 20.0,),
                   ),
-                ),
-                if (txt != '') ...[
-                  const SizedBox(height: 10.0),
-                  Container(
-                    padding: const EdgeInsets.all(10.0),
-                    decoration: BoxDecoration(
-                      color: Colors.deepOrange,
-                      borderRadius: BorderRadius.circular(15.0),
+                  Text(
+                    "$score points",
+                    style: TextStyle(
+                      fontSize: 25.0,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.orange.shade700,
                     ),
-                    child: Text(
-                      "x$txt Streak Bonus",
-                      style: const TextStyle(
-                        fontSize: 14.0,
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
+                  ),
+                  if (streakTxt != '' && score != 0) ...[
+                    const SizedBox(height: 10.0),
+                    Container(
+                      padding: const EdgeInsets.all(10.0),
+                      decoration: BoxDecoration(
+                        color: Colors.deepOrange,
+                        borderRadius: BorderRadius.circular(15.0),
+                      ),
+                      child: Text(
+                        "x$streakTxt Streak Bonus",
+                        style: const TextStyle(
+                          fontSize: 14.0,
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
-                  ),
+                  ],
+                  if (newBadge && score != 0) ...[
+                    const SizedBox(height: 10.0),
+                    Container(
+                      padding: const EdgeInsets.all(10.0),
+                      decoration: BoxDecoration(
+                        color: Colors.deepOrange,
+                        borderRadius: BorderRadius.circular(15.0),
+                      ),
+                      child: Text(
+                        "x2 Badge Bonus",
+                        style: const TextStyle(
+                          fontSize: 14.0,
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
                 ],
-              ],
+              ),
             ),
-          ),
+          ],
           const SizedBox(height: 25.0),
         ],
         ElevatedButton(

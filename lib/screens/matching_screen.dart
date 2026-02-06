@@ -34,6 +34,7 @@ class _MatchingScreenState extends State<MatchingScreen> {
 
   final int questionPoints = 30;
   int score = 0;
+  late int newScore;
   int questionIndex = 0;
   int? answerIndex;
   int difference = 0;
@@ -42,6 +43,7 @@ class _MatchingScreenState extends State<MatchingScreen> {
   bool isCorrectAnswer = false;
   bool check = false;
   bool timerEnd = false;
+  bool newBadge = false;
 
   late DateTime endTime;
 
@@ -53,6 +55,9 @@ class _MatchingScreenState extends State<MatchingScreen> {
       user = await userService.refreshUserLocalStorage();
     }
 
+    int dbTrainCount = user!.dragAndDropTCount + 1;
+    int dbQuizCount = user!.dragAndDropQCount + 1;
+    newScore = score;
     final badgesSnapshot = await FirebaseDatabase.instance.ref().child('badges').get();
 
     if (badgesSnapshot.exists) {
@@ -68,6 +73,29 @@ class _MatchingScreenState extends State<MatchingScreen> {
           if (!dbBadges.contains(badgeNum)) {
             dbBadges.add(badgeNum);
             badges.add(BadgeClass.fromMap(data));
+            newBadge = true;
+          }
+        }
+
+        if (widget.quiz) {
+          if (data['dragAndDropQCount'] == dbQuizCount) {
+            int badgeNum = data['badgeNum'] as int;
+
+            if (!dbBadges.contains(badgeNum)) {
+              dbBadges.add(badgeNum);
+              badges.add(BadgeClass.fromMap(data));
+              newBadge = true;
+            }
+          }
+        } else {
+          if (data['dragAndDropTCount'] == dbTrainCount) {
+            int badgeNum = data['badgeNum'] as int;
+
+            if (!dbBadges.contains(badgeNum)) {
+              dbBadges.add(badgeNum);
+              badges.add(BadgeClass.fromMap(data));
+              newBadge = true;
+            }
           }
         }
       }
@@ -76,9 +104,21 @@ class _MatchingScreenState extends State<MatchingScreen> {
     final DatabaseReference usersRef = FirebaseDatabase.instance.ref().child('users');
     final userRef = usersRef.child(widget.username);
 
-    await userRef.update({
-      'learningDetails/badges': dbBadges,
-    });
+    if (widget.quiz) {
+      await userRef.update({
+        'learningDetails/score': user!.score + newScore,
+        'learningDetails/badges': dbBadges,
+        'learningDetails/trainCounts/dragAndDropQCount': dbQuizCount,
+      });
+    } else {
+      await userRef.update({
+        'learningDetails/score': user!.score + newScore,
+        'learningDetails/badges': dbBadges,
+        'learningDetails/trainCounts/dragAndDropTCount': dbTrainCount,
+      });
+    }
+
+    user = await userService.refreshUserLocalStorage();
 
     setState(() {
       completed = true;
@@ -211,6 +251,7 @@ class _MatchingScreenState extends State<MatchingScreen> {
                       child: completed ? CompletedLesson(
                         completed: () => Navigator.pop(context),
                         badges: badges,
+                        newBadge: newBadge,
                         score: score,
                         reviewLesson: false,
                         isGuest: false,
