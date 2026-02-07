@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import '../classes/question_class.dart';
 import '../classes/reading_tutorial_class.dart';
@@ -43,11 +44,20 @@ class _BuildTutorialState extends State<BuildTutorial> {
 
   late WebViewController controller = WebViewController();
   double _webviewHeight = 100;
+  bool darkMode = false;
+
+  Future<void> _loadTheme() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      darkMode = prefs.getBool('darkMode') ?? false;
+    });
+  }
 
   @override
   void initState() {
     super.initState();
 
+    _loadTheme();
     if (widget.readingTutorial.webviewFile != null) {
       controller = WebViewController()
         ..setJavaScriptMode(JavaScriptMode.unrestricted)
@@ -74,7 +84,7 @@ class _BuildTutorialState extends State<BuildTutorial> {
         Container(
           padding: const EdgeInsets.all(8.0),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: darkMode ? Colors.black : Colors.orange.shade100,
             border: Border.all(width: 2.0, color: Colors.orange.shade300),
             borderRadius: BorderRadius.circular(15.0),
           ),
@@ -104,7 +114,7 @@ class _BuildTutorialState extends State<BuildTutorial> {
           Container(
             padding: const EdgeInsets.all(12.0),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: darkMode ? Colors.black : Colors.white,
               borderRadius: BorderRadius.circular(15.0),
               boxShadow: [BoxShadow(
                 color: Colors.orange,
@@ -136,6 +146,7 @@ class _BuildTutorialState extends State<BuildTutorial> {
               possibleAnswers: widget.possibleAnswers,
               answerIndex: widget.answerIndex,
               check: widget.check,
+              darkMode: darkMode,
               onTap: widget.onTap,
               tips: widget.readingTutorial.webviewFile ?? '',
               controller: controller,
@@ -144,7 +155,7 @@ class _BuildTutorialState extends State<BuildTutorial> {
           ],
         ],
         const SizedBox(height: 15.0),
-        NavigationButtons(answerIndex: widget.answerIndex, isCorrectAnswer: widget.isCorrectAnswer, check: widget.check, correctAnswer: '', questionPoints: widget.questionPoints, next: widget.next,),
+        NavigationButtons(answerIndex: widget.answerIndex, isCorrectAnswer: widget.isCorrectAnswer, check: widget.check, darkMode: darkMode, correctAnswer: '', questionPoints: widget.questionPoints, next: widget.next,),
       ],
     );
   }

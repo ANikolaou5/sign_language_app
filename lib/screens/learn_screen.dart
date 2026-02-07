@@ -1,5 +1,6 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sign_language_app/screens/material_screen.dart';
 
 import '../classes/reading_tutorial_class.dart';
@@ -25,6 +26,14 @@ class _LearnScreenState extends State<LearnScreen> {
   int completedLevels = 0;
   List<int> completedLessons = [];
   List<ReadingTutorial> readingTutorials = [];
+  bool darkMode = true;
+
+  Future<void> _loadTheme() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      darkMode = prefs.getBool('darkMode') ?? false;
+    });
+  }
 
   // Function to load username from local storage, when already logged in.
   Future<void> _loadUserLocalStorage() async {
@@ -80,6 +89,8 @@ class _LearnScreenState extends State<LearnScreen> {
   @override
   void initState() {
     super.initState();
+
+    _loadTheme();
     _loadUserLocalStorage().then((_) async {
       await _loadLevels();
       await _loadLearningDetails();
@@ -92,7 +103,6 @@ class _LearnScreenState extends State<LearnScreen> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        backgroundColor: Colors.orange.shade50,
         body: levels.isEmpty ? const Center(child: CircularProgressIndicator()) : Padding(
           padding: const EdgeInsets.all(10.0),
           child: Column(
@@ -101,7 +111,7 @@ class _LearnScreenState extends State<LearnScreen> {
               Container(
                 padding: const EdgeInsets.all(8.0),
                 decoration: BoxDecoration(
-                  color: Colors.orange.shade100,
+                  color: darkMode ? Colors.black : Colors.orange.shade100,
                   border: Border.all(width: 2.0, color: Colors.orange.shade300),
                   borderRadius: BorderRadius.circular(15.0),
                 ),
@@ -142,7 +152,7 @@ class _LearnScreenState extends State<LearnScreen> {
                         child: Container(
                           padding: const EdgeInsets.all(15.0),
                           decoration: BoxDecoration(
-                            color: (level <= completedLevels) ? Colors.deepOrange.shade200 : ((level > completedLevels + 1) ? Colors.grey.shade100 : Colors.white),
+                            color: (level <= completedLevels) ? Colors.deepOrange.shade200 : ((level > completedLevels + 1) ? Colors.grey.shade100 : (darkMode ? Colors.orange.shade300 : Colors.white)),
                             border: (level <= completedLevels) ? null : Border.all(width: 2.0, color: Colors.orange.shade300),
                             borderRadius: BorderRadius.circular(15.0),
                           ),
@@ -173,7 +183,7 @@ class _LearnScreenState extends State<LearnScreen> {
                                 Container(
                                   padding: const EdgeInsets.all(8.0),
                                   decoration: BoxDecoration(
-                                    color: (level <= completedLevels) ? Colors.orange.shade100 : Colors.white,
+                                    color: (level <= completedLevels) ? Colors.orange.shade100 : (darkMode ? Colors.orange.shade300 : Colors.white),
                                     borderRadius: BorderRadius.circular(15.0),
                                   ),
                                   child: Column(
@@ -185,6 +195,7 @@ class _LearnScreenState extends State<LearnScreen> {
                                             " Level Progress",
                                             style: TextStyle(
                                               fontSize: 16.0,
+                                              color: Colors.black,
                                             ),
                                           ),
                                           Text(

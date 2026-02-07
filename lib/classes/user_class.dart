@@ -1,8 +1,8 @@
 class UserClass {
   final String uid;
   final String username;
-  final String? name;
-  final String? surname;
+  String? name;
+  String? surname;
   final String? email;
 
   final int streakNum;

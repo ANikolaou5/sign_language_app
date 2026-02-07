@@ -10,6 +10,7 @@ class MatchQuestion extends StatelessWidget {
     required this.answerIndex,
     required this.isCorrectAnswer,
     required this.check,
+    required this.darkMode,
     required this.questionPoints,
     required this.onMatch,
     required this.next,
@@ -22,6 +23,7 @@ class MatchQuestion extends StatelessWidget {
   final int? answerIndex;
   final bool isCorrectAnswer;
   final bool check;
+  final bool darkMode;
   final int questionPoints;
   final Function(String, String) onMatch;
   final VoidCallback next;
@@ -35,7 +37,7 @@ class MatchQuestion extends StatelessWidget {
         Container(
           padding: const EdgeInsets.all(8.0),
           decoration: BoxDecoration(
-            color: Colors.orange.shade100,
+            color: darkMode ? Colors.black : Colors.orange.shade100,
             border: Border.all(width: 2.0, color: Colors.orange.shade300),
             borderRadius: BorderRadius.circular(15.0),
           ),
@@ -117,7 +119,7 @@ class MatchQuestion extends StatelessWidget {
                       height: 70.0,
                       alignment: Alignment.center,
                       decoration: BoxDecoration(
-                        color: isHovering ? Colors.orange.shade100 : Colors.white,
+                        color: isHovering ? Colors.orange.shade100 : (darkMode ? Colors.black : Colors.white),
                         borderRadius: BorderRadius.circular(12.0),
                         border: Border.all(
                           color: isHovering
@@ -176,7 +178,7 @@ class MatchQuestion extends StatelessWidget {
                     child: Container(
                       padding: const EdgeInsets.all(8.0),
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: darkMode ? Colors.black : Colors.white,
                         borderRadius: BorderRadius.circular(15.0),
                         border: Border.all(
                           width: 2.0,
@@ -194,7 +196,7 @@ class MatchQuestion extends StatelessWidget {
                       child: Container(
                         padding: const EdgeInsets.all(8.0),
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: darkMode ? Colors.black : Colors.white,
                           borderRadius: BorderRadius.circular(15.0),
                           border: Border.all(
                             width: 2.0,
@@ -210,7 +212,7 @@ class MatchQuestion extends StatelessWidget {
                   child: Container(
                     padding: const EdgeInsets.all(8.0),
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: darkMode ? Colors.black : Colors.white,
                       borderRadius: BorderRadius.circular(15.0),
                       border: Border.all(
                         width: 2.0,
@@ -228,7 +230,7 @@ class MatchQuestion extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 30.0),
-        NavigationButtons(answerIndex: answerIndex, isCorrectAnswer: isCorrectAnswer, check: check, correctAnswer: '', questionPoints: questionPoints, next: next,),
+        NavigationButtons(answerIndex: answerIndex, isCorrectAnswer: isCorrectAnswer, check: check, darkMode: darkMode, correctAnswer: '', questionPoints: questionPoints, next: next,),
       ],
     );
   }

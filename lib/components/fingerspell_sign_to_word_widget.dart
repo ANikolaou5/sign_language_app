@@ -8,6 +8,7 @@ class FingerspellSignToWord extends StatelessWidget {
     required this.question,
     required this.isCorrectAnswer,
     required this.check,
+    required this.darkMode,
     required this.questionPoints,
     required this.next,
     required this.answerTextController,
@@ -16,6 +17,7 @@ class FingerspellSignToWord extends StatelessWidget {
   final Question question;
   final bool isCorrectAnswer;
   final bool check;
+  final bool darkMode;
   final int questionPoints;
   final VoidCallback next;
   final TextEditingController answerTextController;
@@ -29,7 +31,7 @@ class FingerspellSignToWord extends StatelessWidget {
         Container(
           padding: const EdgeInsets.all(8.0),
           decoration: BoxDecoration(
-            color: Colors.orange.shade100,
+            color: darkMode ? Colors.black : Colors.orange.shade100,
             border: Border.all(width: 2.0, color: Colors.orange.shade300),
             borderRadius: BorderRadius.circular(15.0),
           ),
@@ -54,7 +56,7 @@ class FingerspellSignToWord extends StatelessWidget {
         Container(
           padding: const EdgeInsets.all(12.0),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: darkMode ? Colors.black : Colors.white,
             borderRadius: BorderRadius.circular(15.0),
             boxShadow: [BoxShadow(
               color: Colors.orange,
@@ -92,7 +94,7 @@ class FingerspellSignToWord extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 25.0),
-        NavigationButtons(answerIndex: check ? 1 : null, isCorrectAnswer: isCorrectAnswer, check: check, correctAnswer: question.answer, questionPoints: questionPoints, next: next,),
+        NavigationButtons(answerIndex: check ? 1 : null, isCorrectAnswer: isCorrectAnswer, check: check, darkMode: darkMode, correctAnswer: question.answer, questionPoints: questionPoints, next: next,),
       ],
     );
   }

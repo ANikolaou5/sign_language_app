@@ -1,6 +1,7 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sign_language_app/screens/achievements_screen.dart';
 
 import '../classes/user_class.dart';
@@ -25,6 +26,7 @@ class _HomeScreenState extends State<HomeScreen> {
   UserClass? user;
   List<UserClass> users = [];
   String? errorMessage;
+  bool darkMode = false;
 
   // Function to load username from local storage, when already logged in.
   Future<void> _loadUserLocalStorage() async {
@@ -70,10 +72,11 @@ class _HomeScreenState extends State<HomeScreen> {
                 padding: const EdgeInsets.all(20.0),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(25.0),
-                  gradient: LinearGradient(colors: [
-                    Colors.orange.shade100,
-                    Colors.white
-                  ],),
+                  gradient: LinearGradient(
+                    colors: darkMode
+                        ? [Colors.grey.shade900, Colors.black]
+                        : [Colors.orange.shade100, Colors.white],
+                  ),
                 ),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -130,11 +133,18 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {});
   }
 
+  Future<void> _loadTheme() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      darkMode = prefs.getBool('darkMode') ?? false;
+    });
+  }
+
   @override
   void initState() {
     super.initState();
     streakGoalTextController = TextEditingController();
-
+    _loadTheme();
     _loadUserLocalStorage().then((_) async {
       await _resetStreakNum();
       await _loadTopUsers();
@@ -151,7 +161,6 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        backgroundColor: Colors.orange.shade50,
         body: Padding(
           padding: const EdgeInsets.all(10.0),
           child: SingleChildScrollView(
@@ -176,7 +185,11 @@ class _HomeScreenState extends State<HomeScreen> {
                       padding: const EdgeInsets.all(10.0),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(15.0),
-                        gradient: LinearGradient(colors: [Colors.orange.shade100, Colors.white],),
+                        gradient: LinearGradient(
+                          colors: darkMode
+                              ? [Colors.grey.shade900, Colors.black]
+                              : [Colors.orange.shade100, Colors.white],
+                        ),
                       ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -229,7 +242,11 @@ class _HomeScreenState extends State<HomeScreen> {
                     padding: const EdgeInsets.all(10.0),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(15.0),
-                      gradient: LinearGradient(colors: [Colors.orange.shade100, Colors.white],),
+                      gradient: LinearGradient(
+                        colors: darkMode
+                            ? [Colors.grey.shade900, Colors.black]
+                            : [Colors.orange.shade100, Colors.white],
+                      ),
                     ),
                     child: Column(
                       children: [

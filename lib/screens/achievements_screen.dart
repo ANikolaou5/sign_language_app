@@ -1,5 +1,6 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../classes/badge_class.dart';
 import '../classes/user_class.dart';
@@ -20,6 +21,7 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
 
   UserClass? user;
   List<BadgeClass> badges = [];
+  bool darkMode = true;
 
   Future<void> _loadUserLocalStorage() async {
     user = await userService.loadUserLocalStorage();
@@ -34,10 +36,18 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
     setState(() {});
   }
 
+  Future<void> _loadTheme() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      darkMode = prefs.getBool('darkMode') ?? false;
+    });
+  }
+
   @override
   void initState() {
     super.initState();
 
+    _loadTheme();
     _loadBadges();
     _loadUserLocalStorage();
   }
@@ -46,7 +56,6 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        backgroundColor: Colors.orange.shade50,
         appBar: AppBar(
           centerTitle: true,
           backgroundColor: Colors.transparent,
@@ -54,7 +63,10 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
           flexibleSpace: Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                  colors: [Colors.orange.shade500, Colors.deepOrange.shade800]),
+                colors: darkMode
+                    ? [Colors.grey.shade900, Colors.black]
+                    : [Colors.orange.shade500, Colors.deepOrange.shade800],
+              )
             ),
           ),
           title: const Text(
@@ -72,7 +84,7 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
               Container(
                 padding: const EdgeInsets.all(8.0),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: darkMode ? Colors.black : Colors.white,
                   border: Border.all(width: 2.0, color: Colors.orange.shade300),
                   borderRadius: BorderRadius.circular(15.0),
                 ),
@@ -99,7 +111,9 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
                         decoration: BoxDecoration(
                           border: Border.all(color: Colors.deepOrange,),
                           borderRadius: BorderRadius.circular(15.0),
-                          gradient: LinearGradient(colors: [Colors.orange.shade100, Colors.white],),
+                          gradient: LinearGradient(colors: darkMode
+                              ? [Colors.grey.shade900, Colors.black]
+                              : [Colors.orange.shade100, Colors.white],),
                         ),
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.center,
@@ -107,7 +121,7 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
                             ColorFiltered(
                               colorFilter: earned
                                 ? const ColorFilter.mode(Colors.transparent, BlendMode.multiply)
-                                : ColorFilter.mode(Colors.grey.shade200, BlendMode.saturation),
+                                : (darkMode ? ColorFilter.mode(Colors.transparent, BlendMode.saturation) : ColorFilter.mode(Colors.grey.shade200, BlendMode.saturation)),
                               child: Image.asset(
                                 badge.badgeImage,
                                 height: 100,
@@ -133,10 +147,7 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
                                   Text(
                                     badge.badgeDesc,
                                     softWrap: true,
-                                    style: TextStyle(
-                                      fontSize: 14.0,
-                                      color: earned ? Colors.black87 : Colors.blueGrey,
-                                    ),
+                                    style: TextStyle(fontSize: 14.0,),
                                   ),
                                 ],
                               ),

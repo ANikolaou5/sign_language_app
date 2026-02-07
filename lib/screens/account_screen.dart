@@ -2,16 +2,18 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sign_language_app/screens/appearance_screen.dart';
+import 'package:sign_language_app/screens/edit_profile_screen.dart';
 
 import '../classes/user_class.dart';
 import '../components/progress_item_widget.dart';
 import '../services/user_service.dart';
 
 class AccountScreen extends StatefulWidget {
-  const AccountScreen({super.key, required this.changeIndex});
+  const AccountScreen({super.key, required this.changeIndex, required this.onThemeChange,});
 
   final Function(int) changeIndex;
-
+  final Function(bool) onThemeChange;
   @override
   State<AccountScreen> createState() => _AccountScreenState();
 }
@@ -36,6 +38,14 @@ class _AccountScreenState extends State<AccountScreen> {
   bool visible = false;
   bool signIn = true;
   bool loading = false;
+  bool darkMode = true;
+
+  Future<void> _loadTheme() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      darkMode = prefs.getBool('darkMode') ?? false;
+    });
+  }
 
   Future<void> _signUp() async {
     setState(() => loading = true);
@@ -220,6 +230,7 @@ class _AccountScreenState extends State<AccountScreen> {
     await auth.signOut();
     final prefs = await SharedPreferences.getInstance();
     await prefs.clear();
+    widget.onThemeChange(false);
 
     setState(() {
       user = null;
@@ -228,6 +239,7 @@ class _AccountScreenState extends State<AccountScreen> {
       nameTextController.clear();
       surnameTextController.clear();
       passwordTextController.clear();
+      _loadTheme();
     });
   }
 
@@ -244,12 +256,12 @@ class _AccountScreenState extends State<AccountScreen> {
   void initState() {
     super.initState();
 
+    _loadTheme();
     usernameTextController = TextEditingController();
     emailTextController = TextEditingController();
     nameTextController = TextEditingController();
     surnameTextController = TextEditingController();
     passwordTextController = TextEditingController();
-
     _loadUserLocalStorage();
   }
 
@@ -267,7 +279,6 @@ class _AccountScreenState extends State<AccountScreen> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        backgroundColor: Colors.orange.shade50,
         body: Padding(
           padding: const EdgeInsets.all(10.0),
           child: SingleChildScrollView(
@@ -282,7 +293,11 @@ class _AccountScreenState extends State<AccountScreen> {
                       width: 2.0,
                     ),
                     borderRadius: BorderRadius.circular(30.0),
-                    gradient: LinearGradient(colors: [Colors.orange.shade100, Colors.white],),
+                    gradient: LinearGradient(
+                      colors: darkMode
+                          ? [Colors.grey.shade900, Colors.black]
+                          : [Colors.orange.shade100, Colors.white],
+                    ),
                   ),
                   alignment: Alignment.center,
                   child: user == null ? Column(
@@ -343,7 +358,7 @@ class _AccountScreenState extends State<AccountScreen> {
                             ),
                           )
                         ),
-                        const SizedBox(height: 10),
+                        const SizedBox(height: 10.0),
                         TextField(
                           controller: surnameTextController,
                           decoration: InputDecoration(
@@ -357,7 +372,7 @@ class _AccountScreenState extends State<AccountScreen> {
                             ),
                           ),
                         ),
-                        const SizedBox(height: 10),
+                        const SizedBox(height: 10.0),
                       ],
                       TextField(
                         controller: passwordTextController,
@@ -381,7 +396,7 @@ class _AccountScreenState extends State<AccountScreen> {
                         ),
                         obscureText: !visible,
                       ),
-                      const SizedBox(height: 10),
+                      const SizedBox(height: 10.0),
                       if (errorMessage != null) Text(errorMessage!, style: const TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
                       const SizedBox(height: 20),
                       loading ? const Center(child: CircularProgressIndicator()) : Column(
@@ -483,11 +498,17 @@ class _AccountScreenState extends State<AccountScreen> {
                 if (user != null) ...[
                   const SizedBox(height: 10.0),
                   InkWell(
-                    onTap: () {},
+                    onTap: () async {
+                      await Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => EditProfileScreen(user: user!)),
+                      );
+                      setState(() {});
+                    },
                     child: Container(
                       padding: const EdgeInsets.all(12.0),
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: darkMode ? Colors.black : Colors.white,
                         border: Border.all(
                           color: Colors.grey.shade300,
                           width: 2.0,
@@ -517,7 +538,6 @@ class _AccountScreenState extends State<AccountScreen> {
                             style: TextStyle(
                               fontSize: 18.0,
                               fontWeight: FontWeight.bold,
-                              color: Colors.black,
                             ),
                           ),
                         ],
@@ -526,11 +546,19 @@ class _AccountScreenState extends State<AccountScreen> {
                   ),
                   const SizedBox(height: 10.0),
                   InkWell(
-                    onTap: () {},
+                    onTap: () async {
+                      await Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => AppearanceScreen(onThemeChange: widget.onThemeChange)),
+                      );
+                      setState(() {
+                        _loadTheme();
+                      });
+                    },
                     child: Container(
                       padding: const EdgeInsets.all(12.0),
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: darkMode ? Colors.black : Colors.white,
                         border: Border.all(
                           color: Colors.grey.shade300,
                           width: 2.0,
@@ -560,50 +588,6 @@ class _AccountScreenState extends State<AccountScreen> {
                             style: TextStyle(
                               fontSize: 18.0,
                               fontWeight: FontWeight.bold,
-                              color: Colors.black,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 10.0),
-                  InkWell(
-                    onTap: () {},
-                    child: Container(
-                      padding: const EdgeInsets.all(12.0),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        border: Border.all(
-                          color: Colors.grey.shade300,
-                          width: 2.0,
-                        ),
-                        borderRadius: BorderRadius.circular(15.0),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Container(
-                            width: 40,
-                            height: 40,
-                            decoration: BoxDecoration(
-                              color: Colors.orange.shade100,
-                              shape: BoxShape.circle,
-                            ),
-                            alignment: Alignment.center,
-                            child: Icon(
-                              Icons.help_outline,
-                              size: 25.0,
-                              color: Colors.deepOrange.shade800,
-                            ),
-                          ),
-                          const SizedBox(width: 10.0),
-                          const Text(
-                            "Help & Support",
-                            style: TextStyle(
-                              fontSize: 18.0,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black,
                             ),
                           ),
                         ],
@@ -620,7 +604,11 @@ class _AccountScreenState extends State<AccountScreen> {
                             padding: const EdgeInsets.all(20.0),
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(25.0),
-                              gradient: LinearGradient(colors: [Colors.orange.shade100, Colors.white],),
+                              gradient: LinearGradient(
+                                colors: darkMode
+                                  ? [Colors.grey.shade900, Colors.black]
+                                  : [Colors.orange.shade100, Colors.white],
+                              ),
                             ),
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
@@ -673,6 +661,7 @@ class _AccountScreenState extends State<AccountScreen> {
                                     ),
                                     ElevatedButton(
                                       style: ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.white,
                                         foregroundColor: Colors.white,
                                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
                                       ),
@@ -701,7 +690,7 @@ class _AccountScreenState extends State<AccountScreen> {
                     child: Container(
                       padding: const EdgeInsets.all(12.0),
                       decoration: BoxDecoration(
-                        color: Colors.red.shade50,
+                        color: darkMode ? Colors.black : Colors.red.shade50,
                         border: Border.all(
                           color: Colors.red.shade200,
                           width: 2.0,

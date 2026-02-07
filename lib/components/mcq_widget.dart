@@ -4,12 +4,13 @@ import 'package:webview_flutter/webview_flutter.dart';
 import '../classes/question_class.dart';
 
 class MultipleChoiceQuestion extends StatelessWidget {
-  const MultipleChoiceQuestion({super.key, required this.question, required this.possibleAnswers, required this.answerIndex, required this.check, required this.onTap, required this.tips, required this.controller, required this.webviewHeight,});
+  const MultipleChoiceQuestion({super.key, required this.question, required this.possibleAnswers, required this.answerIndex, required this.check, required this.darkMode, required this.onTap, required this.tips, required this.controller, required this.webviewHeight,});
 
   final Question question;
   final List<String> possibleAnswers;
   final int? answerIndex;
   final bool check;
+  final bool darkMode;
   final Function(int) onTap;
   final String tips;
   final WebViewController controller;
@@ -53,10 +54,10 @@ class MultipleChoiceQuestion extends StatelessWidget {
                     padding: const EdgeInsets.all(10.0),
                     decoration: BoxDecoration(
                       color: !check
-                        ? (selected ? Colors.orange.shade100 : Colors.white)
+                        ? (selected ? Colors.orange.shade100 : (darkMode ? Colors.black : Colors.white))
                         : (possibleAnswers[index] == correctAnswer
                           ? Colors.green.shade100
-                          : (selected ? Colors.red.shade100 : Colors.white)),
+                          : (selected ? Colors.red.shade100 : (darkMode ? Colors.black : Colors.white))),
                       borderRadius: BorderRadius.circular(15.0),
                       border: Border.all(
                         color: !check
@@ -127,7 +128,7 @@ class MultipleChoiceQuestion extends StatelessWidget {
             child: Container(
               padding: const EdgeInsets.all(8.0),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: darkMode ? Colors.black : Colors.white,
                 border: Border.all(width: 2.0, color: Colors.orange.shade300),
                 borderRadius: BorderRadius.circular(15.0),
               ),

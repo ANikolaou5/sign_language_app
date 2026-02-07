@@ -258,7 +258,15 @@ class GeneralService {
     }
   }
 
+  Future<bool> loadTheme() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    return prefs.getBool('darkMode') ?? false;
+  }
+
   Future<void> startPrompt(BuildContext context, VoidCallback onTap, IconData icon, String question) async {
+    bool darkMode = await loadTheme();
+
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -268,7 +276,11 @@ class GeneralService {
             padding: const EdgeInsets.all(20.0),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(25.0),
-              gradient: LinearGradient(colors: [Colors.orange.shade100, Colors.white],),
+              gradient: LinearGradient(
+                colors: darkMode
+                    ? [Colors.grey.shade900, Colors.black]
+                    : [Colors.orange.shade100, Colors.white],
+              ),
             ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -293,6 +305,7 @@ class GeneralService {
                   children: [
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white,
                         foregroundColor: Colors.white,
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
                       ),
@@ -336,6 +349,8 @@ class GeneralService {
   }
 
   Future<void> exitPrompt(BuildContext context, String txt) async {
+    bool darkMode = await loadTheme();
+
     return await showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -345,7 +360,11 @@ class GeneralService {
               padding: const EdgeInsets.all(25.0),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(20.0),
-                gradient: LinearGradient(colors: [Colors.orange.shade100, Colors.white],),
+                gradient: LinearGradient(
+                  colors: darkMode
+                    ? [Colors.grey.shade900, Colors.black]
+                    : [Colors.orange.shade100, Colors.white],
+                ),
               ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -385,6 +404,7 @@ class GeneralService {
                       ),
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.white,
                           foregroundColor: Colors.white,
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
                         ),

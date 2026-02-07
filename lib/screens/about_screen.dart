@@ -1,13 +1,33 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class AboutScreen extends StatelessWidget {
+class AboutScreen extends StatefulWidget {
   const AboutScreen ({super.key});
+
+  @override
+  State<AboutScreen> createState() => _AboutScreenState();
+}
+
+class _AboutScreenState extends State<AboutScreen> {
+  bool darkMode = true;
+
+  Future<void> _loadTheme() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      darkMode = prefs.getBool('darkMode') ?? false;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _loadTheme();
+  }
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        backgroundColor: Colors.orange.shade50,
         appBar: AppBar(
           centerTitle: true,
           backgroundColor: Colors.transparent,
@@ -15,7 +35,10 @@ class AboutScreen extends StatelessWidget {
           flexibleSpace: Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                  colors: [Colors.orange.shade500, Colors.deepOrange.shade800]),
+                colors: darkMode
+                    ? [Colors.grey.shade900, Colors.black]
+                    : [Colors.orange.shade500, Colors.deepOrange.shade800],
+              ),
             ),
           ),
           title: const Text(

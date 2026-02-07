@@ -9,7 +9,9 @@ import 'home_screen.dart';
 import 'learn_screen.dart';
 
 class MainScreen extends StatefulWidget {
-  const MainScreen({super.key});
+  const MainScreen({super.key, required this.onThemeChange});
+
+  final Function(bool) onThemeChange;
 
   @override
   State<MainScreen> createState() => _MainScreenState();
@@ -27,21 +29,19 @@ class _MainScreenState extends State<MainScreen> {
     'Account',
   ];
 
-  late List<Widget> _screens;
-
-  @override
-  void initState() {
-    super.initState();
-
-    _screens = [
-      HomeScreen(key: const PageStorageKey('home'), changeIndex: changeIndex),
-      LearnScreen(key: const PageStorageKey('learn'), changeIndex: changeIndex),
-      TrainScreen(key: const PageStorageKey('train'), changeIndex: changeIndex),
-      PlayScreen(key: const PageStorageKey('play'), changeIndex: changeIndex),
-      InferenceScreen(key: const PageStorageKey('camera_checker'), changeIndex: changeIndex),
-      AccountScreen(key: const PageStorageKey('account'), changeIndex: changeIndex),
-    ];
+  Widget _getScreen(int index) {
+    switch (index) {
+      case 0: return HomeScreen(key: const PageStorageKey('home'), changeIndex: changeIndex);
+      case 1: return LearnScreen(key: const PageStorageKey('learn'), changeIndex: changeIndex);
+      case 2: return TrainScreen(key: const PageStorageKey('train'), changeIndex: changeIndex);
+      case 3: return PlayScreen(key: const PageStorageKey('play'), changeIndex: changeIndex);
+      case 4: return InferenceScreen(key: const PageStorageKey('camera'), changeIndex: changeIndex);
+      case 5: return AccountScreen(key: const PageStorageKey('account'), changeIndex: changeIndex, onThemeChange: widget.onThemeChange);
+      default: return HomeScreen(key: const PageStorageKey('home'), changeIndex: changeIndex);
+    }
   }
+
+  bool darkMode = true;
 
   void _onTap(int index) {
     setState(() {
@@ -57,6 +57,8 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final bool darkMode = Theme.of(context).brightness == Brightness.dark;
+
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
@@ -66,9 +68,9 @@ class _MainScreenState extends State<MainScreen> {
           flexibleSpace: Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: [Colors.orange.shade500, Colors.deepOrange.shade800],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
+                colors: darkMode
+                    ? [Colors.grey.shade900, Colors.black]
+                    : [Colors.orange.shade500, Colors.deepOrange.shade800],
               ),
             ),
           ),
@@ -99,7 +101,7 @@ class _MainScreenState extends State<MainScreen> {
           index: _index,
           children: _screens,
         ),*/
-        body: Center(child: _screens.elementAt(_index)),
+        body: Center(child: _getScreen(_index)),
         bottomNavigationBar: BottomNavigationBar(
           type: BottomNavigationBarType.fixed,
           items: const <BottomNavigationBarItem>[
@@ -135,8 +137,7 @@ class _MainScreenState extends State<MainScreen> {
             ),
           ],
           currentIndex: _index,
-          selectedItemColor: Colors.deepOrange.shade800,
-          unselectedItemColor: Colors.grey,
+          selectedItemColor: darkMode ? Colors.orange.shade300 : Colors.deepOrange.shade800,          unselectedItemColor: Colors.grey,
           showUnselectedLabels: true,
           onTap: _onTap,
         ),

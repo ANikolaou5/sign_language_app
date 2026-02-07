@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sign_language_app/screens/game_lobby_screen.dart';
 import 'package:sign_language_app/screens/quiz_time_screen.dart';
 
@@ -19,6 +20,7 @@ class _PlayScreenState extends State<PlayScreen> {
   final UserService userService = UserService();
   final GeneralService generalService = GeneralService();
   UserClass? user;
+  bool darkMode = true;
 
   // Function to load username from local storage, when already logged in.
   Future<void> _loadUserLocalStorage() async {
@@ -29,15 +31,20 @@ class _PlayScreenState extends State<PlayScreen> {
     }
   }
 
+  Future<void> _loadTheme() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      darkMode = prefs.getBool('darkMode') ?? false;
+    });
+  }
+
   @override
   void initState() {
     super.initState();
 
+    _loadTheme();
     _loadUserLocalStorage().then((_) async {
       await generalService.loginPrompt(user, context, widget.changeIndex, true);
-      /*signToTextQuestions = await generalService.loadSignToTextQuestions();
-      multipleChoiceQuestions = await generalService.loadMCQ();
-      matchQuestions = generalService.createMatchQuestions();*/
     });
   }
 
@@ -45,7 +52,6 @@ class _PlayScreenState extends State<PlayScreen> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        backgroundColor: Colors.orange.shade50,
         body: Padding(
           padding: const EdgeInsets.all(10.0),
           child: Column(
@@ -54,7 +60,7 @@ class _PlayScreenState extends State<PlayScreen> {
               Container(
                 padding: const EdgeInsets.all(8.0),
                 decoration: BoxDecoration(
-                  color: Colors.orange.shade100,
+                  color: darkMode ? Colors.black : Colors.orange.shade100,
                   border: Border.all(width: 2.0, color: Colors.orange.shade300),
                   borderRadius: BorderRadius.circular(15.0),
                 ),
@@ -71,7 +77,7 @@ class _PlayScreenState extends State<PlayScreen> {
               Container(
                 padding: const EdgeInsets.all(8.0),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: darkMode ? Colors.black : Colors.white,
                   border: Border.all(width: 2.0, color: Colors.orange.shade300),
                   borderRadius: BorderRadius.circular(15.0),
                 ),

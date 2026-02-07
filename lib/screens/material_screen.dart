@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sign_language_app/screens/reading_tutorial_screen.dart';
 
 import '../classes/reading_tutorial_class.dart';
@@ -23,6 +24,14 @@ class _MaterialScreenState extends State<MaterialScreen> {
   UserClass? user;
 
   List<int> completedLessons = [];
+  bool darkMode = true;
+
+  Future<void> _loadTheme() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      darkMode = prefs.getBool('darkMode') ?? false;
+    });
+  }
 
   // Function to load username from local storage, when already logged in.
   Future<void> _loadUserLocalStorage() async {
@@ -57,6 +66,7 @@ class _MaterialScreenState extends State<MaterialScreen> {
   void initState() {
     super.initState();
 
+    _loadTheme();
     _loadUserLocalStorage().then((_) async {
       await _loadLearningDetails();
     });
@@ -70,14 +80,17 @@ class _MaterialScreenState extends State<MaterialScreen> {
 
   return SafeArea(
     child: Scaffold(
-        backgroundColor: Colors.orange.shade50,
         appBar: AppBar(
           centerTitle: true,
           backgroundColor: Colors.transparent,
           foregroundColor: Colors.white,
           flexibleSpace: Container(
             decoration: BoxDecoration(
-              gradient: LinearGradient(colors: [Colors.orange.shade500, Colors.deepOrange.shade800]),
+              gradient: LinearGradient(
+                colors: darkMode
+                    ? [Colors.grey.shade900, Colors.black]
+                    : [Colors.orange.shade500, Colors.deepOrange.shade800],
+              ),
             ),
           ),
           title: const Text(
@@ -95,7 +108,7 @@ class _MaterialScreenState extends State<MaterialScreen> {
               Container(
                 padding: const EdgeInsets.all(8.0),
                 decoration: BoxDecoration(
-                  color: Colors.orange.shade100,
+                  color: darkMode ? Colors.black : Colors.orange.shade100,
                   border: Border.all(width: 2.0, color: Colors.orange.shade300),
                   borderRadius: BorderRadius.circular(15.0),
                 ),
@@ -112,7 +125,7 @@ class _MaterialScreenState extends State<MaterialScreen> {
               Container(
                 padding: const EdgeInsets.all(8.0),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: darkMode ? Colors.black : Colors.white,
                   border: Border.all(width: 2.0, color: Colors.orange.shade300),
                   borderRadius: BorderRadius.circular(15.0),
                 ),
@@ -154,7 +167,7 @@ class _MaterialScreenState extends State<MaterialScreen> {
               Container(
                 padding: const EdgeInsets.all(8.0),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: darkMode ? Colors.black : Colors.white,
                   border: Border.all(width: 2.0, color: Colors.orange.shade300),
                   borderRadius: BorderRadius.circular(15.0),
                 ),
@@ -199,7 +212,7 @@ class _MaterialScreenState extends State<MaterialScreen> {
                         child: Container(
                           padding: const EdgeInsets.all(8.0),
                           decoration: BoxDecoration(
-                            color: completed ? Colors.deepOrange.shade200 : Colors.white,
+                            color: completed ? Colors.deepOrange.shade200 : (darkMode ? Colors.orange.shade300 : Colors.white),
                             border: completed ? null : Border.all(width: 2.0, color: Colors.orange.shade300),
                             borderRadius: BorderRadius.circular(15.0),
                           ),

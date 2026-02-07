@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../classes/badge_class.dart';
 
 class CompletedLesson extends StatelessWidget {
-  const CompletedLesson({super.key, this.readingTutorial, required this.completed, required this.badges, required this.newBadge, required this.score, required this.reviewLesson, required this.isGuest, required this.timerEnd, required this.quiz, required this.streakUpdate, required this.streak,});
+  const CompletedLesson({super.key, this.readingTutorial, required this.completed, required this.badges, required this.newBadge, required this.score, required this.reviewLesson, required this.isGuest, required this.timerEnd, required this.quiz, required this.darkMode, required this.streakUpdate, required this.streak,});
 
   final int? readingTutorial;
   final VoidCallback completed;
@@ -14,6 +14,7 @@ class CompletedLesson extends StatelessWidget {
   final bool isGuest;
   final bool timerEnd;
   final bool quiz;
+  final bool darkMode;
   final bool streakUpdate;
   final int? streak;
 
@@ -49,7 +50,6 @@ class CompletedLesson extends StatelessWidget {
           style: TextStyle(
             fontSize: 32.0,
             fontWeight: FontWeight.bold,
-            color: Colors.black,
           ),
         ),
         const SizedBox(height: 10.0),
@@ -68,7 +68,7 @@ class CompletedLesson extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(20.0),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: darkMode ? Colors.black : Colors.white,
                 borderRadius: BorderRadius.circular(15.0),
                 border: Border.all(color: Colors.orange.shade300),
               ),
@@ -93,10 +93,7 @@ class CompletedLesson extends StatelessWidget {
                   Text(
                     earnedBadge.badgeDesc,
                     textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      fontSize: 14.0,
-                      color: Colors.black,
-                    ),
+                    style: const TextStyle(fontSize: 14.0,),
                   ),
                 ],
               ),
@@ -107,7 +104,7 @@ class CompletedLesson extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(20.0),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: darkMode ? Colors.black : Colors.white,
                 borderRadius: BorderRadius.circular(15.0),
                 border: Border.all(color: Colors.orange.shade300),
               ),

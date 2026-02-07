@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../services/game_service.dart';
 import '../classes/question_class.dart';
 import '../classes/online_quiz.dart';
@@ -29,10 +30,12 @@ class _MiniGameScreenState extends State<MiniGameScreen> {
   bool _isProcessing = false;
   bool _hasMovedToNext = false;
   bool _rewardProcessed = false; // Ensures rewards only trigger once
+  bool darkMode = true;
 
   @override
   void initState() {
     super.initState();
+    _loadTheme();
     _gameService = GameService(widget.gameId, widget.myUid);
   }
 
@@ -40,6 +43,13 @@ class _MiniGameScreenState extends State<MiniGameScreen> {
   void dispose() {
     _answerController.dispose();
     super.dispose();
+  }
+
+  Future<void> _loadTheme() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      darkMode = prefs.getBool('darkMode') ?? false;
+    });
   }
 
   /// Handles final score calculation and database updates for Wins/Losses/Draws
@@ -141,9 +151,19 @@ class _MiniGameScreenState extends State<MiniGameScreen> {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
-          title: const Text("Multiplayer Match"),
-          backgroundColor: Colors.deepOrange,
+          centerTitle: true,
+          backgroundColor: Colors.transparent,
           foregroundColor: Colors.white,
+          flexibleSpace: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: darkMode
+                    ? [Colors.grey.shade900, Colors.black]
+                    : [Colors.orange.shade500, Colors.deepOrange.shade800],
+              ),
+            ),
+          ),
+          title: const Text("Multiplayer Match"),
         ),
         body: StreamBuilder<DatabaseEvent>(
           stream: _gameService.gameStream,

@@ -1,6 +1,7 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_timer_countdown/flutter_timer_countdown.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sign_language_app/classes/user_class.dart';
 
 import '../classes/badge_class.dart';
@@ -45,6 +46,7 @@ class _WordsToSignScreenState extends State<WordsToSignScreen> {
   bool check = false;
   bool timerEnd = false;
   bool newBadge = false;
+  bool darkMode = false;
 
   late DateTime endTime;
 
@@ -58,6 +60,13 @@ class _WordsToSignScreenState extends State<WordsToSignScreen> {
     'assets/symbols/please.png',
     'assets/symbols/yes.png',
   ];
+
+  Future<void> _loadTheme() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      darkMode = prefs.getBool('darkMode') ?? false;
+    });
+  }
 
   void _createPossibleAnswersMCQ() {
     if (finalMultipleChoiceQuestions.isEmpty) return;
@@ -209,6 +218,7 @@ class _WordsToSignScreenState extends State<WordsToSignScreen> {
   void initState() {
     super.initState();
 
+    _loadTheme();
     _loadUserLocalStorage().then((_) async {
       endTime = generalService.calculateEndTime(
           widget.multipleChoiceQuestions.length, widget.difficulty);
@@ -241,7 +251,6 @@ class _WordsToSignScreenState extends State<WordsToSignScreen> {
       },
       child: SafeArea(
         child: Scaffold(
-          backgroundColor: Colors.orange.shade50,
           appBar: AppBar(
             centerTitle: true,
             backgroundColor: Colors.transparent,
@@ -249,7 +258,10 @@ class _WordsToSignScreenState extends State<WordsToSignScreen> {
             flexibleSpace: Container(
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                    colors: [Colors.orange.shade500, Colors.deepOrange.shade800]),
+                  colors: darkMode
+                      ? [Colors.grey.shade900, Colors.black]
+                      : [Colors.orange.shade500, Colors.deepOrange.shade800],
+                ),
               ),
             ),
             title: const Text(
@@ -310,6 +322,7 @@ class _WordsToSignScreenState extends State<WordsToSignScreen> {
                         isGuest: false,
                         timerEnd: timerEnd,
                         quiz: widget.quiz,
+                        darkMode: darkMode,
                         streak: user?.streakNum,
                         streakUpdate: difference == 1 ? true : false,
                       ) : MultipleChoiceQuestionWordsToSign(
@@ -319,6 +332,7 @@ class _WordsToSignScreenState extends State<WordsToSignScreen> {
                         answerIndex: answerIndex,
                         isCorrectAnswer: isCorrectAnswer,
                         check: check,
+                        darkMode: darkMode,
                         onTap: (index) {
                           if (!check) {
                             setState(() {

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:async';
 
 import '../classes/question_class.dart';
@@ -31,10 +32,20 @@ class _GameLobbyScreenState extends State<GameLobbyScreen> {
   bool _isAuthLoading = true;
 
   late final DatabaseReference _gamesRef;
+  bool darkMode = true;
+
+  Future<void> _loadTheme() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      darkMode = prefs.getBool('darkMode') ?? false;
+    });
+  }
 
   @override
   void initState() {
     super.initState();
+    _loadTheme();
+
     // Initialize reference here
     _gamesRef = FirebaseDatabase.instance.ref("games/matches");
 
@@ -276,14 +287,17 @@ class _GameLobbyScreenState extends State<GameLobbyScreen> {
     // Normal Lobby UI
     return SafeArea(
       child: Scaffold(
-        backgroundColor: Colors.orange.shade50,
         appBar: AppBar(
           centerTitle: true,
           backgroundColor: Colors.transparent,
           foregroundColor: Colors.white,
           flexibleSpace: Container(
             decoration: BoxDecoration(
-              gradient: LinearGradient(colors: [Colors.orange.shade500, Colors.deepOrange.shade800]),
+              gradient: LinearGradient(
+                colors: darkMode
+                    ? [Colors.grey.shade900, Colors.black]
+                    : [Colors.orange.shade500, Colors.deepOrange.shade800],
+              ),
             ),
           ),
           title: const Text(
@@ -314,7 +328,7 @@ class _GameLobbyScreenState extends State<GameLobbyScreen> {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.deepOrange.shade50,
+        color: darkMode ? Colors.black : Colors.deepOrange.shade50,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: Colors.deepOrange.shade200),
       ),
@@ -401,7 +415,11 @@ class _GameLobbyScreenState extends State<GameLobbyScreen> {
         padding: const EdgeInsets.all(10.0),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(15.0),
-          gradient: LinearGradient(colors: [Colors.orange.shade100, Colors.white],),
+          gradient: LinearGradient(
+            colors: darkMode
+                ? [Colors.grey.shade900, Colors.black]
+                : [Colors.orange.shade100, Colors.white],
+          ),
         ),
         child: Column(
           children: [

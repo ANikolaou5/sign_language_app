@@ -1,6 +1,7 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_timer_countdown/flutter_timer_countdown.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sign_language_app/components/fingerspell_sign_to_word_widget.dart';
 
 import '../classes/badge_class.dart';
@@ -44,7 +45,16 @@ class _FingerspellSignToWordScreenState extends State<FingerspellSignToWordScree
   bool check = false;
   bool timerEnd = false;
   bool newBadge = false;
+  bool darkMode = false;
+
   late DateTime endTime;
+
+  Future<void> _loadTheme() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      darkMode = prefs.getBool('darkMode') ?? false;
+    });
+  }
 
   Future<void> _complete() async {
     List<int> dbBadges = List<int>.from(user!.badges);
@@ -175,6 +185,7 @@ class _FingerspellSignToWordScreenState extends State<FingerspellSignToWordScree
   void initState() {
     super.initState();
 
+    _loadTheme();
     _loadUserLocalStorage().then((_) async {
       endTime = generalService.calculateEndTime(
           widget.signToTextQuestions.length, widget.difficulty);
@@ -207,7 +218,6 @@ class _FingerspellSignToWordScreenState extends State<FingerspellSignToWordScree
       },
       child: SafeArea(
         child: Scaffold(
-          backgroundColor: Colors.orange.shade50,
           appBar: AppBar(
             centerTitle: true,
             backgroundColor: Colors.transparent,
@@ -215,7 +225,10 @@ class _FingerspellSignToWordScreenState extends State<FingerspellSignToWordScree
             flexibleSpace: Container(
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                    colors: [Colors.orange.shade500, Colors.deepOrange.shade800]),
+                  colors: darkMode
+                      ? [Colors.grey.shade900, Colors.black]
+                      : [Colors.orange.shade500, Colors.deepOrange.shade800],
+                ),
               ),
             ),
             title: const Text(
@@ -279,11 +292,13 @@ class _FingerspellSignToWordScreenState extends State<FingerspellSignToWordScree
                         isGuest: false,
                         quiz: widget.quiz,
                         timerEnd: timerEnd,
+                        darkMode: darkMode,
                         streak: user?.streakNum,
                         streakUpdate: difference == 1 ? true : false,
                       ) : FingerspellSignToWord(
                         question: finalQuestions[questionIndex],
                         check: check,
+                        darkMode: darkMode,
                         isCorrectAnswer: isCorrectAnswer,
                         questionPoints: widget.quiz ? questionPoints * 2 : questionPoints,
                         next: _next,

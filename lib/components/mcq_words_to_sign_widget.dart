@@ -4,7 +4,7 @@ import '../classes/question_class.dart';
 import 'navigation_buttons_widget.dart';
 
 class MultipleChoiceQuestionWordsToSign extends StatelessWidget {
-  const MultipleChoiceQuestionWordsToSign({super.key, required this.question, required this.possibleAnswers, required this.pointsMCQ, required this.answerIndex, required this.isCorrectAnswer, required this.check, required this.next, required this.onTap,});
+  const MultipleChoiceQuestionWordsToSign({super.key, required this.question, required this.possibleAnswers, required this.pointsMCQ, required this.answerIndex, required this.isCorrectAnswer, required this.check, required this.darkMode, required this.next, required this.onTap,});
 
   final Question question;
   final List<String> possibleAnswers;
@@ -12,6 +12,7 @@ class MultipleChoiceQuestionWordsToSign extends StatelessWidget {
   final int? answerIndex;
   final bool isCorrectAnswer;
   final bool check;
+  final bool darkMode;
   final VoidCallback next;
   final Function(int) onTap;
 
@@ -25,7 +26,7 @@ class MultipleChoiceQuestionWordsToSign extends StatelessWidget {
         Container(
           padding: const EdgeInsets.all(8.0),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: darkMode ? Colors.black : Colors.orange.shade100,
             border: Border.all(width: 2.0, color: Colors.orange.shade300),
             borderRadius: BorderRadius.circular(15.0),
           ),
@@ -79,10 +80,10 @@ class MultipleChoiceQuestionWordsToSign extends StatelessWidget {
                     padding: const EdgeInsets.all(10.0),
                     decoration: BoxDecoration(
                       color: !check
-                        ? (selected ? Colors.orange.shade100 : Colors.white)
+                        ? (selected ? Colors.orange.shade100 : (darkMode ? Colors.black : Colors.white))
                         : (possibleAnswers[index] == correctAnswer
                           ? Colors.green.shade100
-                          : (selected ? Colors.red.shade100 : Colors.white)),
+                          : (selected ? Colors.red.shade100 : (darkMode ? Colors.black : Colors.white))),
                       borderRadius: BorderRadius.circular(15.0),
                       border: Border.all(
                         color: !check
@@ -148,7 +149,7 @@ class MultipleChoiceQuestionWordsToSign extends StatelessWidget {
           }),
         ),
         const SizedBox(height: 25.0),
-        NavigationButtons(answerIndex: check ? 1 : null, isCorrectAnswer: isCorrectAnswer, check: check, correctAnswer: '', questionPoints: pointsMCQ, next: next,),
+        NavigationButtons(answerIndex: check ? 1 : null, isCorrectAnswer: isCorrectAnswer, check: check, darkMode: darkMode, correctAnswer: '', questionPoints: pointsMCQ, next: next,),
       ],
     );
   }

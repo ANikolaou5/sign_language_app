@@ -95,6 +95,7 @@ class _ReadingTutorialScreenState extends State<ReadingTutorialScreen> {
   bool isGuest = false;
   bool check = false;
   bool newBadge = false;
+  bool darkMode = true;
 
   void _createPossibleAnswersMCQ() {
     final correctImage = multipleChoiceQuestion!.answer;
@@ -272,9 +273,18 @@ class _ReadingTutorialScreenState extends State<ReadingTutorialScreen> {
     await _complete();
   }
 
+  Future<void> _loadTheme() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      darkMode = prefs.getBool('darkMode') ?? false;
+    });
+  }
+
   @override
   void initState() {
     super.initState();
+
+    _loadTheme();
     _loadQuestions();
   }
 
@@ -294,7 +304,6 @@ class _ReadingTutorialScreenState extends State<ReadingTutorialScreen> {
       },
       child: SafeArea(
         child: Scaffold(
-          backgroundColor: Colors.orange.shade50,
           appBar: AppBar(
             centerTitle: true,
             backgroundColor: Colors.transparent,
@@ -302,7 +311,10 @@ class _ReadingTutorialScreenState extends State<ReadingTutorialScreen> {
             flexibleSpace: Container(
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                    colors: [Colors.orange.shade500, Colors.deepOrange.shade800]),
+                    colors: darkMode
+                        ? [Colors.grey.shade900, Colors.black]
+                        : [Colors.orange.shade500, Colors.deepOrange.shade800],
+                ),
               ),
             ),
             title: const Text(
@@ -329,6 +341,7 @@ class _ReadingTutorialScreenState extends State<ReadingTutorialScreen> {
                   isGuest: isGuest,
                   timerEnd: false,
                   quiz: false,
+                  darkMode: darkMode,
                   streak: null,
                   streakUpdate: false,
                 )

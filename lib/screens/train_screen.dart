@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sign_language_app/components/train_categories_widget.dart';
 import 'package:sign_language_app/screens/matching_screen.dart';
 import 'package:sign_language_app/screens/fingerspell_sign_to_word_screen.dart';
@@ -30,6 +31,15 @@ class _TrainScreenState extends State<TrainScreen> {
   List<Question> multipleChoiceQuestionsWordsToSign = [];
   List<Map<String, dynamic>> matchQuestions = [];
 
+  bool darkMode = true;
+
+  Future<void> _loadTheme() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      darkMode = prefs.getBool('darkMode') ?? false;
+    });
+  }
+
   // Function to load username from local storage, when already logged in.
   Future<void> _loadUserLocalStorage() async {
     user = await userService.loadUserLocalStorage();
@@ -43,6 +53,7 @@ class _TrainScreenState extends State<TrainScreen> {
   void initState() {
     super.initState();
 
+    _loadTheme();
     _loadUserLocalStorage().then((_) async {
       await generalService.loginPrompt(user, context, widget.changeIndex, true);
       signToTextQuestions = await generalService.loadSignToTextQuestions();
@@ -57,7 +68,6 @@ class _TrainScreenState extends State<TrainScreen> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        backgroundColor: Colors.orange.shade50,
         body: Padding(
           padding: const EdgeInsets.all(10.0),
           child: SingleChildScrollView(
@@ -68,7 +78,7 @@ class _TrainScreenState extends State<TrainScreen> {
                 Container(
                   padding: const EdgeInsets.all(8.0),
                   decoration: BoxDecoration(
-                    color: Colors.orange.shade100,
+                    color: darkMode ? Colors.black : Colors.orange.shade100,
                     border: Border.all(width: 2.0, color: Colors.orange.shade300),
                     borderRadius: BorderRadius.circular(15.0),
                   ),
@@ -85,7 +95,7 @@ class _TrainScreenState extends State<TrainScreen> {
                 Container(
                   padding: const EdgeInsets.all(8.0),
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: darkMode ? Colors.black : Colors.white,
                     border: Border.all(width: 2.0, color: Colors.orange.shade300),
                     borderRadius: BorderRadius.circular(15.0),
                   ),

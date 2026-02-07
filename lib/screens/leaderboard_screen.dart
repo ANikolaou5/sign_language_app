@@ -1,5 +1,6 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../classes/user_class.dart';
 import '../components/leaderboard_list_widget.dart';
@@ -17,6 +18,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
   final UserService userService = UserService();
 
   List<UserClass> users = [];
+  bool darkMode = true;
 
   Future<void> _loadUsers() async {
     users = await userService.loadUsers();
@@ -24,9 +26,18 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
     setState(() {});
   }
 
+  Future<void> _loadTheme() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      darkMode = prefs.getBool('darkMode') ?? false;
+    });
+  }
+
   @override
   void initState() {
     super.initState();
+
+    _loadTheme();
     _loadUsers();
   }
 
@@ -34,7 +45,6 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        backgroundColor: Colors.orange.shade50,
         appBar: AppBar(
           centerTitle: true,
           backgroundColor: Colors.transparent,
@@ -42,7 +52,10 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
           flexibleSpace: Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                  colors: [Colors.orange.shade500, Colors.deepOrange.shade800]),
+                colors: darkMode
+                    ? [Colors.grey.shade900, Colors.black]
+                    : [Colors.orange.shade500, Colors.deepOrange.shade800],
+              ),
             ),
           ),
           title: const Text(

@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 
 class NavigationButtons extends StatelessWidget {
-  const NavigationButtons({super.key, required this.answerIndex, required this.isCorrectAnswer, this.check, required this.correctAnswer, required this.questionPoints, required this.next,});
+  const NavigationButtons({super.key, required this.answerIndex, required this.isCorrectAnswer, this.check, required this.darkMode, required this.correctAnswer, required this.questionPoints, required this.next,});
 
   final int? answerIndex;
   final bool isCorrectAnswer;
   final bool? check;
+  final bool darkMode;
   final String correctAnswer;
   final int questionPoints;
   final VoidCallback next;
@@ -15,7 +16,7 @@ class NavigationButtons extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(20.0),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: darkMode ? Colors.black : Colors.white,
         border: Border.all(width: 2.0, color: Colors.orange.shade300),
         borderRadius: BorderRadius.circular(15.0),
       ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sign_language_app/screens/fingerspell_sign_to_word_screen.dart';
 import 'package:sign_language_app/screens/matching_screen.dart';
 import 'package:sign_language_app/screens/read_the_sign_screen.dart';
@@ -20,6 +21,7 @@ class QuizTimeScreen extends StatefulWidget {
 class _FingerspellSignToWordScreenState extends State<QuizTimeScreen> {
   final GeneralService generalService = GeneralService();
   final UserService userService = UserService();
+  bool darkMode = true;
 
   String difficulty = 'Easy';
   String category = 'Drag & Drop';
@@ -57,9 +59,17 @@ class _FingerspellSignToWordScreenState extends State<QuizTimeScreen> {
     }
   }
 
+  Future<void> _loadTheme() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      darkMode = prefs.getBool('darkMode') ?? false;
+    });
+  }
+
   @override
   void initState() {
     super.initState();
+    _loadTheme();
   }
 
   @override
@@ -69,7 +79,6 @@ class _FingerspellSignToWordScreenState extends State<QuizTimeScreen> {
     // [Accessed 3 Dec. 2025].
     return SafeArea(
       child: Scaffold(
-        backgroundColor: Colors.orange.shade50,
         appBar: AppBar(
           centerTitle: true,
           backgroundColor: Colors.transparent,
@@ -77,7 +86,10 @@ class _FingerspellSignToWordScreenState extends State<QuizTimeScreen> {
           flexibleSpace: Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                  colors: [Colors.orange.shade500, Colors.deepOrange.shade800]),
+                colors: darkMode
+                    ? [Colors.grey.shade900, Colors.black]
+                    : [Colors.orange.shade500, Colors.deepOrange.shade800],
+              ),
             ),
           ),
           title: const Text(
@@ -114,7 +126,7 @@ class _FingerspellSignToWordScreenState extends State<QuizTimeScreen> {
                   const SizedBox(height: 5.0),
                   Container(
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: darkMode ? Colors.black : Colors.white,
                       borderRadius: BorderRadius.circular(15.0),
                       border: Border.all(color: Colors.orange.shade300),
                     ),
@@ -130,14 +142,14 @@ class _FingerspellSignToWordScreenState extends State<QuizTimeScreen> {
                           child: Container(
                             padding: const EdgeInsets.all(15.0),
                             decoration: BoxDecoration(
-                              color: selected ? Colors.deepOrange : Colors.white,
+                              color: selected ? Colors.deepOrange : (darkMode ? Colors.black : Colors.white),
                               borderRadius: BorderRadius.circular(15.0),
                             ),
                             child: Text(
                               option,
                               style: TextStyle(
                                 fontSize: 20.0,
-                                color: selected ? Colors.white : Colors.black,
+                                color: selected ? Colors.white : (darkMode ? Colors.white : Colors.black),
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -158,7 +170,7 @@ class _FingerspellSignToWordScreenState extends State<QuizTimeScreen> {
                   Container(
                     padding: const EdgeInsets.all(12.0),
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: darkMode ? Colors.black : Colors.white,
                       borderRadius: BorderRadius.circular(15.0),
                       border: Border.all(color: Colors.orange.shade300),
                     ),
@@ -193,7 +205,7 @@ class _FingerspellSignToWordScreenState extends State<QuizTimeScreen> {
                   const SizedBox(height: 5.0),
                   Container(
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: darkMode ? Colors.black : Colors.white,
                       borderRadius: BorderRadius.circular(15.0),
                       border: Border.all(color: Colors.orange.shade300),
                     ),
@@ -210,14 +222,14 @@ class _FingerspellSignToWordScreenState extends State<QuizTimeScreen> {
                           child: Container(
                             padding: const EdgeInsets.all(15.0),
                             decoration: BoxDecoration(
-                              color: selected ? Colors.deepOrange : Colors.white,
+                              color: selected ? Colors.deepOrange : (darkMode ? Colors.black : Colors.white),
                               borderRadius: BorderRadius.circular(15.0),
                             ),
                             child: Text(
                               option,
                               style: TextStyle(
                                 fontSize: 20.0,
-                                color: selected ? Colors.white : Colors.black,
+                                color: selected ? Colors.white : (darkMode ? Colors.white :Colors.black),
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -237,7 +249,7 @@ class _FingerspellSignToWordScreenState extends State<QuizTimeScreen> {
                   const SizedBox(height: 5.0),
                   Container(
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: darkMode ? Colors.black : Colors.white,
                       borderRadius: BorderRadius.circular(15.0),
                       border: Border.all(color: Colors.orange.shade300),
                     ),
@@ -253,14 +265,14 @@ class _FingerspellSignToWordScreenState extends State<QuizTimeScreen> {
                           child: Container(
                             padding: const EdgeInsets.all(15.0),
                             decoration: BoxDecoration(
-                              color: selected ? Colors.deepOrange: Colors.white,
+                              color: selected ? Colors.deepOrange: (darkMode ? Colors.black : Colors.white),
                               borderRadius: BorderRadius.circular(15.0),
                             ),
                             child: Text(
                               option,
                               style: TextStyle(
                                 fontSize: 20.0,
-                                color: selected ? Colors.white : Colors.black,
+                                color: selected ? Colors.white : (darkMode ? Colors.white : Colors.black),
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
