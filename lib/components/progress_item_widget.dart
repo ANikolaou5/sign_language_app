@@ -10,7 +10,7 @@ class ProgressItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(10),
+      padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [Colors.black.withAlpha(50), Colors.black.withAlpha(20), Colors.black.withAlpha(50)],
@@ -43,6 +43,7 @@ class ProgressItem extends StatelessWidget {
           const SizedBox(height: 3.0),
           Text(
             text,
+            textAlign: TextAlign.center,
             style: TextStyle(fontSize: 14.0, color: Colors.white),
           ),
         ],

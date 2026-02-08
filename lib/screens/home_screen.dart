@@ -228,14 +228,19 @@ class _HomeScreenState extends State<HomeScreen> {
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: [
                               ProgressItem(
-                                text: "Streak",
+                                text: "Game\nStreak",
                                 num: user?.streakNum ?? 0,
                                 icon: Icons.local_fire_department,
                               ),
                               ProgressItem(
-                                text: "Score",
+                                text: "Total\nScore",
                                 num: user?.score ?? 0,
                                 icon: Icons.emoji_events,
+                              ),
+                              ProgressItem(
+                                text: "Online\nWins",
+                                num: user?.wins ?? 0,
+                                icon: Icons.videogame_asset_rounded,
                               ),
                             ],
                           ),

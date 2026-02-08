@@ -1,4 +1,3 @@
-
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:sign_language_app/services/inference_service.dart';
@@ -12,7 +11,6 @@ class InferenceScreen extends StatefulWidget {
 
   final Function(int) changeIndex;
 
-
   @override
   State<InferenceScreen> createState() => _InferenceScreenState();
 }
@@ -25,13 +23,15 @@ class _InferenceScreenState extends State<InferenceScreen> {
   late CameraController _controller;
   Future<void>? _initializeControllerFuture;
 
-  bool _isSending = false;
-  String _resultText = 'Make a sign through your camera and press "Check" to check it.';
+  late List<CameraDescription> _cameras;
+  int _selectedCameraIndex = 0;
 
-  // Function to load username from local storage, when already logged in.
+  bool _isSending = false;
+  String _resultText =
+      'Make a sign through your camera and press "Check" to check it.';
+
   Future<void> _loadUserLocalStorage() async {
     user = await userService.loadUserLocalStorage();
-
     if (user != null) {
       setState(() {});
     }
@@ -42,18 +42,24 @@ class _InferenceScreenState extends State<InferenceScreen> {
     super.initState();
 
     _loadUserLocalStorage().then((_) async {
-      await generalService.loginPrompt(user, context, widget.changeIndex, true);
+      await generalService.loginPrompt(
+        user,
+        context,
+        widget.changeIndex,
+        true,
+      );
     });
 
     _initCamera();
   }
 
   Future<void> _initCamera() async {
-    final cameras = await availableCameras();
-    final camera = cameras.first;
+    _cameras = await availableCameras();
+
+    if (_cameras.isEmpty) return;
 
     _controller = CameraController(
-      camera,
+      _cameras[_selectedCameraIndex],
       ResolutionPreset.medium,
       enableAudio: false,
     );
@@ -65,6 +71,15 @@ class _InferenceScreenState extends State<InferenceScreen> {
     }
   }
 
+  Future<void> _switchCamera() async {
+    if (_cameras.length < 2 || _isSending) return;
+
+    _selectedCameraIndex =
+        (_selectedCameraIndex + 1) % _cameras.length;
+
+    await _controller.dispose();
+    await _initCamera();
+  }
 
   Future<void> _captureAndSend() async {
     if (_isSending) return;
@@ -78,7 +93,8 @@ class _InferenceScreenState extends State<InferenceScreen> {
       final XFile photo = await _controller.takePicture();
       final bytes = await photo.readAsBytes();
 
-      final result = await InferenceService.classifyFromCameraBytes(bytes);
+      final result =
+      await InferenceService.classifyFromCameraBytes(bytes);
 
       final predictions = result['predictions'] as List<dynamic>;
 
@@ -90,7 +106,8 @@ class _InferenceScreenState extends State<InferenceScreen> {
         });
       } else {
         setState(() {
-          _resultText = 'Please try again.\nThe sign you used is not recognized.';
+          _resultText =
+          'Please try again.\nThe sign you used is not recognized.';
         });
       }
     } catch (e) {
@@ -111,7 +128,6 @@ class _InferenceScreenState extends State<InferenceScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: AppBar(title: const Text('ASL Capture')),
       body: SafeArea(
         child: Column(
           children: [
@@ -121,10 +137,31 @@ class _InferenceScreenState extends State<InferenceScreen> {
                   : FutureBuilder(
                 future: _initializeControllerFuture,
                 builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.done) {
-                    return CameraPreview(_controller);
+                  if (snapshot.connectionState ==
+                      ConnectionState.done) {
+                    return Stack(
+                      children: [
+                        CameraPreview(_controller),
+
+                        Positioned(
+                          top: 16,
+                          right: 16,
+                          child: FloatingActionButton(
+                            heroTag: "switch_camera",
+                            backgroundColor:
+                            Colors.black.withOpacity(0.6),
+                            onPressed: _switchCamera,
+                            child: const Icon(
+                              Icons.cameraswitch,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ],
+                    );
                   }
-                  return const Center(child: CircularProgressIndicator());
+                  return const Center(
+                      child: CircularProgressIndicator());
                 },
               ),
             ),
@@ -135,22 +172,24 @@ class _InferenceScreenState extends State<InferenceScreen> {
                 children: [
                   Text(
                     _resultText,
-                    style: const TextStyle(
-                      fontSize: 18,
-                    ),
+                    style: const TextStyle(fontSize: 18),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 12),
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton.icon(
-                      style: ButtonStyle(
-                        backgroundColor: MaterialStateProperty.all(Colors.deepOrange),
-                        foregroundColor: MaterialStateProperty.all(Colors.white),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.deepOrange,
+                        foregroundColor: Colors.white,
                       ),
-                      onPressed: _isSending ? null : _captureAndSend,
-                      icon: const Icon(Icons.camera, size: 20,),
-                      label: const Text('Check', style: TextStyle(fontSize: 20),),
+                      onPressed:
+                      _isSending ? null : _captureAndSend,
+                      icon: const Icon(Icons.camera, size: 20),
+                      label: const Text(
+                        'Check',
+                        style: TextStyle(fontSize: 20),
+                      ),
                     ),
                   ),
                 ],

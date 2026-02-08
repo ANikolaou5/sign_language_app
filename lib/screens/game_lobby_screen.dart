@@ -310,14 +310,16 @@ class _GameLobbyScreenState extends State<GameLobbyScreen> {
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(10.0),
-          child: Column(
-            children: [
-              _buildPlayerCard(),
-              const SizedBox(height: 40),
-              _buildMatchmakingSection(),
-              const Spacer(),
-              _buildLeaderboardPreview(),
-            ],
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                _buildPlayerCard(),
+                const SizedBox(height: 40),
+                _buildMatchmakingSection(),
+                const SizedBox(height: 40),
+                _buildLeaderboardPreview(),
+              ],
+            ),
           ),
         ),
       ),
@@ -328,7 +330,7 @@ class _GameLobbyScreenState extends State<GameLobbyScreen> {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: darkMode ? Colors.black : Colors.deepOrange.shade50,
+        color: darkMode ? Colors.black : Colors.deepOrange.shade100,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: Colors.deepOrange.shade200),
       ),
@@ -360,7 +362,7 @@ class _GameLobbyScreenState extends State<GameLobbyScreen> {
     return Column(
       children: [
         const Text(
-          "Compete with others in Real-Time!",
+          "Compete with others online in real time!",
           textAlign: TextAlign.center,
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
         ),
@@ -412,13 +414,16 @@ class _GameLobbyScreenState extends State<GameLobbyScreen> {
       elevation: 4.0,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
       child: Container(
-        padding: const EdgeInsets.all(10.0),
+        padding: const EdgeInsets.all(20.0),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(15.0),
           gradient: LinearGradient(
-            colors: darkMode
+            colors:
+            darkMode
                 ? [Colors.grey.shade900, Colors.black]
-                : [Colors.orange.shade100, Colors.white],
+                : [ Colors.orange.shade800, Colors.orange.shade900 ],
+            begin: AlignmentGeometry.bottomCenter,
+            // end: AlignmentGeometry.bottomCenter
           ),
         ),
         child: Column(
@@ -431,11 +436,12 @@ class _GameLobbyScreenState extends State<GameLobbyScreen> {
                   style: TextStyle(
                     fontSize: 22.0,
                     fontWeight: FontWeight.bold,
+                    color: Colors.white,
                   ),
                 ),
                 Icon(
                   Icons.workspace_premium,
-                  color: Colors.orange.shade900,
+                  color: Colors.white,
                   size: 35.0,
                 ),
               ],
@@ -464,7 +470,7 @@ class _GameLobbyScreenState extends State<GameLobbyScreen> {
                     Expanded(
                       child: Text(
                         user.username,
-                        style: const TextStyle(fontSize: 16.0),
+                        style: const TextStyle(fontSize: 16.0, color: Colors.white),
                       ),
                     ),
                     Text(
@@ -472,7 +478,7 @@ class _GameLobbyScreenState extends State<GameLobbyScreen> {
                       style: TextStyle(
                         fontSize: 18.0,
                         fontWeight: FontWeight.bold,
-                        color: Colors.orange.shade900,
+                        color: Colors.white
                       ),
                     ),
                   ],

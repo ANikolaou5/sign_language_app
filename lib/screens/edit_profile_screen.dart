@@ -166,7 +166,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               child: Column(
                 children: [
                   Container(
-                    padding: const EdgeInsets.all(30.0),
+                    padding: const EdgeInsets.all(20.0),
                     decoration: BoxDecoration(
                       border: Border.all(
                         color: Colors.deepOrange.shade400,
@@ -176,27 +176,37 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       gradient: LinearGradient(
                         colors: darkMode
                           ? [Colors.grey.shade900, Colors.black]
-                          : [Colors.orange.shade100, Colors.white],
+                          : [Colors.orange.shade500, Colors.deepOrange.shade800]
                       ),
                     ),
                     alignment: Alignment.center,
                     child: Column(
                       children: [
-                        CircleAvatar(
-                          radius: 60.0,
-                          backgroundColor: Colors.deepOrange.shade400,
-                          child: Icon(
-                            Icons.person,
-                            size: 70.0,
-                            color: Colors.white,
+                        Container(
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: Colors.white,
+                              width: 2.0,
+                            ),
+                          ),
+                          child: CircleAvatar(
+                            radius: 60.0,
+                            backgroundColor: Colors.deepOrange.shade700,
+                            child: Icon(
+                              Icons.person,
+                              size: 70.0,
+                              color: Colors.white,
+                            ),
                           ),
                         ),
-                        const SizedBox(height: 10.0),
+                        const SizedBox(height: 20.0),
                         Text(
                           widget.user.username,
                           style: TextStyle(
                             fontSize: 22.0,
                             fontWeight: FontWeight.bold,
+                            color: Colors.white
                           ),
                         ),
                       ],
@@ -247,18 +257,22 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     ),
                   ),
                   const SizedBox(height: 25.0),
-                  ElevatedButton(
-                    onPressed: _editProfile,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.deepOrange,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0),),
-                    ),
-                    child: Text(
-                      'Save',
-                      style: const TextStyle(
-                        fontSize: 18.0,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width,
+                    height: 50,
+                    child: ElevatedButton(
+                      onPressed: _editProfile,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.deepOrange,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0),),
+                      ),
+                      child: Text(
+                        'Save',
+                        style: const TextStyle(
+                          fontSize: 18.0,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
                       ),
                     ),
                   ),

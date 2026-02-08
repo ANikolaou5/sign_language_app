@@ -95,10 +95,10 @@ class _AppearanceScreenState extends State<AppearanceScreen> {
                     ),
                     const SizedBox(height: 25.0),
                     Text(
-                      "Note: Switching to Dark Mode helps improve battery and makes it more comfortable to use the app in low-light environments.",
+                      "Switching to Dark Mode helps improve battery and makes it more comfortable to use the app in low-light environments.",
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                        fontSize: 12.0,
+                        fontSize: 14.0,
                         color: Colors.grey.shade500,
                       ),
                     ),
