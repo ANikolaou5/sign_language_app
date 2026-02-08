@@ -81,7 +81,7 @@ class _PlayScreenState extends State<PlayScreen> {
                       padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 35.0),
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
-                          colors: [Colors.deepOrange.shade700, Colors.orange.shade400],
+                          colors: [Colors.deepOrange.shade700, Colors.orange.shade700],
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
                         ),
@@ -147,7 +147,7 @@ class _PlayScreenState extends State<PlayScreen> {
                       padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 35.0),
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
-                          colors: [Colors.deepOrange.shade700, Colors.orange.shade400],
+                          colors: [Colors.deepOrange.shade700, Colors.orange.shade700],
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
                         ),
