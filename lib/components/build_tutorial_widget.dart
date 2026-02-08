@@ -111,6 +111,25 @@ class _BuildTutorialState extends State<BuildTutorial> {
         ],
         const SizedBox(height: 10.0),
         if(widget.tutorial) ...[
+
+          Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadiusGeometry.circular(10),
+              border: Border.all(
+                color: Colors.black,
+                width: 2
+              )
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadiusGeometry.circular(10),
+              child: Image.asset(
+                widget.readingTutorial.tutorialImage,
+                height: 360,
+                fit: BoxFit.contain,
+              ),
+            ),
+          ),
+
           if (widget.readingTutorial.webviewFile != null) ...[
             SizedBox(height: 20.0,),
             //WebView
