@@ -110,10 +110,10 @@ class _InferenceScreenState extends State<InferenceScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        // appBar: AppBar(title: const Text('ASL Capture')),
-        body: Column(
+    return Scaffold(
+      // appBar: AppBar(title: const Text('ASL Capture')),
+      body: SafeArea(
+        child: Column(
           children: [
             Expanded(
               child: _initializeControllerFuture == null

@@ -78,30 +78,30 @@ class _MaterialScreenState extends State<MaterialScreen> {
     int completedTutorials = widget.readingTutorials.where((t) => completedLessons.contains(t.readingTutorial)).length;
     double progress = tutorials > 0 ? completedTutorials / tutorials : 0.0;
 
-  return SafeArea(
-    child: Scaffold(
-        appBar: AppBar(
-          centerTitle: true,
-          backgroundColor: Colors.transparent,
-          foregroundColor: Colors.white,
-          flexibleSpace: Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: darkMode
-                    ? [Colors.grey.shade900, Colors.black]
-                    : [Colors.orange.shade500, Colors.deepOrange.shade800],
-              ),
-            ),
-          ),
-          title: const Text(
-            "Reading Tutorials",
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
+  return Scaffold(
+      appBar: AppBar(
+        centerTitle: true,
+        backgroundColor: Colors.transparent,
+        foregroundColor: Colors.white,
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: darkMode
+                  ? [Colors.grey.shade900, Colors.black]
+                  : [Colors.orange.shade500, Colors.deepOrange.shade800],
             ),
           ),
         ),
-        body: widget.readingTutorials.isEmpty ? const Center(child: CircularProgressIndicator()) : Padding(
+        title: const Text(
+          "Reading Tutorials",
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+      ),
+      body: SafeArea(
+        child: widget.readingTutorials.isEmpty ? const Center(child: CircularProgressIndicator()) : Padding(
           padding: const EdgeInsets.all(10.0),
           child: Column(
             children: [

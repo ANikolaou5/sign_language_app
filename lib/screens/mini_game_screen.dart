@@ -148,24 +148,24 @@ class _MiniGameScreenState extends State<MiniGameScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        appBar: AppBar(
-          centerTitle: true,
-          backgroundColor: Colors.transparent,
-          foregroundColor: Colors.white,
-          flexibleSpace: Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: darkMode
-                    ? [Colors.grey.shade900, Colors.black]
-                    : [Colors.orange.shade500, Colors.deepOrange.shade800],
-              ),
+    return Scaffold(
+      appBar: AppBar(
+        centerTitle: true,
+        backgroundColor: Colors.transparent,
+        foregroundColor: Colors.white,
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: darkMode
+                  ? [Colors.grey.shade900, Colors.black]
+                  : [Colors.orange.shade500, Colors.deepOrange.shade800],
             ),
           ),
-          title: const Text("Multiplayer Match"),
         ),
-        body: StreamBuilder<DatabaseEvent>(
+        title: const Text("Multiplayer Match"),
+      ),
+      body: SafeArea(
+        child: StreamBuilder<DatabaseEvent>(
           stream: _gameService.gameStream,
           builder: (context, snapshot) {
             if (snapshot.hasError) return Center(child: Text("Error: ${snapshot.error}"));

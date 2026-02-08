@@ -77,30 +77,30 @@ class _FingerspellSignToWordScreenState extends State<QuizTimeScreen> {
     // GaneshTamang (2024). Flutter PopScope for android back button to leave app showing black screen instead of going to home screen of android. [online] GitHub.
     // Available at: https://github.com/GaneshTamang/flast_chat_firebase_example/issues/1
     // [Accessed 3 Dec. 2025].
-    return SafeArea(
-      child: Scaffold(
-        appBar: AppBar(
-          centerTitle: true,
-          backgroundColor: Colors.transparent,
-          foregroundColor: Colors.white,
-          flexibleSpace: Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: darkMode
-                    ? [Colors.grey.shade900, Colors.black]
-                    : [Colors.orange.shade500, Colors.deepOrange.shade800],
-              ),
-            ),
-          ),
-          title: const Text(
-            "Quiz Time",
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
+    return Scaffold(
+      appBar: AppBar(
+        centerTitle: true,
+        backgroundColor: Colors.transparent,
+        foregroundColor: Colors.white,
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: darkMode
+                  ? [Colors.grey.shade900, Colors.black]
+                  : [Colors.orange.shade500, Colors.deepOrange.shade800],
             ),
           ),
         ),
-        body: Padding(
+        title: const Text(
+          "Quiz Time",
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+      ),
+      body: SafeArea(
+        child: Padding(
           padding: const EdgeInsets.all(10.0),
           child: SingleChildScrollView(
             scrollDirection: Axis.vertical,

@@ -285,30 +285,30 @@ class _GameLobbyScreenState extends State<GameLobbyScreen> {
     }
 
     // Normal Lobby UI
-    return SafeArea(
-      child: Scaffold(
-        appBar: AppBar(
-          centerTitle: true,
-          backgroundColor: Colors.transparent,
-          foregroundColor: Colors.white,
-          flexibleSpace: Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: darkMode
-                    ? [Colors.grey.shade900, Colors.black]
-                    : [Colors.orange.shade500, Colors.deepOrange.shade800],
-              ),
-            ),
-          ),
-          title: const Text(
-            "Play Online",
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
+    return Scaffold(
+      appBar: AppBar(
+        centerTitle: true,
+        backgroundColor: Colors.transparent,
+        foregroundColor: Colors.white,
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: darkMode
+                  ? [Colors.grey.shade900, Colors.black]
+                  : [Colors.orange.shade500, Colors.deepOrange.shade800],
             ),
           ),
         ),
-        body: Padding(
+        title: const Text(
+          "Play Online",
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+      ),
+      body: SafeArea(
+        child: Padding(
           padding: const EdgeInsets.all(10.0),
           child: Column(
             children: [

@@ -302,30 +302,30 @@ class _ReadingTutorialScreenState extends State<ReadingTutorialScreen> {
 
         generalService.exitPrompt(context, 'reading tutorial');
       },
-      child: SafeArea(
-        child: Scaffold(
-          appBar: AppBar(
-            centerTitle: true,
-            backgroundColor: Colors.transparent,
-            foregroundColor: Colors.white,
-            flexibleSpace: Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                    colors: darkMode
-                        ? [Colors.grey.shade900, Colors.black]
-                        : [Colors.orange.shade500, Colors.deepOrange.shade800],
-                ),
-              ),
-            ),
-            title: const Text(
-              "Reading Tutorials",
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
+      child: Scaffold(
+        appBar: AppBar(
+          centerTitle: true,
+          backgroundColor: Colors.transparent,
+          foregroundColor: Colors.white,
+          flexibleSpace: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                  colors: darkMode
+                      ? [Colors.grey.shade900, Colors.black]
+                      : [Colors.orange.shade500, Colors.deepOrange.shade800],
               ),
             ),
           ),
-          body: Padding(
+          title: const Text(
+            "Reading Tutorials",
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+        ),
+        body: SafeArea(
+          child: Padding(
             padding: const EdgeInsets.all(10.0),
             child: SingleChildScrollView(
               key: ValueKey(Random().nextInt(1000000).toString()),

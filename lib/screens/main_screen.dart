@@ -59,88 +59,86 @@ class _MainScreenState extends State<MainScreen> {
   Widget build(BuildContext context) {
     final bool darkMode = Theme.of(context).brightness == Brightness.dark;
 
-    return SafeArea(
-      child: Scaffold(
-        appBar: AppBar(
-          centerTitle: true,
-          elevation: 0,
-          backgroundColor: Colors.transparent,
-          flexibleSpace: Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: darkMode
-                    ? [Colors.grey.shade900, Colors.black]
-                    : [Colors.orange.shade500, Colors.deepOrange.shade800],
-              ),
+    return Scaffold(
+      appBar: AppBar(
+        centerTitle: true,
+        elevation: 0,
+        backgroundColor: Colors.transparent,
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: darkMode
+                  ? [Colors.grey.shade900, Colors.black]
+                  : [Colors.orange.shade500, Colors.deepOrange.shade800],
             ),
           ),
-          title: Text(
-            _titles[_index],
-            style: const TextStyle(
-              fontWeight: FontWeight.bold,
+        ),
+        title: Text(
+          _titles[_index],
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+        actions: [
+          IconButton(
+            icon: const Icon(
+              Icons.info_outline,
               color: Colors.white,
+              size: 30.0,
             ),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const AboutScreen()),
+              );
+            },
           ),
-          actions: [
-            IconButton(
-              icon: const Icon(
-                Icons.info_outline,
-                color: Colors.white,
-                size: 30.0,
-              ),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const AboutScreen()),
-                );
-              },
-            ),
-          ],
-        ),
-        /*body: IndexedStack(
-          index: _index,
-          children: _screens,
-        ),*/
-        body: Center(child: _getScreen(_index)),
-        bottomNavigationBar: BottomNavigationBar(
-          type: BottomNavigationBarType.fixed,
-          items: const <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
-              icon: Icon(Icons.home_outlined),
-              activeIcon: Icon(Icons.home),
-              label: "Home",
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.menu_book_outlined),
-              activeIcon: Icon(Icons.menu_book),
-              label: "Learn",
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.quiz_outlined),
-              activeIcon: Icon(Icons.quiz),
-              label: "Train",
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.sports_esports_outlined),
-              activeIcon: Icon(Icons.sports_esports),
-              label: "Play",
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.video_camera_front_outlined),
-              activeIcon: Icon(Icons.video_camera_front),
-              label: "Live test",
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.person_outline),
-              activeIcon: Icon(Icons.person),
-              label: "Account",
-            ),
-          ],
-          currentIndex: _index,
-          selectedItemColor: darkMode ? Colors.orange.shade300 : Colors.deepOrange.shade800,          unselectedItemColor: Colors.grey,
-          showUnselectedLabels: true,
-          onTap: _onTap,
-        ),
+        ],
+      ),
+      /*body: IndexedStack(
+        index: _index,
+        children: _screens,
+      ),*/
+      body: SafeArea(child: Center(child: _getScreen(_index))),
+      bottomNavigationBar: BottomNavigationBar(
+        type: BottomNavigationBarType.fixed,
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home_outlined),
+            activeIcon: Icon(Icons.home),
+            label: "Home",
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.menu_book_outlined),
+            activeIcon: Icon(Icons.menu_book),
+            label: "Learn",
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.quiz_outlined),
+            activeIcon: Icon(Icons.quiz),
+            label: "Train",
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.sports_esports_outlined),
+            activeIcon: Icon(Icons.sports_esports),
+            label: "Play",
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.video_camera_front_outlined),
+            activeIcon: Icon(Icons.video_camera_front),
+            label: "Live test",
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person_outline),
+            activeIcon: Icon(Icons.person),
+            label: "Account",
+          ),
+        ],
+        currentIndex: _index,
+        selectedItemColor: darkMode ? Colors.orange.shade300 : Colors.deepOrange.shade800,          unselectedItemColor: Colors.grey,
+        showUnselectedLabels: true,
+        onTap: _onTap,
       ),
     );
   }

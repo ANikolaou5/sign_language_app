@@ -43,30 +43,30 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        appBar: AppBar(
-          centerTitle: true,
-          backgroundColor: Colors.transparent,
-          foregroundColor: Colors.white,
-          flexibleSpace: Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: darkMode
-                    ? [Colors.grey.shade900, Colors.black]
-                    : [Colors.orange.shade500, Colors.deepOrange.shade800],
-              ),
-            ),
-          ),
-          title: const Text(
-            "Leaderboard",
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
+    return Scaffold(
+      appBar: AppBar(
+        centerTitle: true,
+        backgroundColor: Colors.transparent,
+        foregroundColor: Colors.white,
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: darkMode
+                  ? [Colors.grey.shade900, Colors.black]
+                  : [Colors.orange.shade500, Colors.deepOrange.shade800],
             ),
           ),
         ),
-        body: Padding(
+        title: const Text(
+          "Leaderboard",
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+      ),
+      body: SafeArea(
+        child: Padding(
           padding: const EdgeInsets.all(10.0),
           child: ListView.builder(
             itemCount: users.length,
@@ -76,8 +76,8 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
               return LeaderboardList(user: user, ranking: ranking);
             },
           ),
-        )
-      ),
+        ),
+      )
     );
   }
 }

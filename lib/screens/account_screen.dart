@@ -277,9 +277,9 @@ class _AccountScreenState extends State<AccountScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        body: Padding(
+    return Scaffold(
+      body: SafeArea(
+        child: Padding(
           padding: const EdgeInsets.all(10.0),
           child: SingleChildScrollView(
             scrollDirection: Axis.vertical,
@@ -731,8 +731,8 @@ class _AccountScreenState extends State<AccountScreen> {
               ],
             ),
           )
-        )
-      ),
+        ),
+      )
     );
   }
 }

@@ -137,131 +137,133 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           }
         );
       },
-      child: SafeArea(
-        child: Scaffold(
-          appBar: AppBar(
-            centerTitle: true,
-            backgroundColor: Colors.transparent,
-            foregroundColor: Colors.white,
-            flexibleSpace: Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: darkMode
-                      ? [Colors.grey.shade900, Colors.black]
-                      : [Colors.orange.shade500, Colors.deepOrange.shade800],
-                ),
-              ),
-            ),
-            title: const Text(
-              "Edit Profile",
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
+      child: Scaffold(
+        appBar: AppBar(
+          centerTitle: true,
+          backgroundColor: Colors.transparent,
+          foregroundColor: Colors.white,
+          flexibleSpace: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: darkMode
+                    ? [Colors.grey.shade900, Colors.black]
+                    : [Colors.orange.shade500, Colors.deepOrange.shade800],
               ),
             ),
           ),
-          body: Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: Column(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(30.0),
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      color: Colors.deepOrange.shade400,
-                      width: 2.0,
+          title: const Text(
+            "Edit Profile",
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+        ),
+        body: SafeArea(
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: Column(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(30.0),
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: Colors.deepOrange.shade400,
+                        width: 2.0,
+                      ),
+                      borderRadius: BorderRadius.circular(30.0),
+                      gradient: LinearGradient(
+                        colors: darkMode
+                          ? [Colors.grey.shade900, Colors.black]
+                          : [Colors.orange.shade100, Colors.white],
+                      ),
                     ),
-                    borderRadius: BorderRadius.circular(30.0),
-                    gradient: LinearGradient(
-                      colors: darkMode
-                        ? [Colors.grey.shade900, Colors.black]
-                        : [Colors.orange.shade100, Colors.white],
+                    alignment: Alignment.center,
+                    child: Column(
+                      children: [
+                        CircleAvatar(
+                          radius: 60.0,
+                          backgroundColor: Colors.deepOrange.shade400,
+                          child: Icon(
+                            Icons.person,
+                            size: 70.0,
+                            color: Colors.white,
+                          ),
+                        ),
+                        const SizedBox(height: 10.0),
+                        Text(
+                          widget.user.username,
+                          style: TextStyle(
+                            fontSize: 22.0,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  alignment: Alignment.center,
-                  child: Column(
-                    children: [
-                      CircleAvatar(
-                        radius: 60.0,
-                        backgroundColor: Colors.deepOrange.shade400,
-                        child: Icon(
-                          Icons.person,
-                          size: 70.0,
-                          color: Colors.white,
+                  const SizedBox(height: 25.0),
+                  TextField(
+                    controller: nameTextController,
+                    decoration:  InputDecoration(
+                      labelText: 'Name',
+                      filled: true,
+                      fillColor: darkMode ? Colors.black : Colors.white,
+                      border: OutlineInputBorder(),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: Colors.deepOrange.shade400,
+                          width: 2.0,
                         ),
                       ),
-                      const SizedBox(height: 10.0),
-                      Text(
-                        widget.user.username,
-                        style: TextStyle(
-                          fontSize: 22.0,
-                          fontWeight: FontWeight.bold,
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: Colors.deepOrange.shade400,
+                          width: 2.0,
                         ),
                       ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 25.0),
-                TextField(
-                  controller: nameTextController,
-                  decoration:  InputDecoration(
-                    labelText: 'Name',
-                    filled: true,
-                    fillColor: darkMode ? Colors.black : Colors.white,
-                    border: OutlineInputBorder(),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                        color: Colors.deepOrange.shade400,
-                        width: 2.0,
-                      ),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                        color: Colors.deepOrange.shade400,
-                        width: 2.0,
-                      ),
                     ),
                   ),
-                ),
-                const SizedBox(height: 10.0),
-                TextField(
-                  controller: surnameTextController,
-                  decoration: InputDecoration(
-                    labelText: 'Surname',
-                    filled: true,
-                    fillColor: darkMode ? Colors.black : Colors.white,
-                    border: OutlineInputBorder(),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                        color: Colors.deepOrange.shade400,
-                        width: 2.0,
+                  const SizedBox(height: 10.0),
+                  TextField(
+                    controller: surnameTextController,
+                    decoration: InputDecoration(
+                      labelText: 'Surname',
+                      filled: true,
+                      fillColor: darkMode ? Colors.black : Colors.white,
+                      border: OutlineInputBorder(),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: Colors.deepOrange.shade400,
+                          width: 2.0,
+                        ),
                       ),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                        color: Colors.deepOrange.shade400,
-                        width: 2.0,
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: Colors.deepOrange.shade400,
+                          width: 2.0,
+                        ),
                       ),
                     ),
                   ),
-                ),
-                const SizedBox(height: 25.0),
-                ElevatedButton(
-                  onPressed: _editProfile,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.deepOrange,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0),),
-                  ),
-                  child: Text(
-                    'Save',
-                    style: const TextStyle(
-                      fontSize: 18.0,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                  const SizedBox(height: 25.0),
+                  ElevatedButton(
+                    onPressed: _editProfile,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.deepOrange,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0),),
+                    ),
+                    child: Text(
+                      'Save',
+                      style: const TextStyle(
+                        fontSize: 18.0,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),

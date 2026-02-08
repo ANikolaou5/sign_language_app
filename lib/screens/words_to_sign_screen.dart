@@ -249,30 +249,30 @@ class _WordsToSignScreenState extends State<WordsToSignScreen> {
           generalService.exitPrompt(context, 'training');
         }
       },
-      child: SafeArea(
-        child: Scaffold(
-          appBar: AppBar(
-            centerTitle: true,
-            backgroundColor: Colors.transparent,
-            foregroundColor: Colors.white,
-            flexibleSpace: Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: darkMode
-                      ? [Colors.grey.shade900, Colors.black]
-                      : [Colors.orange.shade500, Colors.deepOrange.shade800],
-                ),
-              ),
-            ),
-            title: const Text(
-              "Words to Sign",
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
+      child: Scaffold(
+        appBar: AppBar(
+          centerTitle: true,
+          backgroundColor: Colors.transparent,
+          foregroundColor: Colors.white,
+          flexibleSpace: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: darkMode
+                    ? [Colors.grey.shade900, Colors.black]
+                    : [Colors.orange.shade500, Colors.deepOrange.shade800],
               ),
             ),
           ),
-          body: Column(
+          title: const Text(
+            "Words to Sign",
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+        ),
+        body: SafeArea(
+          child: Column(
             children: [
               LinearProgressIndicator(
                 value: progress,

@@ -216,30 +216,30 @@ class _FingerspellSignToWordScreenState extends State<FingerspellSignToWordScree
           generalService.exitPrompt(context, 'training');
         }
       },
-      child: SafeArea(
-        child: Scaffold(
-          appBar: AppBar(
-            centerTitle: true,
-            backgroundColor: Colors.transparent,
-            foregroundColor: Colors.white,
-            flexibleSpace: Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: darkMode
-                      ? [Colors.grey.shade900, Colors.black]
-                      : [Colors.orange.shade500, Colors.deepOrange.shade800],
-                ),
-              ),
-            ),
-            title: const Text(
-              "Fingerspell Image to Word",
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
+      child: Scaffold(
+        appBar: AppBar(
+          centerTitle: true,
+          backgroundColor: Colors.transparent,
+          foregroundColor: Colors.white,
+          flexibleSpace: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: darkMode
+                    ? [Colors.grey.shade900, Colors.black]
+                    : [Colors.orange.shade500, Colors.deepOrange.shade800],
               ),
             ),
           ),
-          body: Column(
+          title: const Text(
+            "Fingerspell Image to Word",
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+        ),
+        body: SafeArea(
+          child: Column(
             children: [
               // Flutter.dev. (2024). LinearProgressIndicator class - material library - Dart API. [online]
               // Available at: https://api.flutter.dev/flutter/material/LinearProgressIndicator-class.html

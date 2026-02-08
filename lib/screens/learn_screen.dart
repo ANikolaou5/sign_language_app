@@ -101,9 +101,9 @@ class _LearnScreenState extends State<LearnScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        body: levels.isEmpty ? const Center(child: CircularProgressIndicator()) : Padding(
+    return Scaffold(
+      body: SafeArea(
+        child: levels.isEmpty ? const Center(child: CircularProgressIndicator()) : Padding(
           padding: const EdgeInsets.all(10.0),
           child: Column(
             children: [
