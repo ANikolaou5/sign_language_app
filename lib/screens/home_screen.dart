@@ -20,7 +20,9 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   late TextEditingController streakGoalTextController;
-  final DatabaseReference usersRef = FirebaseDatabase.instance.ref().child('users');
+  final DatabaseReference usersRef = FirebaseDatabase.instance.ref().child(
+    'users',
+  );
   final UserService userService = UserService();
 
   UserClass? user;
@@ -45,17 +47,16 @@ class _HomeScreenState extends State<HomeScreen> {
       DateTime today = DateTime(now.year, now.month, now.day);
       DateTime lastStreakDate = user!.lastStreakDate!;
       DateTime lastDate = DateTime(
-          lastStreakDate.year, lastStreakDate.month, lastStreakDate.day);
-      int difference = today
-          .difference(lastDate)
-          .inDays;
+        lastStreakDate.year,
+        lastStreakDate.month,
+        lastStreakDate.day,
+      );
+      int difference = today.difference(lastDate).inDays;
 
       if (difference > 1) {
         final userRef = usersRef.child(user!.username).child('learningDetails');
 
-        await userRef.update({
-          'streakNum': 0,
-        });
+        await userRef.update({'streakNum': 0});
 
         await userService.refreshUserLocalStorage();
         user = await userService.loadUserLocalStorage();
@@ -67,15 +68,17 @@ class _HomeScreenState extends State<HomeScreen> {
           builder: (BuildContext context) {
             return Dialog(
               shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(15.0)),
+                borderRadius: BorderRadius.circular(15.0),
+              ),
               child: Container(
                 padding: const EdgeInsets.all(20.0),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(25.0),
                   gradient: LinearGradient(
-                    colors: darkMode
-                        ? [Colors.grey.shade900, Colors.black]
-                        : [Colors.orange.shade100, Colors.white],
+                    colors:
+                        darkMode
+                            ? [Colors.grey.shade900, Colors.black]
+                            : [Colors.orange.shade100, Colors.white],
                   ),
                 ),
                 child: Column(
@@ -105,15 +108,13 @@ class _HomeScreenState extends State<HomeScreen> {
                         backgroundColor: Colors.deepOrange,
                         foregroundColor: Colors.white,
                         shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12.0)),
+                          borderRadius: BorderRadius.circular(12.0),
+                        ),
                       ),
                       onPressed: () => Navigator.pop(context),
                       child: const Text(
                         "Start a new streak",
-                        style: TextStyle(
-                          fontSize: 18.0,
-                          color: Colors.white,
-                        ),
+                        style: TextStyle(fontSize: 18.0, color: Colors.white),
                       ),
                     ),
                   ],
@@ -168,7 +169,6 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-
                 SizedBox(
                   width: MediaQuery.of(context).size.width,
                   child: Image(
@@ -179,7 +179,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
                 SizedBox(
                   width: MediaQuery.of(context).size.width,
-                  child: Text("SiLAC",
+                  child: Text(
+                    "SiLAC",
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 40.0,
@@ -188,52 +189,151 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
 
-                SizedBox(height: 20,),
-
                 if (user != null) ...[
                   Card(
                     elevation: 4.0,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15.0),
+                    ),
                     child: Container(
                       padding: const EdgeInsets.all(20.0),
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
-                            colors: darkMode
-                                ? [Colors.grey.shade900, Colors.black]
-                                : [Colors.orange.shade500, Colors.deepOrange.shade800]
+                          colors:
+                              darkMode
+                                  ? [Colors.grey.shade900, Colors.black]
+                                  : [
+                                    Colors.orange.shade500,
+                                    Colors.deepOrange.shade800,
+                                  ],
                         ),
                         borderRadius: BorderRadius.circular(15.0),
                       ),
                       child: Column(
                         children: [
-
                           Text(
-                            user == null ? "Welcome!" : "Welcome, ${user!.username}!",
+                            user == null
+                                ? "Welcome!"
+                                : "Welcome, ${user!.username}!",
                             style: const TextStyle(
                               fontSize: 26.0,
                               fontWeight: FontWeight.bold,
-                              color: Colors.white
+                              color: Colors.white,
                             ),
                           ),
 
-                          SizedBox(height: 15,),
+                          SizedBox(height: 15),
 
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: [
-                              ProgressItem(text: "Streak", num: user?.streakNum ?? 0, icon: Icons.local_fire_department,),
-                              ProgressItem(text: "Score", num: user?.score ?? 0, icon: Icons.emoji_events),
+                              ProgressItem(
+                                text: "Streak",
+                                num: user?.streakNum ?? 0,
+                                icon: Icons.local_fire_department,
+                              ),
+                              ProgressItem(
+                                text: "Score",
+                                num: user?.score ?? 0,
+                                icon: Icons.emoji_events,
+                              ),
                             ],
                           ),
-
                         ],
-                      )
+                      ),
                     ),
                   ),
                   const SizedBox(height: 10.0),
                 ],
 
-                Card( elevation: 4.0, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)), child: InkWell( onTap: () => widget.changeIndex(1), child: Container( padding: const EdgeInsets.all(15.0), decoration: BoxDecoration( color: Colors.deepOrange, borderRadius: BorderRadius.circular(15.0), ), child:Row( mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [ const Text( "Continue Learning... ", style: TextStyle( fontSize: 18.0, fontWeight: FontWeight.bold, color: Colors.white, ), ), Icon( Icons.arrow_forward_ios, size: 22.0, color: Colors.white, ) ], ), ), ), ),
+                user == null ? Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                    "SiLAc is a mobile application for learning ASL using gamified, interactive activities that help users learn sign language through various features.",
+                    textAlign: TextAlign.center,
+                  ),
+                ) : Container(),
+
+                // SizedBox(height: 10,),
+
+                //Start/continue learning...
+                Card(
+                  elevation: 4.0,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15.0),
+                  ),
+                  child: InkWell(
+                    onTap: () => widget.changeIndex(1),
+                    child: Container(
+                      padding: const EdgeInsets.all(15.0),
+                      decoration: BoxDecoration(
+                        color: Colors.deepOrange,
+                        borderRadius: BorderRadius.circular(15.0),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            user == null ? "Start learning" : "Continue Learning",
+                            style: TextStyle(
+                              fontSize: 18.0,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                          Icon(
+                            Icons.arrow_forward_ios,
+                            size: 22.0,
+                            color: Colors.white,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+
+                //View achievements
+                user != null ? Card(
+                  elevation: 4.0,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15.0),
+                  ),
+                  child: InkWell(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute<void>(
+                          builder: (context) => const AchievementsScreen(),
+                        ),
+                      );
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.all(15.0),
+                      decoration: BoxDecoration(
+                        color: Colors.deepOrange,
+                        borderRadius: BorderRadius.circular(15.0),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text(
+                            "View achievements",
+                            style: TextStyle(
+                              fontSize: 18.0,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                          Icon(
+                            Icons.arrow_forward_ios,
+                            size: 22.0,
+                            color: Colors.white,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ) : Container(),
 
                 // Card(
                 //   elevation: 4.0,
@@ -259,16 +359,22 @@ class _HomeScreenState extends State<HomeScreen> {
                 const SizedBox(height: 10.0),
                 Card(
                   elevation: 4.0,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15.0),
+                  ),
                   child: Container(
                     padding: const EdgeInsets.all(20.0),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(15.0),
                       gradient: LinearGradient(
-                        colors: darkMode
-                            ? [Colors.grey.shade900, Colors.black]
-                            : [Colors.orange.shade200, Colors.orange.shade50],
-                        begin: AlignmentGeometry.topCenter,
+                        colors:
+                            darkMode
+                                ? [Colors.grey.shade900, Colors.black]
+                                : [
+                                  Colors.orange.shade800,
+                                  Colors.orange.shade500,
+                                ],
+                        begin: AlignmentGeometry.bottomCenter,
                         // end: AlignmentGeometry.bottomCenter
                       ),
                     ),
@@ -282,71 +388,81 @@ class _HomeScreenState extends State<HomeScreen> {
                               style: TextStyle(
                                 fontSize: 22.0,
                                 fontWeight: FontWeight.bold,
+                                color: Colors.white
                               ),
                             ),
                             Icon(
                               Icons.workspace_premium,
-                              color: Colors.orange.shade900,
+                              color: Colors.white,
                               size: 35.0,
                             ),
                           ],
                         ),
                         const Divider(height: 35.0),
                         Column(
-                          children: users.map((user) {
-                            return Row(
-                              children: [
-                                Container(
-                                  padding: const EdgeInsets.all(10.0),
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    shape: BoxShape.circle,
-                                  ),
-                                  child: Text(
-                                    "${users.indexOf(user) + 1}",
-                                    style: TextStyle(
-                                      fontSize: 20.0,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.orange.shade900,
-                                    )
-                                  ),
-                                ),
-                                const SizedBox(width: 15.0),
-                                Expanded(
-                                  child: Text(
-                                    user.username,
-                                    style: const TextStyle(fontSize: 16.0)
-                                  )
-                                ),
-                                Text(
-                                  "${user.score} pts ",
-                                  style: TextStyle(
-                                    fontSize: 18.0,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.orange.shade900,
-                                  )
-                                ),
-                              ],
-                            );
-                          }).toList(),
+                          children:
+                              users.map((user) {
+                                return Row(
+                                  children: [
+                                    Container(
+                                      padding: const EdgeInsets.all(10.0),
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        shape: BoxShape.circle,
+                                      ),
+                                      child: Text(
+                                        "${users.indexOf(user) + 1}",
+                                        style: TextStyle(
+                                          fontSize: 20.0,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.orange.shade900,
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 15.0),
+                                    Expanded(
+                                      child: Text(
+                                        user.username,
+                                        style: const TextStyle(fontSize: 16.0, color: Colors.white),
+                                      ),
+                                    ),
+                                    Text(
+                                      "${user.score} pts ",
+                                      style: TextStyle(
+                                        fontSize: 18.0,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ],
+                                );
+                              }).toList(),
                         ),
                         const SizedBox(height: 15.0),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
                             InkWell(
-                              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const LeaderboardScreen())),
+                              onTap:
+                                  () => Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder:
+                                          (context) =>
+                                              const LeaderboardScreen(),
+                                    ),
+                                  ),
                               child: Container(
                                 padding: const EdgeInsets.all(10.0),
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(15.0),
-                                  color: Colors.deepOrange.shade300,
+                                  color: Colors.orange.shade100,
                                 ),
                                 child: Text(
                                   "Full Leaderboard",
                                   style: TextStyle(
                                     fontSize: 16.0,
-                                    color: Colors.white,
+                                    color: Colors.black,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
@@ -356,49 +472,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ],
                     ),
-                  )
-                ),
-                const SizedBox(height: 10.0),
-                Card(
-                  elevation: 4.0,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
-                  child: InkWell(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute<void>(
-                          builder: (context) => const AchievementsScreen(),
-                        ),
-                      );
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.all(15.0),
-                      decoration: BoxDecoration(
-                        color: Colors.deepOrange,
-                        borderRadius: BorderRadius.circular(15.0),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          const Text(
-                            "Achievements",
-                            style: TextStyle(
-                              fontSize: 18.0,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
-                          ),
-                          Icon(
-                            Icons.arrow_forward_ios,
-                            size: 22.0,
-                            color: Colors.white,
-                          )
-                        ],
-                      ),
-                    ),
                   ),
                 ),
-              ]
+              ],
             ),
           ),
         ),
