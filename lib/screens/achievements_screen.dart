@@ -145,7 +145,7 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
                                   ),
                                   const SizedBox(height: 5.0),
                                   Text(
-                                    badge.badgeDesc,
+                                    badge.badgeDesc + (earned ? " (Earned)" : " to unlock this badge."),
                                     softWrap: true,
                                     style: TextStyle(fontSize: 14.0,),
                                   ),
