@@ -22,8 +22,8 @@ class _MainScreenState extends State<MainScreen> {
 
   final _titles = [
     'Home',
-    'Learn',
-    'Train',
+    'Learning',
+    'Training',
     'Play',
     'Live test',
     'Account',
@@ -117,7 +117,7 @@ class _MainScreenState extends State<MainScreen> {
           BottomNavigationBarItem(
             icon: Icon(Icons.quiz_outlined),
             activeIcon: Icon(Icons.quiz),
-            label: "Train",
+            label: "Training",
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.sports_esports_outlined),

@@ -232,6 +232,7 @@ class _MatchingScreenState extends State<MatchingScreen> {
                 color: Colors.orange.shade900,
                 minHeight: 8.0,
               ),
+
               if (widget.timer && !completed)...[
                 const SizedBox(height: 10.0),
                 // GeeksforGeeks (2024). Flutter Countdown Timer. [online] GeeksforGeeks.

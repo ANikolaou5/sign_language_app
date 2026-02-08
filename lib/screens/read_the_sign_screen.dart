@@ -100,7 +100,7 @@ class _ReadTheSignScreenState extends State<ReadTheSignScreen> {
 
     int dbTrainCount;
     int dbQuizCount;
-    if (widget.title == "Sign to Words") {
+    if (widget.title == "Signs to Words") {
       dbTrainCount = user!.signToWordsTCount + 1;
       dbQuizCount = user!.signToWordsQCount + 1;
     } else {

@@ -28,22 +28,16 @@ class FingerspellSignToWord extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         const SizedBox(height: 5.0),
-        Container(
-          padding: const EdgeInsets.all(8.0),
-          decoration: BoxDecoration(
-            color: darkMode ? Colors.black : Colors.orange.shade100,
-            border: Border.all(width: 2.0, color: Colors.orange.shade300),
-            borderRadius: BorderRadius.circular(15.0),
-          ),
-          alignment: Alignment.center,
-          child: Text(
-            question.question,
-            style: TextStyle(
-              fontSize: 22.0,
-              fontWeight: FontWeight.bold,
-            ),
+
+        Text(
+          question.question,
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: 22.0,
+            fontWeight: FontWeight.bold,
           ),
         ),
+
         const SizedBox(height: 5.0),
         Text(
           "This question is worth $questionPoints points",
@@ -76,7 +70,7 @@ class FingerspellSignToWord extends StatelessWidget {
                 controller: answerTextController,
                 enabled: !check,
                 decoration: InputDecoration(
-                  labelText: !check ? 'Type your answer...' : 'Answer submitted',
+                  hintText: !check ? 'Type your answer...' : 'Answer submitted',
                   border: OutlineInputBorder(),
                   enabledBorder: UnderlineInputBorder(
                     borderSide: BorderSide(

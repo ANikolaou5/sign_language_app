@@ -264,7 +264,7 @@ class _WordsToSignScreenState extends State<WordsToSignScreen> {
             ),
           ),
           title: const Text(
-            "Words to Sign",
+            "Words to Signs",
             style: TextStyle(
               fontWeight: FontWeight.bold,
               color: Colors.white,

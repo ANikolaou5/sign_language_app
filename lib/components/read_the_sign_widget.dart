@@ -23,22 +23,16 @@ class ReadTheSignQuestion extends StatelessWidget {
     return Column(
       children: [
         const SizedBox(height: 5.0),
-        Container(
-          padding: const EdgeInsets.all(8.0),
-          decoration: BoxDecoration(
-            color: darkMode ? Colors.black : Colors.orange.shade100,
-            border: Border.all(width: 2.0, color: Colors.orange.shade300),
-            borderRadius: BorderRadius.circular(15.0),
-          ),
-          alignment: Alignment.center,
-          child: Text(
-            question.question,
-            style: TextStyle(
-              fontSize: 22.0,
-              fontWeight: FontWeight.bold,
-            ),
+
+        Text(
+          question.question,
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: 22.0,
+            fontWeight: FontWeight.bold,
           ),
         ),
+
         const SizedBox(height: 5.0),
         Text(
           "This question is worth $pointsMCQ points",
@@ -98,7 +92,7 @@ class ReadTheSignQuestion extends StatelessWidget {
                       ),
                     ),
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         Container(
                           width: 40,
@@ -117,13 +111,13 @@ class ReadTheSignQuestion extends StatelessWidget {
                             ),
                           ),
                         ),
-                        const SizedBox(width: 30.0),
+                        const SizedBox(width: 20.0),
                         Text(
                           possibleAnswers[index],
                           style: TextStyle(
                             fontSize: 20.0,
                             color: !check
-                              ? (selected ? Colors.orange.shade700 : Colors.orange)
+                              ? (selected ? Colors.orange.shade700 : Colors.black)
                               : (possibleAnswers[index] == correctAnswer
                               ? Colors.green.shade700
                                 : (selected ? Colors.red.shade700 : Colors.orange)),

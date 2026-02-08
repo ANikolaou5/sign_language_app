@@ -75,39 +75,16 @@ class _TrainScreenState extends State<TrainScreen> {
             child: Column(
               children: [
                 const SizedBox(height: 10.0),
-                Container(
-                  padding: const EdgeInsets.all(8.0),
-                  decoration: BoxDecoration(
-                    color: darkMode ? Colors.black : Colors.orange.shade100,
-                    border: Border.all(width: 2.0, color: Colors.orange.shade300),
-                    borderRadius: BorderRadius.circular(15.0),
-                  ),
-                  alignment: Alignment.center,
-                  child: Text(
-                    'Categories',
-                    style: TextStyle(
-                      fontSize: 25.0,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+
+                Text(
+                  "Practice your sign language skills by completing exercises in each of these modes.\n\nClick on your preferred mode to get started.",
+                  style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
                 ),
-                const SizedBox(height: 10.0),
-                Container(
-                  padding: const EdgeInsets.all(8.0),
-                  decoration: BoxDecoration(
-                    color: darkMode ? Colors.black : Colors.white,
-                    border: Border.all(width: 2.0, color: Colors.orange.shade300),
-                    borderRadius: BorderRadius.circular(15.0),
-                  ),
-                  alignment: Alignment.center,
-                  child: Text(
-                    "Click on one of the below options to get started",
-                    style: TextStyle(fontSize: 16.0,),
-                  ),
-                ),
+
                 const SizedBox(height: 10.0),
                 TrainCategories(
-                  name: "DRAG & DROP TO FINGERSPELL",
+                  name: "Drag & Drop to Fingerspell",
+                  icon: Icons.move_up_outlined,
                   onTap: () {
                     Navigator.push(
                       context,
@@ -117,9 +94,10 @@ class _TrainScreenState extends State<TrainScreen> {
                   },
                   generalService: generalService,
                 ),
-                const SizedBox(height: 10.0),
+
                 TrainCategories(
-                  name: "READ THE SIGN",
+                  name: "Read the sign",
+                  icon: Icons.sign_language,
                   onTap: () {
                     Navigator.push(
                       context,
@@ -129,9 +107,10 @@ class _TrainScreenState extends State<TrainScreen> {
                   },
                   generalService: generalService,
                 ),
-                const SizedBox(height: 10.0),
+
                 TrainCategories(
-                  name: "FINGERSPELL IMAGE TO WORD",
+                  name: "Image to word fingerspelling",
+                  icon: Icons.image,
                   onTap: () {
                     Navigator.push(
                       context,
@@ -141,9 +120,10 @@ class _TrainScreenState extends State<TrainScreen> {
                   },
                   generalService: generalService,
                 ),
-                const SizedBox(height: 10.0),
+
                 TrainCategories(
-                  name: "WORDS TO SIGN",
+                  name: "Words to signs",
+                  icon: Icons.text_fields,
                   onTap: () {
                     Navigator.push(
                       context,
@@ -153,9 +133,10 @@ class _TrainScreenState extends State<TrainScreen> {
                   },
                   generalService: generalService,
                 ),
-                const SizedBox(height: 10.0),
+
                 TrainCategories(
-                  name: "SIGN TO WORDS",
+                  name: "Signs to words",
+                  icon: Icons.sign_language_rounded,
                   onTap: () {
                     Navigator.push(
                       context,
