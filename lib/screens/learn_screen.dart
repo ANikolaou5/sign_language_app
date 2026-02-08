@@ -108,22 +108,17 @@ class _LearnScreenState extends State<LearnScreen> {
           child: Column(
             children: [
               const SizedBox(height: 10.0),
-              Container(
-                padding: const EdgeInsets.all(8.0),
-                decoration: BoxDecoration(
-                  color: darkMode ? Colors.black : Colors.orange.shade100,
-                  border: Border.all(width: 2.0, color: Colors.orange.shade300),
-                  borderRadius: BorderRadius.circular(15.0),
+
+              Text(
+                'Learn sign language by completing the reading tutorials below.',
+                style: TextStyle(
+                  fontSize: 16.0,
+                  fontWeight: FontWeight.bold,
                 ),
-                alignment: Alignment.center,
-                child: Text(
-                  'Categories',
-                  style: TextStyle(
-                    fontSize: 25.0,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+                textAlign: TextAlign.center,
               ),
+
+
               const SizedBox(height: 10.0),
               Expanded(
                 child: ListView.builder(
@@ -139,7 +134,11 @@ class _LearnScreenState extends State<LearnScreen> {
                     double progress = tutorials > 0 ? completedTutorials / tutorials : 0.0;
 
                     return InkWell(
-                      onTap: (level > completedLevels + 1) ? null : () async {
+                      onTap: (level > completedLevels + 1) ? () {
+                        ScaffoldMessenger.maybeOf(context)?.showSnackBar(
+                          SnackBar(content: Text("This level is locked! Please complete the previous levels first."))
+                        );
+                      } : () async {
                         await Navigator.push(
                           context,
                           MaterialPageRoute(builder: (context) => MaterialScreen(levelDesc: levelDesc, readingTutorials: levelReadingTutorials, username: user?.username ?? '')),
@@ -152,8 +151,8 @@ class _LearnScreenState extends State<LearnScreen> {
                         child: Container(
                           padding: const EdgeInsets.all(15.0),
                           decoration: BoxDecoration(
-                            color: (level <= completedLevels) ? Colors.deepOrange.shade200 : ((level > completedLevels + 1) ? Colors.grey.shade100 : (darkMode ? Colors.orange.shade300 : Colors.white)),
-                            border: (level <= completedLevels) ? null : Border.all(width: 2.0, color: Colors.orange.shade300),
+                            color: (level <= completedLevels) ? Colors.green : ((level > completedLevels + 1) ? Colors.grey.shade100 : (darkMode ? Colors.orange.shade300 : Colors.white)),
+                            border: (level <= completedLevels) ? Border.all(width: 2, color: Colors.green.shade700) : Border.all(width: 2.0, color: Colors.orange.shade300),
                             borderRadius: BorderRadius.circular(15.0),
                           ),
                           child: Column(
@@ -164,7 +163,7 @@ class _LearnScreenState extends State<LearnScreen> {
                                   Icon(
                                     (level > completedLevels + 1) ? Icons.lock : ((level <= completedLevels) ? Icons.check_circle : Icons.play_circle),
                                     size: 60.0,
-                                    color: (level > completedLevels + 1) ? Colors.grey : ((level <= completedLevels) ? Colors.green : Colors.deepOrange),
+                                    color: (level > completedLevels + 1) ? Colors.grey : ((level <= completedLevels) ? Colors.white : Colors.deepOrange),
                                   ),
                                   const SizedBox(width: 10.0),
                                   Text(
@@ -173,53 +172,46 @@ class _LearnScreenState extends State<LearnScreen> {
                                     style: TextStyle(
                                       fontSize: 27.0,
                                       fontWeight: FontWeight.bold,
-                                      color: (level > completedLevels + 1) ? Colors.grey : ((level <= completedLevels) ? Colors.green : Colors.deepOrange),
+                                      color: (level > completedLevels + 1) ? Colors.grey : ((level <= completedLevels) ? Colors.white : Colors.deepOrange),
                                     ),
                                   ),
                                 ],
                               ),
                               const SizedBox(height: 8.0),
                               if (level <= completedLevels + 1) ...[
-                                Container(
-                                  padding: const EdgeInsets.all(8.0),
-                                  decoration: BoxDecoration(
-                                    color: (level <= completedLevels) ? Colors.orange.shade100 : (darkMode ? Colors.orange.shade300 : Colors.white),
-                                    borderRadius: BorderRadius.circular(15.0),
-                                  ),
-                                  child: Column(
-                                    children: [
-                                      Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          const Text(
-                                            " Level Progress",
-                                            style: TextStyle(
-                                              fontSize: 16.0,
-                                              color: Colors.black,
-                                            ),
+                                Column(
+                                  children: [
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          " Level Progress",
+                                          style: TextStyle(
+                                            fontSize: 16.0,
+                                            color: (level > completedLevels + 1) ? Colors.grey : ((level <= completedLevels) ? Colors.white : Colors.deepOrange),
                                           ),
-                                          Text(
-                                            "$completedTutorials / $tutorials ",
-                                            style: TextStyle(
-                                              fontSize: 14.0,
-                                              color: (level > completedLevels) ? Colors.deepOrange : Colors.green,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      const SizedBox(height: 8.0),
-                                      ClipRRect(
-                                        borderRadius: BorderRadius.circular(12.0),
-                                        child: LinearProgressIndicator(
-                                          value: progress,
-                                          backgroundColor: Colors.orange.shade100,
-                                          color: (level > completedLevels) ? Colors.deepOrange : Colors.green,
-                                          minHeight: 12.0,
                                         ),
+                                        Text(
+                                          "$completedTutorials / $tutorials ",
+                                          style: TextStyle(
+                                            fontSize: 14.0,
+                                            color: (level > completedLevels + 1) ? Colors.grey : ((level <= completedLevels) ? Colors.white : Colors.deepOrange),
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 8.0),
+                                    ClipRRect(
+                                      borderRadius: BorderRadius.circular(12.0),
+                                      child: LinearProgressIndicator(
+                                        value: progress,
+                                        backgroundColor: Colors.orange.shade100,
+                                        color: (level > completedLevels + 1) ? Colors.grey : ((level <= completedLevels) ? Colors.white : Colors.deepOrange),
+                                        minHeight: 12.0,
                                       ),
-                                    ],
-                                  ),
+                                    ),
+                                  ],
                                 ),
                               ],
                             ],

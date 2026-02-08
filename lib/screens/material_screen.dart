@@ -121,11 +121,12 @@ class _MaterialScreenState extends State<MaterialScreen> {
                   children: [
 
                     Text(
-                      progress == 100 ? "You have completed all levels in this lesson." :
+                      progress == 1 ? "You have completed all levels in this lesson." :
                       "You have completed $completedTutorials out of $tutorials levels in this lesson. Let's finish the remaining ${tutorials - completedTutorials} levels!",
                       style: const TextStyle(
                         fontSize: 18.0,
                       ),
+                      textAlign: TextAlign.center,
                     ),
 
                     SizedBox(height: 20,),
@@ -153,8 +154,9 @@ class _MaterialScreenState extends State<MaterialScreen> {
                     SizedBox(height: 20,),
 
                     Text(
-                      progress == 100 ? "Click on one of the below options to review a lesson." : "Click on one of the below options to start a lesson.",
+                      progress == 1 ? "Click on one of the below options to review a lesson." : "Click on one of the below options to start a lesson.",
                       style: TextStyle(fontSize: 18.0),
+                      textAlign: TextAlign.center,
                     ),
 
                   ],
