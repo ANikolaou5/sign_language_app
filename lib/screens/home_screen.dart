@@ -162,90 +162,114 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(10.0),
+          padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 10),
           child: SingleChildScrollView(
             scrollDirection: Axis.vertical,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(height: 15.0),
-                Text(
-                  user == null ? "Welcome!" : "Welcome, ${user!.username}!",
-                  style: const TextStyle(
-                    fontSize: 26.0,
-                    fontWeight: FontWeight.bold,
+
+                SizedBox(
+                  width: MediaQuery.of(context).size.width,
+                  child: Image(
+                    image: const AssetImage("assets/logos/logo1.png"),
+                    height: 100.0,
                   ),
                 ),
-                const SizedBox(height: 15.0),
+
+                SizedBox(
+                  width: MediaQuery.of(context).size.width,
+                  child: Text("SiLAC",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 40.0,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+
+                SizedBox(height: 20,),
+
                 if (user != null) ...[
                   Card(
                     elevation: 4.0,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
                     child: Container(
-                      padding: const EdgeInsets.all(10.0),
+                      padding: const EdgeInsets.all(20.0),
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(15.0),
                         gradient: LinearGradient(
-                          colors: darkMode
-                              ? [Colors.grey.shade900, Colors.black]
-                              : [Colors.orange.shade100, Colors.white],
+                            colors: darkMode
+                                ? [Colors.grey.shade900, Colors.black]
+                                : [Colors.orange.shade500, Colors.deepOrange.shade800]
                         ),
+                        borderRadius: BorderRadius.circular(15.0),
                       ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      child: Column(
                         children: [
-                          ProgressItem(text: "Streak", num: user?.streakNum ?? 0, icon: Icons.local_fire_department),
-                          ProgressItem(text: "Score", num: user?.score ?? 0, icon: Icons.emoji_events),
+
+                          Text(
+                            user == null ? "Welcome!" : "Welcome, ${user!.username}!",
+                            style: const TextStyle(
+                              fontSize: 26.0,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white
+                            ),
+                          ),
+
+                          SizedBox(height: 15,),
+
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              ProgressItem(text: "Streak", num: user?.streakNum ?? 0, icon: Icons.local_fire_department,),
+                              ProgressItem(text: "Score", num: user?.score ?? 0, icon: Icons.emoji_events),
+                            ],
+                          ),
+
                         ],
                       )
                     ),
                   ),
                   const SizedBox(height: 10.0),
                 ],
-                Card(
-                  elevation: 4.0,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
-                  child: InkWell(
-                    onTap: () => widget.changeIndex(1),
-                    child: Container(
-                      padding: const EdgeInsets.all(15.0),
-                      decoration: BoxDecoration(
-                        color: Colors.deepOrange,
-                        borderRadius: BorderRadius.circular(15.0),
-                      ),
-                      child:Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          const Text(
-                            "Continue Learning... ",
-                            style: TextStyle(
-                              fontSize: 18.0,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
-                          ),
-                          Icon(
-                            Icons.arrow_forward_ios,
-                            size: 22.0,
-                            color: Colors.white,
-                          )
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
+
+                Card( elevation: 4.0, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)), child: InkWell( onTap: () => widget.changeIndex(1), child: Container( padding: const EdgeInsets.all(15.0), decoration: BoxDecoration( color: Colors.deepOrange, borderRadius: BorderRadius.circular(15.0), ), child:Row( mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [ const Text( "Continue Learning... ", style: TextStyle( fontSize: 18.0, fontWeight: FontWeight.bold, color: Colors.white, ), ), Icon( Icons.arrow_forward_ios, size: 22.0, color: Colors.white, ) ], ), ), ), ),
+
+                // Card(
+                //   elevation: 4.0,
+                //   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
+                //   child: InkWell(
+                //     onTap: () => ,
+                //     child: Container(
+                //       padding: const EdgeInsets.all(15.0),
+                //       decoration: BoxDecoration(
+                //         color: Colors.deepOrange,
+                //         borderRadius: BorderRadius.circular(15.0),
+                //       ),
+                //       child:Row(
+                //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                //         children: [
+                //
+                //
+                //         ],
+                //       ),
+                //     ),
+                //   ),
+                // ),
                 const SizedBox(height: 10.0),
                 Card(
                   elevation: 4.0,
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
                   child: Container(
-                    padding: const EdgeInsets.all(10.0),
+                    padding: const EdgeInsets.all(20.0),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(15.0),
                       gradient: LinearGradient(
                         colors: darkMode
                             ? [Colors.grey.shade900, Colors.black]
-                            : [Colors.orange.shade100, Colors.white],
+                            : [Colors.orange.shade200, Colors.orange.shade50],
+                        begin: AlignmentGeometry.topCenter,
+                        // end: AlignmentGeometry.bottomCenter
                       ),
                     ),
                     child: Column(
@@ -316,13 +340,13 @@ class _HomeScreenState extends State<HomeScreen> {
                                 padding: const EdgeInsets.all(10.0),
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(15.0),
-                                  color: Colors.deepOrange.shade200,
+                                  color: Colors.deepOrange.shade300,
                                 ),
                                 child: Text(
                                   "Full Leaderboard",
                                   style: TextStyle(
                                     fontSize: 16.0,
-                                    color: Colors.deepOrange.shade800,
+                                    color: Colors.white,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),

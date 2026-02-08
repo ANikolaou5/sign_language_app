@@ -289,14 +289,14 @@ class _AccountScreenState extends State<AccountScreen> {
                   padding: const EdgeInsets.all(10.0),
                   decoration: BoxDecoration(
                     border: Border.all(
-                      color: Colors.deepOrange.shade400,
+                      color: Colors.black38,
                       width: 2.0,
                     ),
                     borderRadius: BorderRadius.circular(30.0),
                     gradient: LinearGradient(
                       colors: darkMode
                           ? [Colors.grey.shade900, Colors.black]
-                          : [Colors.orange.shade100, Colors.white],
+                          : [Colors.orange.shade500, Colors.deepOrange.shade800],
                     ),
                   ),
                   alignment: Alignment.center,
@@ -307,25 +307,33 @@ class _AccountScreenState extends State<AccountScreen> {
                       Center(
                         child: CircleAvatar(
                           radius: 60.0,
-                          backgroundColor: Colors.deepOrange.shade400,
+                          backgroundColor: Colors.white,
                           child: Icon(
                             Icons.person,
                             size: 70.0,
-                            color: Colors.white,
+                            color: Colors.deepOrange,
                           ),
                         ),
                       ),
                       const SizedBox(height: 40),
                       TextField(
+                        style: TextStyle(color: Colors.white),
                         controller: emailTextController,
                         decoration: InputDecoration(
                           labelText: 'Email',
+                          labelStyle: TextStyle(color: Colors.white),
                           border: OutlineInputBorder(),
                           focusedBorder: OutlineInputBorder(
                             borderSide: BorderSide(
-                              color: Colors.deepOrange.shade400,
-                              width: 2.0,
+                              color: Colors.white,
+                              width: 3.0,
                             ),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
+                              color: Colors.white60,
+                              width: 2,
+                            )
                           ),
                         ),
                       ),
@@ -333,42 +341,66 @@ class _AccountScreenState extends State<AccountScreen> {
                       if (!signIn)...[
                         TextField(
                           controller: usernameTextController,
+                          style: TextStyle(color: Colors.white),
                           decoration: InputDecoration(
                             labelText: 'Username',
+                            labelStyle: TextStyle(color: Colors.white),
                             border: OutlineInputBorder(),
                             focusedBorder: OutlineInputBorder(
                               borderSide: BorderSide(
-                                color: Colors.deepOrange.shade400,
-                                width: 2.0,
+                                color: Colors.white,
+                                width: 3.0,
                               ),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                  color: Colors.white60,
+                                  width: 2,
+                                )
                             ),
                           ),
                         ),
                         const SizedBox(height: 10),
                         TextField(
                           controller: nameTextController,
+                          style: TextStyle(color: Colors.white),
                           decoration:  InputDecoration(
                             labelText: 'Name',
+                            labelStyle: TextStyle(color: Colors.white),
                             border: OutlineInputBorder(),
                             focusedBorder: OutlineInputBorder(
                               borderSide: BorderSide(
-                                color: Colors.deepOrange.shade400,
-                                width: 2.0,
+                                color: Colors.white,
+                                width: 3.0,
                               ),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                  color: Colors.white60,
+                                  width: 2,
+                                )
                             ),
                           )
                         ),
                         const SizedBox(height: 10.0),
                         TextField(
                           controller: surnameTextController,
+                          style: TextStyle(color: Colors.white),
                           decoration: InputDecoration(
                             labelText: 'Surname',
+                            labelStyle: TextStyle(color: Colors.white),
                             border: OutlineInputBorder(),
                             focusedBorder: OutlineInputBorder(
                               borderSide: BorderSide(
-                                color: Colors.deepOrange.shade400,
-                                width: 2.0,
+                                color: Colors.white,
+                                width: 3.0,
                               ),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                  color: Colors.white60,
+                                  width: 2,
+                                )
                             ),
                           ),
                         ),
@@ -376,16 +408,25 @@ class _AccountScreenState extends State<AccountScreen> {
                       ],
                       TextField(
                         controller: passwordTextController,
+                        style: TextStyle(color: Colors.white),
                         decoration: InputDecoration(
                           labelText: 'Password',
+                          labelStyle: TextStyle(color: Colors.white),
                           border: OutlineInputBorder(),
                           focusedBorder: OutlineInputBorder(
                             borderSide: BorderSide(
-                              color: Colors.deepOrange.shade400,
-                              width: 2.0,
+                              color: Colors.white,
+                              width: 3.0,
                             ),
                           ),
+                          enabledBorder: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                color: Colors.white60,
+                                width: 2,
+                              )
+                          ),
                           suffixIcon: IconButton(
+                            color: Colors.white,
                             icon: Icon(visible ? Icons.visibility : Icons.visibility_off,),
                             onPressed: () {
                               setState(() {
@@ -397,33 +438,42 @@ class _AccountScreenState extends State<AccountScreen> {
                         obscureText: !visible,
                       ),
                       const SizedBox(height: 10.0),
-                      if (errorMessage != null) Text(errorMessage!, style: const TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
+                      if (errorMessage != null) Text(errorMessage!, style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
                       const SizedBox(height: 20),
-                      loading ? const Center(child: CircularProgressIndicator()) : Column(
+                      loading ? const Center(child: CircularProgressIndicator(color: Colors.white,)) : Column(
                         children: [
-                          ElevatedButton(
-                            onPressed: signIn ? _signIn : _signUp,
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.deepOrange,
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0),),
-                            ),
-                            child: Text(
-                              signIn ? 'Sign in' : 'Sign up',
-                              style: const TextStyle(
-                                fontSize: 18.0,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
+                          SizedBox(
+                            width: MediaQuery.of(context).size.width,
+                            height: 50,
+                            child: ElevatedButton(
+                              onPressed: signIn ? _signIn : _signUp,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.white,
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0),),
+                              ),
+                              child: Text(
+                                signIn ? 'Sign in' : 'Sign up',
+                                style: const TextStyle(
+                                  fontSize: 18.0,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.deepOrange,
+                                ),
                               ),
                             ),
                           ),
-                          Row(
+                          SizedBox(height: 50,),
+                          Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text(
                                   signIn ? "Don't have an account?" : "Already have an account?",
-                                  style: const TextStyle(fontSize: 16.0)
+                                  style: const TextStyle(fontSize: 16.0, color: Colors.white)
                               ),
-                              TextButton(
+                              SizedBox(height: 10,),
+                              OutlinedButton(
+                                style: ButtonStyle(
+                                  side: MaterialStateProperty.all(BorderSide(color: Colors.white, width: 1.0)),
+                                ),
                                 onPressed: () {
                                   usernameTextController.clear();
                                   emailTextController.clear();
@@ -439,9 +489,8 @@ class _AccountScreenState extends State<AccountScreen> {
                                 child: Text(
                                   signIn ? "Sign up" : "Sign in",
                                   style: const TextStyle(
+                                    color: Colors.white,
                                     fontSize: 16.0,
-                                    decoration: TextDecoration.underline,
-                                    decorationThickness: 1.5,
                                   ),
                                 ),
                               ),
@@ -451,47 +500,51 @@ class _AccountScreenState extends State<AccountScreen> {
                       ),
                     ]
                   ) : Center(
-                    child: Column (
-                      children: [
-                        const SizedBox(height: 10.0),
-                        CircleAvatar(
-                          radius: 40.0,
-                          backgroundColor: Colors.deepOrange.shade400,
-                          child: Icon(
-                            Icons.person,
-                            size: 50.0,
-                            color: Colors.white,
+                    child: Padding(
+                      padding: const EdgeInsets.all(10.0),
+                      child: Column (
+                        children: [
+                          CircleAvatar(
+                            radius: 40.0,
+                            backgroundColor: Colors.white,
+                            child: Icon(
+                              Icons.person,
+                              size: 50.0,
+                              color: Colors.deepOrange.shade800,
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 10.0),
-                        Text(
-                          user!.username,
-                          style: const TextStyle(
-                            fontSize: 24.0,
-                            fontWeight: FontWeight.bold,
+                          const SizedBox(height: 10.0),
+                          Text(
+                            '${user!.name} ${user!.surname}',
+                            style: const TextStyle(
+                              fontSize: 24.0,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
                           ),
-                        ),
-                        Text(
-                          '${user!.name} ${user!.surname}',
-                          style: const TextStyle(fontSize: 14.0),
-                        ),
-                        const SizedBox(height: 5.0),
-                        Text(
-                          user!.email!,
-                          style: const TextStyle(fontSize: 14.0,),
-                        ),
-                        const SizedBox(height: 5.0),
-                        Divider(color: Colors.deepOrange.shade400),
-                        const SizedBox(height: 5.0),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            ProgressItem(text: "Streak", num: user?.streakNum ?? 0),
-                            ProgressItem(text: "Score", num: user?.score ?? 0),
-                          ],
-                        ),
-                        const SizedBox(height: 10.0),
-                      ],
+                          Text(
+                            '(${user!.username})',
+                            style: const TextStyle(fontSize: 14.0, color: Colors.white),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          const SizedBox(height: 5.0),
+                          Text(
+                            user!.email!,
+                            style: const TextStyle(fontSize: 14.0, color: Colors.white),
+                          ),
+                          const SizedBox(height: 10.0),
+                          Divider(color: Colors.white,),
+                          const SizedBox(height: 10.0),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              ProgressItem(text: "Streak", num: user?.streakNum ?? 0),
+                              ProgressItem(text: "Score", num: user?.score ?? 0),
+                            ],
+                          ),
+
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -693,7 +746,7 @@ class _AccountScreenState extends State<AccountScreen> {
                         color: darkMode ? Colors.black : Colors.red.shade50,
                         border: Border.all(
                           color: Colors.red.shade200,
-                          width: 2.0,
+                          width: 3.0,
                         ),
                         borderRadius: BorderRadius.circular(15.0),
                       ),

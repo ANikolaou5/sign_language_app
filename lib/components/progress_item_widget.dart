@@ -9,30 +9,44 @@ class ProgressItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        if (icon != null) ...[
-          Icon(
-            icon,
-            color: Colors.orange.shade900,
-            size: 60.0,
-          ),
-          const SizedBox(height: 5.0),
-        ],
-        Text(
-          num.toString(),
-          style: const TextStyle(
+    return Container(
+      padding: EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [Colors.black.withAlpha(50), Colors.black.withAlpha(20), Colors.black.withAlpha(50)],
+          begin: AlignmentGeometry.topCenter
+        ),
+        border: Border.all(
+          color: Colors.white54
+        ),
+        borderRadius: BorderRadiusGeometry.circular(10),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          if (icon != null) ...[
+            Icon(
+              icon,
+              color: Colors.white,
+              size: 60.0,
+            ),
+            const SizedBox(height: 5.0),
+          ],
+          Text(
+            num.toString(),
+            style: const TextStyle(
               fontSize: 25.0,
-              fontWeight: FontWeight.bold
+              fontWeight: FontWeight.bold,
+              color: Colors.white
+            ),
           ),
-        ),
-        const SizedBox(height: 3.0),
-        Text(
-          text,
-          style: TextStyle(fontSize: 14.0,),
-        ),
-      ],
+          const SizedBox(height: 3.0),
+          Text(
+            text,
+            style: TextStyle(fontSize: 14.0, color: Colors.white),
+          ),
+        ],
+      ),
     );
   }
 }
