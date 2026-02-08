@@ -31,7 +31,7 @@ dependencies:
   flutter:
     sdk: flutter
 
-  # The following adds the Cupertino Icons font to your application.
+  # The following adds the Cupertino Icons fonts to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
   firebase_core: ^4.2.1
@@ -69,7 +69,7 @@ icons_launcher:
 # The following section is specific to Flutter packages.
 flutter:
 
-  # The following line ensures that the Material Icons font is
+  # The following line ensures that the Material Icons fonts is
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
@@ -203,6 +203,7 @@ flutter:
     - assets/content/10.html
     - assets/logos/logo1.png
     - assets/logos/logo2.png
+    - assets/fonts/
 
   # To add assets to your application, add an assets section, like this:
   # assets:
@@ -217,20 +218,20 @@ flutter:
 
   # To add custom fonts to your application, add a fonts section here,
   # in this "flutter" section. Each entry in this list should have a
-  # "family" key with the font family name, and a "fonts" key with a
-  # list giving the asset and other descriptors for the font. For
+  # "family" key with the fonts family name, and a "fonts" key with a
+  # list giving the asset and other descriptors for the fonts. For
   # example:
-  # fonts:
-  #   - family: Schyler
-  #     fonts:
-  #       - asset: fonts/Schyler-Regular.ttf
-  #       - asset: fonts/Schyler-Italic.ttf
-  #         style: italic
-  #   - family: Trajan Pro
-  #     fonts:
-  #       - asset: fonts/TrajanPro.ttf
-  #       - asset: fonts/TrajanPro_Bold.ttf
-  #         weight: 700
+  fonts:
+   - family: SNPro
+     fonts:
+       - asset: assets/fonts/SNPro-Medium.ttf
+       - asset: assets/fonts/SNPro-MediumItalic.ttf
+         style: italic
+       - asset: assets/fonts/SNPro-Bold.ttf
+         weight: 700
+       - asset: assets/fonts/SNPro-BoldItalic.ttf
+         weight: 700
+         style: italic
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package

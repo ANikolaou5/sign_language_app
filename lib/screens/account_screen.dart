@@ -538,8 +538,24 @@ class _AccountScreenState extends State<AccountScreen> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: [
-                              ProgressItem(text: "Streak", num: user?.streakNum ?? 0),
-                              ProgressItem(text: "Score", num: user?.score ?? 0),
+                              ProgressItem(
+                                condensed: true,
+                                text: "Game\nStreak",
+                                num: user?.streakNum ?? 0,
+                                icon: Icons.local_fire_department,
+                              ),
+                              ProgressItem(
+                                condensed: true,
+                                text: "Total\nScore",
+                                num: user?.score ?? 0,
+                                icon: Icons.emoji_events,
+                              ),
+                              ProgressItem(
+                                condensed: true,
+                                text: "Online\nWins",
+                                num: user?.wins ?? 0,
+                                icon: Icons.videogame_asset_rounded,
+                              ),
                             ],
                           ),
 

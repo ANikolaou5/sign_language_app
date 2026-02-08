@@ -38,8 +38,8 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'ASL Learning App',
-      theme: ThemeData(brightness: Brightness.light,),
-      darkTheme: ThemeData(brightness: Brightness.dark,),
+      theme: ThemeData(brightness: Brightness.light, fontFamily: 'SNPro',),
+      darkTheme: ThemeData(brightness: Brightness.dark, fontFamily: 'SNPro'),
       themeMode: darkMode ? ThemeMode.dark : ThemeMode.light,
       home: MainScreen(
         onThemeChange: (bool value) {
