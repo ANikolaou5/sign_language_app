@@ -92,9 +92,9 @@ class _MaterialScreenState extends State<MaterialScreen> {
             ),
           ),
         ),
-        title: const Text(
-          "Reading Tutorials",
-          style: TextStyle(
+        title: Text(
+          widget.levelDesc,
+          style: const TextStyle(
             fontWeight: FontWeight.bold,
             color: Colors.white,
           ),
@@ -105,79 +105,66 @@ class _MaterialScreenState extends State<MaterialScreen> {
           padding: const EdgeInsets.all(10.0),
           child: Column(
             children: [
+
               Container(
-                padding: const EdgeInsets.all(8.0),
+                padding: const EdgeInsets.all(15.0),
                 decoration: BoxDecoration(
-                  color: darkMode ? Colors.black : Colors.orange.shade100,
                   border: Border.all(width: 2.0, color: Colors.orange.shade300),
                   borderRadius: BorderRadius.circular(15.0),
-                ),
-                alignment: Alignment.center,
-                child: Text(
-                  widget.levelDesc,
-                  style: TextStyle(
-                    fontSize: 22.0,
-                    fontWeight: FontWeight.bold,
+                  gradient: LinearGradient(
+                    colors: darkMode ? [Colors.grey.shade900, Colors.black] : [Colors.deepOrange.shade200, Colors.orange.shade400],
+                    begin: AlignmentGeometry.topRight,
+                    end: AlignmentGeometry.bottomLeft
                   ),
-                ),
-              ),
-              const SizedBox(height: 10.0),
-              Container(
-                padding: const EdgeInsets.all(8.0),
-                decoration: BoxDecoration(
-                  color: darkMode ? Colors.black : Colors.white,
-                  border: Border.all(width: 2.0, color: Colors.orange.shade300),
-                  borderRadius: BorderRadius.circular(15.0),
                 ),
                 child: Column(
                   children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text(
-                          " Level Progress",
-                          style: TextStyle(
-                            fontSize: 18.0,
-                          ),
-                        ),
-                        Text(
-                          "$completedTutorials / $tutorials ",
-                          style: TextStyle(
-                            fontSize: 16.0,
-                            color: Colors.deepOrange,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
+
+                    Text(
+                      progress == 100 ? "You have completed all levels in this lesson." :
+                      "You have completed $completedTutorials out of $tutorials levels in this lesson. Let's finish the remaining ${tutorials - completedTutorials} levels!",
+                      style: const TextStyle(
+                        fontSize: 18.0,
+                      ),
                     ),
-                    const SizedBox(height: 8.0),
+
+                    SizedBox(height: 20,),
+
                     ClipRRect(
                       borderRadius: BorderRadius.circular(12.0),
                       child: LinearProgressIndicator(
                         value: progress,
-                        backgroundColor: Colors.orange.shade100,
-                        color: Colors.deepOrange,
+                        // backgroundColor: Colors.white,
+                        color: Colors.black,
                         minHeight: 12.0,
                       ),
                     ),
+
+                    SizedBox(height: 10,),
+
+                    Text(
+                      "$completedTutorials / $tutorials ",
+                      style: TextStyle(
+                        fontSize: 16.0,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+
+                    SizedBox(height: 20,),
+
+                    Text(
+                      progress == 100 ? "Click on one of the below options to review a lesson." : "Click on one of the below options to start a lesson.",
+                      style: TextStyle(fontSize: 18.0),
+                    ),
+
                   ],
                 ),
               ),
-              const SizedBox(height: 10.0),
-              Container(
-                padding: const EdgeInsets.all(8.0),
-                decoration: BoxDecoration(
-                  color: darkMode ? Colors.black : Colors.white,
-                  border: Border.all(width: 2.0, color: Colors.orange.shade300),
-                  borderRadius: BorderRadius.circular(15.0),
-                ),
-                alignment: Alignment.center,
-                child: Text(
-                  "Click on one of the below options to get started",
-                  style: TextStyle(fontSize: 16.0,),
-                ),
-              ),
-              const SizedBox(height: 10.0),
+
+              SizedBox(height: 10,),
+
+
+
               Expanded(
                 child: GridView.builder(
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -212,8 +199,11 @@ class _MaterialScreenState extends State<MaterialScreen> {
                         child: Container(
                           padding: const EdgeInsets.all(8.0),
                           decoration: BoxDecoration(
-                            color: completed ? Colors.deepOrange.shade200 : (darkMode ? Colors.orange.shade300 : Colors.white),
-                            border: completed ? null : Border.all(width: 2.0, color: Colors.orange.shade300),
+                            color: completed ? Colors.green : (darkMode ? Colors.orange.shade300 : Colors.white),
+                            border: Border.all(
+                              width: 2.0,
+                              color: completed ? Colors.green.shade700 : Colors.orange.shade300
+                            ),
                             borderRadius: BorderRadius.circular(15.0),
                           ),
                           child: Column(
@@ -223,7 +213,7 @@ class _MaterialScreenState extends State<MaterialScreen> {
                               Icon(
                                 completed ? Icons.check_circle : Icons.play_circle,
                                 size: 32.0,
-                                color: completed ? Colors.green : Colors.deepOrange,
+                                color: completed ? Colors.white : Colors.deepOrange,
                               ),
                               const SizedBox(height: 5.0),
                               Center(
@@ -233,7 +223,7 @@ class _MaterialScreenState extends State<MaterialScreen> {
                                   style: TextStyle(
                                     fontSize: text.length <= 1 ? 20.0 : 18.0,
                                     fontWeight: FontWeight.bold,
-                                    color: completed ? Colors.green : Colors.deepOrange,
+                                    color: completed ? Colors.white : Colors.deepOrange,
                                   ),
                                 ),
                               ),
