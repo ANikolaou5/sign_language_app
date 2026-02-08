@@ -74,13 +74,12 @@ class _FingerspellSignToWordScreenState extends State<QuizTimeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // GaneshTamang (2024). Flutter PopScope for android back button to leave app showing black screen instead of going to home screen of android. [online] GitHub.
-    // Available at: https://github.com/GaneshTamang/flast_chat_firebase_example/issues/1
-    // [Accessed 3 Dec. 2025].
     return Scaffold(
+      backgroundColor: darkMode ? Colors.black : const Color(0xFFF6F6F6),
       appBar: AppBar(
         centerTitle: true,
         backgroundColor: Colors.transparent,
+        elevation: 0,
         foregroundColor: Colors.white,
         flexibleSpace: Container(
           decoration: BoxDecoration(
@@ -93,254 +92,353 @@ class _FingerspellSignToWordScreenState extends State<QuizTimeScreen> {
         ),
         title: const Text(
           "Quiz Time",
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
+          style: TextStyle(fontWeight: FontWeight.bold),
         ),
       ),
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(10.0),
-          child: SingleChildScrollView(
-            scrollDirection: Axis.vertical,
-            child: Center(
-              child: Column(
-                children: [
-                  Text(
-                    "Set up Quiz Preferences",
-                    style: TextStyle(
-                      fontSize: 30.0,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.deepOrange.shade800,
-                    ),
-                  ),
-                  const SizedBox(height: 25.0),
-                  Text(
-                    "Difficulty",
-                    style: const TextStyle(
-                      fontSize: 24.0,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 5.0),
-                  Container(
-                    decoration: BoxDecoration(
-                      color: darkMode ? Colors.black : Colors.white,
-                      borderRadius: BorderRadius.circular(15.0),
-                      border: Border.all(color: Colors.orange.shade300),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: difficultyOptions.map((option) {
-                        bool selected = option == difficulty;
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _HeroIntro(),
 
-                        return GestureDetector(
-                          onTap: () {
-                            setState(() => difficulty = option);
-                          },
-                          child: Container(
-                            padding: const EdgeInsets.all(15.0),
-                            decoration: BoxDecoration(
-                              color: selected ? Colors.deepOrange : (darkMode ? Colors.black : Colors.white),
-                              borderRadius: BorderRadius.circular(15.0),
-                            ),
-                            child: Text(
-                              option,
-                              style: TextStyle(
-                                fontSize: 20.0,
-                                color: selected ? Colors.white : (darkMode ? Colors.white : Colors.black),
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        );
-                      }).toList(),
-                    ),
-                  ),
-                  const SizedBox(height: 25.0),
-                  Text(
-                    "Category",
-                    style: const TextStyle(
-                      fontSize: 24.0,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 5.0),
-                  Container(
-                    padding: const EdgeInsets.all(12.0),
-                    decoration: BoxDecoration(
-                      color: darkMode ? Colors.black : Colors.white,
-                      borderRadius: BorderRadius.circular(15.0),
-                      border: Border.all(color: Colors.orange.shade300),
-                    ),
-                    child: DropdownButton(
-                      value: category,
-                      items: categoriesOptions.map((String option) {
-                        return DropdownMenuItem(
-                          value: option,
-                          child: Text(option),
-                        );
-                      }).toList(),
-                      onChanged: (option) {
-                        setState(() => category = option!);
-                      },
-                      iconSize: 40.0,
-                      iconEnabledColor: Colors.deepOrange,
-                      style: TextStyle(
-                        fontSize: 20.0,
-                        color: Colors.deepOrange,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 25.0),
-                  Text(
-                    "Timer",
-                    style: const TextStyle(
-                      fontSize: 24.0,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 5.0),
-                  Container(
-                    decoration: BoxDecoration(
-                      color: darkMode ? Colors.black : Colors.white,
-                      borderRadius: BorderRadius.circular(15.0),
-                      border: Border.all(color: Colors.orange.shade300),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: timerOptions.map((option) {
-                        String selection = timer ? 'ON' : 'OFF';
-                        bool selected = option == selection;
+              const SizedBox(height: 20),
 
-                        return GestureDetector(
-                          onTap: () {
-                            setState(() => timer = option == 'ON');
-                          },
-                          child: Container(
-                            padding: const EdgeInsets.all(15.0),
-                            decoration: BoxDecoration(
-                              color: selected ? Colors.deepOrange : (darkMode ? Colors.black : Colors.white),
-                              borderRadius: BorderRadius.circular(15.0),
-                            ),
-                            child: Text(
-                              option,
-                              style: TextStyle(
-                                fontSize: 20.0,
-                                color: selected ? Colors.white : (darkMode ? Colors.white :Colors.black),
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        );
-                      }).toList(),
-                    ),
-                  ),
-                  const SizedBox(height: 25.0),
-                  Text(
-                    "Number of Questions",
-                    style: const TextStyle(
-                      fontSize: 24.0,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 5.0),
-                  Container(
-                    decoration: BoxDecoration(
-                      color: darkMode ? Colors.black : Colors.white,
-                      borderRadius: BorderRadius.circular(15.0),
-                      border: Border.all(color: Colors.orange.shade300),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: numOfQuestionsOptions.map((option) {
-                        bool selected = option == numOfQuestions.toString();
+              _OptionSection(
+                title: "Difficulty",
+                child: _SegmentedSelector(
+                  options: difficultyOptions,
+                  selected: difficulty,
+                  darkMode: darkMode,
+                  onSelect: (v) => setState(() => difficulty = v),
+                ),
+              ),
 
-                        return GestureDetector(
-                          onTap: () {
-                            setState(() => numOfQuestions = int.parse(option));
-                          },
-                          child: Container(
-                            padding: const EdgeInsets.all(15.0),
-                            decoration: BoxDecoration(
-                              color: selected ? Colors.deepOrange: (darkMode ? Colors.black : Colors.white),
-                              borderRadius: BorderRadius.circular(15.0),
-                            ),
-                            child: Text(
-                              option,
-                              style: TextStyle(
-                                fontSize: 20.0,
-                                color: selected ? Colors.white : (darkMode ? Colors.white : Colors.black),
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        );
-                      }).toList(),
-                    ),
-                  ),
-                  const SizedBox(height: 25.0),
-                  ElevatedButton(
-                    onPressed: () {
-                      generalService.startPrompt(
-                        context,
+              _OptionSection(
+                title: "Timer",
+                child: _SegmentedSelector(
+                  options: timerOptions,
+                  selected: timer ? 'ON' : 'OFF',
+                  darkMode: darkMode,
+                  onSelect: (v) => setState(() => timer = v == 'ON'),
+                ),
+              ),
+
+              _OptionSection(
+                title: "Questions",
+                child: _SegmentedSelector(
+                  options: numOfQuestionsOptions,
+                  selected: numOfQuestions.toString(),
+                  darkMode: darkMode,
+                  onSelect: (v) =>
+                      setState(() => numOfQuestions = int.parse(v)),
+                ),
+              ),
+
+              const SizedBox(height: 10),
+
+              Text(
+                "Type of questions",
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 8),
+
+              _CategoryChips(
+                options: categoriesOptions,
+                selected: category,
+                darkMode: darkMode,
+                onSelect: (v) => setState(() => category = v),
+              ),
+
+              const SizedBox(height: 32),
+
+              _PlayButton(
+                onPressed: () {
+                  generalService.startPrompt(
+                    context,
                         () async {
-                          await _generateQuiz(difficulty, category, timer, numOfQuestions);
-                          if (matchQuestions.isNotEmpty) {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) => MatchingScreen(matchQuestions: matchQuestions, username: widget.username, quiz: true, timer: timer, difficulty: difficulty,),
-                              ),
-                            );
-                          } else if (multipleChoiceQuestions.isNotEmpty) {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) => ReadTheSignScreen(title: "Read the Sign", multipleChoiceQuestions: multipleChoiceQuestions, username: widget.username, quiz: true, timer: timer, difficulty: difficulty, symbols: false,),
-                              ),
-                            );
-                          } else if (signToTextQuestions.isNotEmpty) {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) => FingerspellSignToWordScreen(signToTextQuestions: signToTextQuestions, username: widget.username, quiz: true, timer: timer, difficulty: difficulty,),
-                              ),
-                            );
-                          } else if (multipleChoiceQuestionsWordsToSign.isNotEmpty) {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) => WordsToSignScreen(multipleChoiceQuestions: multipleChoiceQuestionsWordsToSign, username: widget.username, quiz: true, timer: timer, difficulty: difficulty,),
-                              ),
-                            );
-                          } else if (multipleChoiceQuestionsSignToWords.isNotEmpty) {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) => ReadTheSignScreen(title: "Sign to Words", multipleChoiceQuestions: multipleChoiceQuestionsSignToWords, username: widget.username, quiz: true, timer: timer, difficulty: difficulty, symbols: true,),
-                              ),
-                            );
-                          }
-                        },
-                        Icons.sports_esports,
-                        'Start quiz?',
+                      await _generateQuiz(
+                        difficulty,
+                        category,
+                        timer,
+                        numOfQuestions,
                       );
+
+                      if (matchQuestions.isNotEmpty) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => MatchingScreen(
+                              matchQuestions: matchQuestions,
+                              username: widget.username,
+                              quiz: true,
+                              timer: timer,
+                              difficulty: difficulty,
+                            ),
+                          ),
+                        );
+                      } else if (multipleChoiceQuestions.isNotEmpty) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => ReadTheSignScreen(
+                              title: "Read the Sign",
+                              multipleChoiceQuestions:
+                              multipleChoiceQuestions,
+                              username: widget.username,
+                              quiz: true,
+                              timer: timer,
+                              difficulty: difficulty,
+                              symbols: false,
+                            ),
+                          ),
+                        );
+                      } else if (signToTextQuestions.isNotEmpty) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) =>
+                                FingerspellSignToWordScreen(
+                                  signToTextQuestions: signToTextQuestions,
+                                  username: widget.username,
+                                  quiz: true,
+                                  timer: timer,
+                                  difficulty: difficulty,
+                                ),
+                          ),
+                        );
+                      } else if (multipleChoiceQuestionsWordsToSign
+                          .isNotEmpty) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => WordsToSignScreen(
+                              multipleChoiceQuestions:
+                              multipleChoiceQuestionsWordsToSign,
+                              username: widget.username,
+                              quiz: true,
+                              timer: timer,
+                              difficulty: difficulty,
+                            ),
+                          ),
+                        );
+                      } else if (multipleChoiceQuestionsSignToWords
+                          .isNotEmpty) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => ReadTheSignScreen(
+                              title: "Sign to Words",
+                              multipleChoiceQuestions:
+                              multipleChoiceQuestionsSignToWords,
+                              username: widget.username,
+                              quiz: true,
+                              timer: timer,
+                              difficulty: difficulty,
+                              symbols: true,
+                            ),
+                          ),
+                        );
+                      }
                     },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.deepOrange,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
-                      padding: const EdgeInsets.all(15.0),
-                    ),
-                    child: const Text(
-                      'Generate Quiz',
-                      style: TextStyle(
-                        fontSize: 22.0,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                ],
-              )
+                    Icons.sports_esports,
+                    'Start quiz?',
+                  );
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+}
+
+class _HeroIntro extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: const [
+        Text(
+          "Build your quiz",
+          style: TextStyle(
+            fontSize: 30,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        SizedBox(height: 6),
+        Text(
+          "Choose how you want to be challenged",
+          style: TextStyle(fontSize: 16, color: Colors.grey),
+        ),
+      ],
+    );
+  }
+}
+
+class _OptionSection extends StatelessWidget {
+  final String title;
+  final Widget child;
+
+  const _OptionSection({
+    required this.title,
+    required this.child,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: const TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
             ),
+          ),
+          const SizedBox(height: 5),
+          child,
+        ],
+      ),
+    );
+  }
+}
+
+class _SegmentedSelector extends StatelessWidget {
+  final List<String> options;
+  final String selected;
+  final bool darkMode;
+  final Function(String) onSelect;
+
+  const _SegmentedSelector({
+    required this.options,
+    required this.selected,
+    required this.darkMode,
+    required this.onSelect,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(6),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(18),
+        color: darkMode ? Colors.grey.shade900 : Colors.white,
+      ),
+      child: Row(
+        children: options.map((option) {
+          final isSelected = option == selected;
+
+          return Expanded(
+            child: GestureDetector(
+              onTap: () => onSelect(option),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(14),
+                  color:
+                  isSelected ? Colors.deepOrange : Colors.transparent,
+                ),
+                child: Text(
+                  option,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: isSelected
+                        ? Colors.white
+                        : darkMode
+                        ? Colors.white
+                        : Colors.black,
+                  ),
+                ),
+              ),
+            ),
+          );
+        }).toList(),
+      ),
+    );
+  }
+}
+
+class _CategoryChips extends StatelessWidget {
+  final List<String> options;
+  final String selected;
+  final bool darkMode;
+  final Function(String) onSelect;
+
+  const _CategoryChips({
+    required this.options,
+    required this.selected,
+    required this.darkMode,
+    required this.onSelect,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Wrap(
+      spacing: 10,
+      runSpacing: 10,
+      children: options.map((option) {
+        final isSelected = option == selected;
+
+        return ChoiceChip(
+          label: Text(
+            option,
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: isSelected
+                  ? Colors.white
+                  : darkMode
+                  ? Colors.white
+                  : Colors.black,
+            ),
+          ),
+          selected: isSelected,
+          selectedColor: Colors.deepOrange,
+          backgroundColor:
+          darkMode ? Colors.grey.shade900 : Colors.white,
+          checkmarkColor: Colors.white,
+          onSelected: (_) => onSelect(option),
+        );
+      }).toList(),
+    );
+  }
+}
+
+class _PlayButton extends StatelessWidget {
+  final VoidCallback onPressed;
+
+  const _PlayButton({required this.onPressed});
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: double.infinity,
+      child: ElevatedButton(
+        onPressed: onPressed,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.deepOrange,
+          padding: const EdgeInsets.symmetric(vertical: 18),
+          shape:
+          RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+        ),
+        child: const Text(
+          "PLAY QUIZ",
+          style: TextStyle(
+            fontSize: 22,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
           ),
         ),
       ),
