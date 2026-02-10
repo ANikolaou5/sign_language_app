@@ -1,14 +1,49 @@
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'firebase_options.dart';
 import 'screens/main_screen.dart';
+
+Widget _buildRunnableApp({
+  required bool isWeb,
+  required double webAppWidth,
+  required double webAppHeight,
+  required Widget app,
+}) {
+  if (!isWeb) {
+    return app;
+  }
+
+  return Center(
+    child: ClipRect(
+      child: SizedBox(
+        width: webAppWidth,
+        height: webAppHeight,
+        child: app,
+      ),
+    ),
+  );
+}
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+  if (!kIsWeb) {
+    await Firebase.initializeApp();
+  }
+  else {
+    await Firebase.initializeApp(options: DefaultFirebaseOptions.web);
+  }
 
-  runApp(const MyApp());
+  final runnableApp = _buildRunnableApp(
+    isWeb: kIsWeb,
+    webAppWidth: 480,
+    webAppHeight: 960,
+    app: const MyApp(),
+  );
+
+  runApp(runnableApp);
 }
 
 class MyApp extends StatefulWidget {

@@ -13,7 +13,7 @@ class MultipleChoiceQuestion extends StatelessWidget {
   final bool darkMode;
   final Function(int) onTap;
   final String tips;
-  final WebViewController controller;
+  final WebViewController? controller;
   final double webviewHeight;
 
   @override
@@ -144,12 +144,13 @@ class MultipleChoiceQuestion extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 10.0),
+                  controller != null ?
                   SizedBox(
                     height: webviewHeight,
                     child: WebViewWidget(
-                      controller: controller,
+                      controller: controller!,
                     ),
-                  ),
+                  ) : Container(),
                 ],
               ),
             ),

@@ -7,6 +7,7 @@ import '../classes/question_class.dart';
 import '../classes/reading_tutorial_class.dart';
 import 'mcq_widget.dart';
 import 'navigation_buttons_widget.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 class BuildTutorial extends StatefulWidget {
   const BuildTutorial({
@@ -42,7 +43,7 @@ class BuildTutorial extends StatefulWidget {
 
 class _BuildTutorialState extends State<BuildTutorial> {
 
-  late WebViewController controller = WebViewController();
+  WebViewController? controller;
   double _webviewHeight = 100;
   bool darkMode = false;
 
@@ -58,7 +59,8 @@ class _BuildTutorialState extends State<BuildTutorial> {
     super.initState();
 
     _loadTheme();
-    if (widget.readingTutorial.webviewFile != null) {
+
+    if (!kIsWeb && widget.readingTutorial.webviewFile != null) {
       controller = WebViewController()
         ..setJavaScriptMode(JavaScriptMode.unrestricted)
         ..setBackgroundColor(Colors.orange.shade50)
@@ -66,8 +68,6 @@ class _BuildTutorialState extends State<BuildTutorial> {
           NavigationDelegate(
             onPageFinished: (String url) async {
               await Future.delayed(const Duration(milliseconds: 100));
-
-              // 2. Call the resize function
               _updateWebViewHeight();
             },
           ),
@@ -131,13 +131,12 @@ class _BuildTutorialState extends State<BuildTutorial> {
           ),
 
           if (widget.readingTutorial.webviewFile != null) ...[
-            SizedBox(height: 20.0,),
-            //WebView
-            SizedBox(
+            const SizedBox(height: 20.0),
+            kIsWeb
+                ? _buildWebFallback()
+                : SizedBox(
               height: _webviewHeight,
-              child: WebViewWidget(
-                controller: controller,
-              ),
+              child: WebViewWidget(controller: controller!),
             ),
           ],
         ] else ...[
@@ -150,6 +149,7 @@ class _BuildTutorialState extends State<BuildTutorial> {
               darkMode: darkMode,
               onTap: widget.onTap,
               tips: widget.readingTutorial.webviewFile ?? '',
+              // 4. Pass null or a dummy check inside MultipleChoiceQuestion if needed
               controller: controller,
               webviewHeight: _webviewHeight,
             ),
@@ -161,18 +161,30 @@ class _BuildTutorialState extends State<BuildTutorial> {
     );
   }
 
+  // 5. Create a fallback widget for the Web
+  Widget _buildWebFallback() {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.orange.shade50,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: Colors.orange.shade200),
+      ),
+      child: const Text(
+        "Additional tutorial content is available in the mobile app. (Local HTML assets are not supported in web view mode).",
+        style: TextStyle(fontStyle: FontStyle.italic),
+      ),
+    );
+  }
+
   // Helper function to calculate and update height
   Future<void> _updateWebViewHeight() async {
+    if (kIsWeb || controller == null) return;
     try {
-      // Get the scroll height (content height)
-      final result = await controller.runJavaScriptReturningResult(
+      final result = await controller!.runJavaScriptReturningResult(
           'document.documentElement.scrollHeight');
-
-      // Strip non-numeric characters to get a clean double.
       String cleanResult = result.toString().replaceAll(RegExp(r'[^0-9.]'), '');
-
       double? height = double.tryParse(cleanResult);
-
       if (height != null && height > 0) {
         setState(() {
           _webviewHeight = height + 20;
