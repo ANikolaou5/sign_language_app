@@ -87,7 +87,7 @@ class _AboutScreenState extends State<AboutScreen> {
                   child: Column(
                     children: [
                       const Text(
-                        "SiLAc is a mobile application for learning ASL using gamified, interactive activities that help users learn sign language through various features.",
+                        "SiLAc is a mobile application for learning American Sign Language (ASL) using gamified, interactive activities that help users learn sign language through various features.",
                         style: TextStyle(fontSize: 16.0,),
                         textAlign: TextAlign.justify,
                       ),

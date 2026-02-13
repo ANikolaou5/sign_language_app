@@ -90,11 +90,6 @@ class CompletedLesson extends StatelessWidget {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  Text(
-                    earnedBadge.badgeDesc,
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(fontSize: 14.0,),
-                  ),
                 ],
               ),
             ),

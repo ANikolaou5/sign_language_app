@@ -180,7 +180,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 SizedBox(
                   width: MediaQuery.of(context).size.width,
                   child: Text(
-                    "SiLAC",
+                    "SiLAc",
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 40.0,
@@ -254,7 +254,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 user == null ? Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Text(
-                    "SiLAc is a mobile application for learning ASL using gamified, interactive activities that help users learn sign language through various features.",
+                    "SiLAc is a mobile application for learning American Sign Language (ASL) using gamified, interactive activities that help users learn sign language through various features.",
                     textAlign: TextAlign.center,
                   ),
                 ) : Container(),
