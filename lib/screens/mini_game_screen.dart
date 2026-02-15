@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../services/game_service.dart';
 import '../classes/question_class.dart';
 import '../classes/online_quiz.dart';
+import '../services/user_service.dart';
 
 class MiniGameScreen extends StatefulWidget {
 
@@ -25,6 +26,7 @@ class MiniGameScreen extends StatefulWidget {
 }
 
 class _MiniGameScreenState extends State<MiniGameScreen> {
+  final UserService userService = UserService();
   late GameService _gameService;
   final TextEditingController _answerController = TextEditingController();
   bool _isProcessing = false;
@@ -342,7 +344,10 @@ class _MiniGameScreenState extends State<MiniGameScreen> {
           const Text("Rewards have been added to your profile!", style: TextStyle(color: Colors.green)),
           const SizedBox(height: 30),
           ElevatedButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () async {
+              await userService.refreshUserLocalStorage();
+              Navigator.pop(context);
+            },
             child: const Text("Return to Lobby"),
           )
         ],

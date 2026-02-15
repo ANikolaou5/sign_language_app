@@ -46,6 +46,18 @@
             text-align: center;
             padding: 10px;
         }
+        .collection-item.flex-item {
+            display: flex;
+            align-items: flex-start;
+        }
+        .collection-item.flex-item i {
+            margin-right: 15px;
+            margin-top: 4px;
+            flex-shrink: 0;
+        }
+        .collection-item.flex-item .item-content {
+            flex-grow: 1;
+        }
     </style>
 </head>
 <body>
@@ -63,13 +75,17 @@
 
         <h2 class="section-title">Key Characteristics</h2>
         <ul class="collection">
-            <li class="collection-item">
-                <i class="material-icons orange-text text-darken-4 left">check_circle</i>
-                <strong>Pinky Up:</strong> The pinky finger points straight up toward the sky.
+            <li class="collection-item flex-item">
+                <i class="material-icons orange-text text-darken-4">check_circle</i>
+                <span class="item-content">
+                    <strong>Pinky Up:</strong> The pinky finger points straight up toward the sky.
+                </span>
             </li>
-            <li class="collection-item">
-                <i class="material-icons orange-text text-darken-4 left">check_circle</i>
-                <strong>Closed Fist:</strong> The other three fingers are folded into the palm, with the thumb crossed over them.
+            <li class="collection-item flex-item">
+                <i class="material-icons orange-text text-darken-4">check_circle</i>
+                <span class="item-content">
+                    <strong>Closed Fist:</strong> The other three fingers are folded into the palm, with the thumb crossed over them.
+                </span>
             </li>
         </ul>
 

@@ -28,7 +28,7 @@ class ReadTheSignQuestion extends StatelessWidget {
           question.question,
           textAlign: TextAlign.center,
           style: TextStyle(
-            fontSize: 22.0,
+            fontSize: 18.0,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -37,11 +37,11 @@ class ReadTheSignQuestion extends StatelessWidget {
         Text(
           "This question is worth $pointsMCQ points",
           style: TextStyle(
-            fontSize: 16.0,
+            fontSize: 14.0,
             color: Colors.grey.shade700,
           ),
         ),
-        const SizedBox(height: 10.0),
+        const SizedBox(height: 5.0),
         Container(
           padding: const EdgeInsets.all(12.0),
           decoration: BoxDecoration(
@@ -60,13 +60,13 @@ class ReadTheSignQuestion extends StatelessWidget {
             fit: BoxFit.contain,
           ),
         ),
-        const SizedBox(height: 10.0),
+        const SizedBox(height: 5.0),
         Column(
           children: List.generate(possibleAnswers.length, (index) {
             final selected = answerIndex == index;
 
             return Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: const EdgeInsets.all(4.0),
               child: InkWell(
                 onTap: check ? null : () => onTap(index),
                 child: AnimatedOpacity(
@@ -115,9 +115,9 @@ class ReadTheSignQuestion extends StatelessWidget {
                         Text(
                           possibleAnswers[index],
                           style: TextStyle(
-                            fontSize: 20.0,
+                            fontSize: 18.0,
                             color: !check
-                              ? (selected ? Colors.orange.shade700 : Colors.black)
+                              ? Colors.orange.shade700
                               : (possibleAnswers[index] == correctAnswer
                               ? Colors.green.shade700
                                 : (selected ? Colors.red.shade700 : Colors.orange)),
@@ -150,7 +150,7 @@ class ReadTheSignQuestion extends StatelessWidget {
             );
           }),
         ),
-        const SizedBox(height: 25.0),
+        const SizedBox(height: 10.0),
         NavigationButtons(answerIndex: check ? 1 : null, isCorrectAnswer: isCorrectAnswer, check: check, darkMode: darkMode, correctAnswer: question.answer, questionPoints: pointsMCQ, next: next,),
       ],
     );

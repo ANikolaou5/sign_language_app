@@ -27,6 +27,7 @@ class _AccountScreenState extends State<AccountScreen> {
   late TextEditingController nameTextController;
   late TextEditingController surnameTextController;
   late TextEditingController passwordTextController;
+  late TextEditingController confirmPasswordTextController;
 
   final DatabaseReference usersRef = FirebaseDatabase.instance.ref().child('users');
   final FirebaseAuth auth = FirebaseAuth.instance;
@@ -35,7 +36,8 @@ class _AccountScreenState extends State<AccountScreen> {
   String? errorMessage;
   UserClass? user;
 
-  bool visible = false;
+  bool visible1 = false;
+  bool visible2 = false;
   bool signIn = true;
   bool loading = false;
   bool darkMode = true;
@@ -55,11 +57,20 @@ class _AccountScreenState extends State<AccountScreen> {
     String inputEmail = emailTextController.text.trim();
     String inputUsername = usernameTextController.text.trim();
     String inputPassword = passwordTextController.text.trim();
+    String inputConfirmPassword = confirmPasswordTextController.text.trim();
 
     // Forcing user to fill all fields.
-    if (inputName.isEmpty || inputSurname.isEmpty || inputEmail.isEmpty || inputUsername.isEmpty || inputPassword.isEmpty) {
+    if (inputEmail.isEmpty || inputUsername.isEmpty || inputPassword.isEmpty) {
       setState(() {
-        errorMessage = "All fields required!";
+        errorMessage = "Email, username and password fields required!";
+        loading = false;
+      });
+      return;
+    }
+
+    if (inputPassword != inputConfirmPassword) {
+      setState(() {
+        errorMessage = "Passwords do not match";
         loading = false;
       });
       return;
@@ -239,6 +250,7 @@ class _AccountScreenState extends State<AccountScreen> {
       nameTextController.clear();
       surnameTextController.clear();
       passwordTextController.clear();
+      confirmPasswordTextController.clear();
       _loadTheme();
     });
   }
@@ -262,6 +274,7 @@ class _AccountScreenState extends State<AccountScreen> {
     nameTextController = TextEditingController();
     surnameTextController = TextEditingController();
     passwordTextController = TextEditingController();
+    confirmPasswordTextController = TextEditingController();
     _loadUserLocalStorage();
   }
 
@@ -272,6 +285,7 @@ class _AccountScreenState extends State<AccountScreen> {
     nameTextController.dispose();
     surnameTextController.dispose();
     passwordTextController.dispose();
+    confirmPasswordTextController.dispose();
     super.dispose();
   }
 
@@ -286,7 +300,7 @@ class _AccountScreenState extends State<AccountScreen> {
             child: Column(
               children: [
                 Container(
-                  padding: const EdgeInsets.all(10.0),
+                  padding: const EdgeInsets.all(8.0),
                   decoration: BoxDecoration(
                     border: Border.all(
                       color: Colors.black38,
@@ -365,7 +379,7 @@ class _AccountScreenState extends State<AccountScreen> {
                           controller: nameTextController,
                           style: TextStyle(color: Colors.white),
                           decoration:  InputDecoration(
-                            labelText: 'Name',
+                            labelText: 'Name (Optional)',
                             labelStyle: TextStyle(color: Colors.white),
                             border: OutlineInputBorder(),
                             focusedBorder: OutlineInputBorder(
@@ -387,7 +401,7 @@ class _AccountScreenState extends State<AccountScreen> {
                           controller: surnameTextController,
                           style: TextStyle(color: Colors.white),
                           decoration: InputDecoration(
-                            labelText: 'Surname',
+                            labelText: 'Surname (Optional)',
                             labelStyle: TextStyle(color: Colors.white),
                             border: OutlineInputBorder(),
                             focusedBorder: OutlineInputBorder(
@@ -427,16 +441,50 @@ class _AccountScreenState extends State<AccountScreen> {
                           ),
                           suffixIcon: IconButton(
                             color: Colors.white,
-                            icon: Icon(visible ? Icons.visibility : Icons.visibility_off,),
+                            icon: Icon(visible1 ? Icons.visibility : Icons.visibility_off,),
                             onPressed: () {
                               setState(() {
-                                visible = !visible;
+                                visible1 = !visible1;
                               });
                             },
                           ),
                         ),
-                        obscureText: !visible,
+                        obscureText: !visible1,
                       ),
+                      if (!signIn)...[
+                        const SizedBox(height: 10.0),
+                        TextField(
+                          controller: confirmPasswordTextController,
+                          style: TextStyle(color: Colors.white),
+                          decoration: InputDecoration(
+                            labelText: 'Confirm Password',
+                            labelStyle: TextStyle(color: Colors.white),
+                            border: OutlineInputBorder(),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                color: Colors.white,
+                                width: 3.0,
+                              ),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                  color: Colors.white60,
+                                  width: 2,
+                                )
+                            ),
+                            suffixIcon: IconButton(
+                              color: Colors.white,
+                              icon: Icon(visible2 ? Icons.visibility : Icons.visibility_off,),
+                              onPressed: () {
+                                setState(() {
+                                  visible2 = !visible2;
+                                });
+                              },
+                            ),
+                          ),
+                          obscureText: !visible2,
+                        ),
+                      ],
                       const SizedBox(height: 10.0),
                       if (errorMessage != null) Text(errorMessage!, style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
                       const SizedBox(height: 20),
@@ -480,6 +528,7 @@ class _AccountScreenState extends State<AccountScreen> {
                                   nameTextController.clear();
                                   surnameTextController.clear();
                                   passwordTextController.clear();
+                                  confirmPasswordTextController.clear();
 
                                   setState(() {
                                     errorMessage = null;
@@ -515,26 +564,28 @@ class _AccountScreenState extends State<AccountScreen> {
                           ),
                           const SizedBox(height: 10.0),
                           Text(
-                            '${user!.name} ${user!.surname}',
+                            '${user!.username}',
                             style: const TextStyle(
                               fontSize: 24.0,
                               fontWeight: FontWeight.bold,
                               color: Colors.white,
                             ),
                           ),
-                          Text(
-                            '(${user!.username})',
-                            style: const TextStyle(fontSize: 14.0, color: Colors.white),
-                            overflow: TextOverflow.ellipsis,
-                          ),
+                          if (user!.name != '' || user!.surname != '') ...[
+                            Text(
+                              '${user!.name} ${user!.surname}',
+                              style: const TextStyle(fontSize: 14.0, color: Colors.white),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
                           const SizedBox(height: 5.0),
                           Text(
                             user!.email!,
                             style: const TextStyle(fontSize: 14.0, color: Colors.white),
                           ),
-                          const SizedBox(height: 10.0),
+                          const SizedBox(height: 5.0),
                           Divider(color: Colors.white,),
-                          const SizedBox(height: 10.0),
+                          const SizedBox(height: 5.0),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: [
@@ -565,7 +616,7 @@ class _AccountScreenState extends State<AccountScreen> {
                   ),
                 ),
                 if (user != null) ...[
-                  const SizedBox(height: 10.0),
+                  const SizedBox(height: 5.0),
                   InkWell(
                     onTap: () async {
                       await Navigator.push(
@@ -575,7 +626,7 @@ class _AccountScreenState extends State<AccountScreen> {
                       setState(() {});
                     },
                     child: Container(
-                      padding: const EdgeInsets.all(12.0),
+                      padding: const EdgeInsets.all(8.0),
                       decoration: BoxDecoration(
                         color: darkMode ? Colors.black : Colors.white,
                         border: Border.all(
@@ -613,7 +664,7 @@ class _AccountScreenState extends State<AccountScreen> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 10.0),
+                  const SizedBox(height: 5.0),
                   InkWell(
                     onTap: () async {
                       await Navigator.push(
@@ -625,7 +676,7 @@ class _AccountScreenState extends State<AccountScreen> {
                       });
                     },
                     child: Container(
-                      padding: const EdgeInsets.all(12.0),
+                      padding: const EdgeInsets.all(8.0),
                       decoration: BoxDecoration(
                         color: darkMode ? Colors.black : Colors.white,
                         border: Border.all(
@@ -663,7 +714,7 @@ class _AccountScreenState extends State<AccountScreen> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 10.0),
+                  const SizedBox(height: 5.0),
                   InkWell(
                     onTap: () {
                       showDialog(context: context, builder: (BuildContext context) {
@@ -757,7 +808,7 @@ class _AccountScreenState extends State<AccountScreen> {
                       });
                     },
                     child: Container(
-                      padding: const EdgeInsets.all(12.0),
+                      padding: const EdgeInsets.all(8.0),
                       decoration: BoxDecoration(
                         color: darkMode ? Colors.black : Colors.red.shade50,
                         border: Border.all(

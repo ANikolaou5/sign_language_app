@@ -46,6 +46,18 @@
             text-align: center;
             padding: 10px;
         }
+        .collection-item.flex-item {
+            display: flex;
+            align-items: flex-start;
+        }
+        .collection-item.flex-item i {
+            margin-right: 15px;
+            margin-top: 4px;
+            flex-shrink: 0;
+        }
+        .collection-item.flex-item .item-content {
+            flex-grow: 1;
+        }
     </style>
 </head>
 <body>
@@ -63,13 +75,17 @@
 
         <h2 class="section-title">Key Characteristics</h2>
         <ul class="collection">
-            <li class="collection-item">
-                <i class="material-icons orange-text text-darken-4 left">check_circle</i>
-                <strong>The Hook:</strong> The index finger is raised but <b>bent at the knuckles</b> to form a hook shape (like a pirate's hook).
+            <li class="collection-item flex-item">
+                <i class="material-icons orange-text text-darken-4">check_circle</i>
+                <span class="item-content">
+                    <strong>The Hook:</strong> The index finger is raised but <b>bent at the knuckles</b> to form a hook shape (like a pirate's hook).
+                </span>
             </li>
-            <li class="collection-item">
-                <i class="material-icons orange-text text-darken-4 left">check_circle</i>
-                <strong>Tucked Fist:</strong> The thumb, middle, ring, and pinky fingers are folded tightly into a fist.
+            <li class="collection-item flex-item">
+                <i class="material-icons orange-text text-darken-4">check_circle</i>
+                <span class="item-content">
+                    <strong>Tucked Fist:</strong> The thumb, middle, ring, and pinky fingers are folded tightly into a fist.
+                </span>
             </li>
         </ul>
 

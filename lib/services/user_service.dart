@@ -176,7 +176,7 @@ class UserService {
       return dbCompletedLevels;
     } else {
       final prefs = await SharedPreferences.getInstance();
-      final completedLevels = prefs.getInt('guestCompletedLevels') ?? 0;
+      final completedLevels = prefs.getInt('guestLevels') ?? 0;
       return completedLevels;
     }
   }

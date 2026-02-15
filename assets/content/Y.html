@@ -46,6 +46,18 @@
             text-align: center;
             padding: 10px;
         }
+        .collection-item.flex-item {
+            display: flex;
+            align-items: flex-start;
+        }
+        .collection-item.flex-item i {
+            margin-right: 15px;
+            margin-top: 4px;
+            flex-shrink: 0;
+        }
+        .collection-item.flex-item .item-content {
+            flex-grow: 1;
+        }
     </style>
 </head>
 <body>
@@ -63,13 +75,17 @@
 
         <h2 class="section-title">Key Characteristics</h2>
         <ul class="collection">
-            <li class="collection-item">
-                <i class="material-icons orange-text text-darken-4 left">check_circle</i>
-                <strong>Extended Outer Fingers:</strong> The <b>thumb</b> and the <b>pinky finger</b> are fully extended outward.
+            <li class="collection-item flex-item">
+                <i class="material-icons orange-text text-darken-4">check_circle</i>
+                <span class="item-content">
+                    <strong>Extended Outer Fingers:</strong> The <b>thumb</b> and the <b>pinky finger</b> are fully extended outward.
+                </span>
             </li>
-            <li class="collection-item">
-                <i class="material-icons orange-text text-darken-4 left">check_circle</i>
-                <strong>Tucked Center:</strong> The index, middle, and ring fingers remain folded flat against the palm.
+            <li class="collection-item flex-item">
+                <i class="material-icons orange-text text-darken-4">check_circle</i>
+                <span class="item-content">
+                    <strong>Tucked Center:</strong> The index, middle, and ring fingers remain folded flat against the palm.
+                </span>
             </li>
         </ul>
 

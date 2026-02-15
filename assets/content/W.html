@@ -46,6 +46,18 @@
             text-align: center;
             padding: 10px;
         }
+        .collection-item.flex-item {
+            display: flex;
+            align-items: flex-start;
+        }
+        .collection-item.flex-item i {
+            margin-right: 15px;
+            margin-top: 4px;
+            flex-shrink: 0;
+        }
+        .collection-item.flex-item .item-content {
+            flex-grow: 1;
+        }
     </style>
 </head>
 <body>
@@ -63,13 +75,17 @@
 
         <h2 class="section-title">Key Characteristics</h2>
         <ul class="collection">
-            <li class="collection-item">
-                <i class="material-icons orange-text text-darken-4 left">check_circle</i>
-                <strong>Three-Finger Extension:</strong> The index, middle, and ring fingers are extended and <b>spread apart</b>.
+            <li class="collection-item flex-item">
+                <i class="material-icons orange-text text-darken-4">check_circle</i>
+                <span class="item-content">
+                    <strong>Three-Finger Extension:</strong> The index, middle, and ring fingers are extended and <b>spread apart</b>.
+                </span>
             </li>
-            <li class="collection-item">
-                <i class="material-icons orange-text text-darken-4 left">check_circle</i>
-                <strong>Pinky Takedown:</strong> The thumb holds down the <b>pinky finger only</b>, resting against the pinky's nail or tip.
+            <li class="collection-item flex-item">
+                <i class="material-icons orange-text text-darken-4">check_circle</i>
+                <span class="item-content">
+                    <strong>Pinky Takedown:</strong> The thumb holds down the <b>pinky finger only</b>, resting against the pinky's nail or tip.
+                </span>
             </li>
         </ul>
 

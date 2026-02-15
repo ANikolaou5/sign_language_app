@@ -53,7 +53,7 @@ class NavigationButtons extends StatelessWidget {
                   Text(
                     "Correct answer:\n$correctAnswer",
                     style: TextStyle(
-                      color: Colors.red.shade400,
+                      color: Colors.green,
                       fontSize: 14.0,
                       fontWeight: FontWeight.bold,
                     ),
@@ -62,14 +62,7 @@ class NavigationButtons extends StatelessWidget {
               ],
             ),
           ] else ...[
-            Text(
-              "Press 'Next' to continue...",
-              style: TextStyle(
-                color: Colors.grey,
-                fontSize: 18.0,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
+            const Expanded(child: SizedBox()),
           ],
           const SizedBox(width: 10.0),
           ElevatedButton(

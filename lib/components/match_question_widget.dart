@@ -39,7 +39,7 @@ class MatchQuestion extends StatelessWidget {
           'Drag each sign to its matching letter to form the word below.',
           textAlign: TextAlign.center,
           style: TextStyle(
-            fontSize: 22.0,
+            fontSize: 18.0,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -50,7 +50,7 @@ class MatchQuestion extends StatelessWidget {
         Text(
           "This question is worth $questionPoints points",
           style: TextStyle(
-            fontSize: 16.0,
+            fontSize: 14.0,
             color: Colors.grey.shade700,
           ),
         ),
@@ -60,7 +60,7 @@ class MatchQuestion extends StatelessWidget {
             const Text(
               "TARGET WORD",
               style: TextStyle(
-                fontSize: 20.0,
+                fontSize: 18.0,
                 fontWeight: FontWeight.bold,
                 color: Colors.orange,
               ),
@@ -89,7 +89,7 @@ class MatchQuestion extends StatelessWidget {
                   child: Text(
                     txt,
                     style: const TextStyle(
-                      fontSize: 28.0,
+                      fontSize: 25.0,
                       fontWeight: FontWeight.bold,
                       color: Colors.green,
                     ),
@@ -127,7 +127,7 @@ class MatchQuestion extends StatelessWidget {
                       child: Text(
                         txt,
                         style: const TextStyle(
-                          fontSize: 28.0,
+                          fontSize: 25.0,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -140,7 +140,7 @@ class MatchQuestion extends StatelessWidget {
             const Text(
               "AVAILABLE SIGNS",
               style: TextStyle(
-                fontSize: 20.0,
+                fontSize: 18.0,
                 fontWeight: FontWeight.bold,
                 color: Colors.orange,
               ),

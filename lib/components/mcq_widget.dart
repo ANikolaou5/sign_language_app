@@ -23,7 +23,7 @@ class MultipleChoiceQuestion extends StatelessWidget {
     return Column(
       children: [
         Container(
-          padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 10.0),
+          padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
           decoration: BoxDecoration(
             color: Colors.deepOrange,
             borderRadius: BorderRadius.circular(20.0),
@@ -32,7 +32,7 @@ class MultipleChoiceQuestion extends StatelessWidget {
             question.questionContent,
             textAlign: TextAlign.center,
             style: const TextStyle(
-              fontSize: 22.0,
+              fontSize: 18.0,
               fontWeight: FontWeight.bold,
               color: Colors.white,
             ),
@@ -43,7 +43,7 @@ class MultipleChoiceQuestion extends StatelessWidget {
             final selected = answerIndex == index;
 
             return Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: const EdgeInsets.all(4.0),
               child: InkWell(
                 onTap: check ? null : () => onTap(index),
                 child: AnimatedOpacity(
@@ -92,7 +92,7 @@ class MultipleChoiceQuestion extends StatelessWidget {
                         Expanded(
                           child: Image.asset(
                             possibleAnswers[index],
-                            height: 135,
+                            height: 100,
                             fit: BoxFit.contain,
                           ),
                         ),
@@ -150,7 +150,21 @@ class MultipleChoiceQuestion extends StatelessWidget {
                     child: WebViewWidget(
                       controller: controller!,
                     ),
-                  ) : Container(),
+                  ) : Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.orange.shade50,
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: Colors.orange.shade200),
+                    ),
+                    child: const Text(
+                      "Additional tutorial content is available in the mobile app. (Local HTML assets are not supported in web view mode).",
+                      style: TextStyle(
+                        fontStyle: FontStyle.italic,
+                        color: Colors.black,
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),

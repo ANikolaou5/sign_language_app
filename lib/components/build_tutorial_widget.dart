@@ -93,7 +93,7 @@ class _BuildTutorialState extends State<BuildTutorial> {
               ? widget.readingTutorial.tutorialText
               : widget.multipleChoiceQuestion!.question,
             style: TextStyle(
-              fontSize: 22.0,
+              fontSize: 18.0,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -103,7 +103,7 @@ class _BuildTutorialState extends State<BuildTutorial> {
           Text(
             "This question is worth ${widget.questionPoints} points",
             style: TextStyle(
-              fontSize: 16.0,
+              fontSize: 14.0,
               color: Colors.grey.shade700,
             ),
           ),
@@ -123,7 +123,7 @@ class _BuildTutorialState extends State<BuildTutorial> {
               borderRadius: BorderRadiusGeometry.circular(10),
               child: Image.asset(
                 widget.readingTutorial.tutorialImage,
-                height: 360,
+                height: 300,
                 fit: BoxFit.contain,
               ),
             ),
@@ -154,7 +154,7 @@ class _BuildTutorialState extends State<BuildTutorial> {
             ),
           ],
         ],
-        const SizedBox(height: 15.0),
+        const SizedBox(height: 10.0),
         NavigationButtons(answerIndex: widget.answerIndex, isCorrectAnswer: widget.isCorrectAnswer, check: widget.check, darkMode: darkMode, correctAnswer: '', questionPoints: widget.questionPoints, next: widget.next,),
       ],
     );
@@ -171,7 +171,10 @@ class _BuildTutorialState extends State<BuildTutorial> {
       ),
       child: const Text(
         "Additional tutorial content is available in the mobile app. (Local HTML assets are not supported in web view mode).",
-        style: TextStyle(fontStyle: FontStyle.italic),
+        style: TextStyle(
+          fontStyle: FontStyle.italic,
+          color: Colors.black,
+        ),
       ),
     );
   }

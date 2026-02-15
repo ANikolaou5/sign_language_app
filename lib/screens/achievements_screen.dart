@@ -33,7 +33,23 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
 
   Future<void> _loadBadges() async {
     badges = await generalService.loadBadges();
+    _sortBadges();
     setState(() {});
+  }
+
+  void _sortBadges() {
+    if (user != null && badges.isNotEmpty) {
+      setState(() {
+        badges.sort((a, b) {
+          bool earnedA = user!.badges.contains(a.badgeNum);
+          bool earnedB = user!.badges.contains(b.badgeNum);
+
+          if (earnedA && !earnedB) return -1;
+          if (!earnedA && earnedB) return 1;
+          return 0;
+        });
+      });
+    }
   }
 
   Future<void> _loadTheme() async {
@@ -112,7 +128,7 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
                           border: Border.all(color: Colors.deepOrange,),
                           borderRadius: BorderRadius.circular(15.0),
                           gradient: LinearGradient(colors: darkMode
-                              ? [Colors.grey.shade900, Colors.black]
+                              ? [Colors.orange.shade300, Colors.orange.shade300]
                               : [Colors.orange.shade100, Colors.white],),
                         ),
                         child: Row(
@@ -121,7 +137,7 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
                             ColorFiltered(
                               colorFilter: earned
                                 ? const ColorFilter.mode(Colors.transparent, BlendMode.multiply)
-                                : (darkMode ? ColorFilter.mode(Colors.transparent, BlendMode.saturation) : ColorFilter.mode(Colors.grey.shade200, BlendMode.saturation)),
+                                : ColorFilter.mode(Colors.grey.shade200, BlendMode.saturation),
                               child: Image.asset(
                                 badge.badgeImage,
                                 height: 100,
@@ -147,7 +163,10 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
                                   Text(
                                     badge.badgeDesc + (earned ? " (Earned)" : " to unlock this badge."),
                                     softWrap: true,
-                                    style: TextStyle(fontSize: 14.0,),
+                                    style: TextStyle(
+                                      fontSize: 14.0,
+                                      color: Colors.black,
+                                    ),
                                   ),
                                 ],
                               ),

@@ -57,7 +57,7 @@ class CompletedLesson extends StatelessWidget {
           quiz
           ? (timerEnd ? "You've run out of time, but you still did great! Keep practicing to get faster!" : "You have finished this quiz")
           : readingTutorial != null
-            ? (!reviewLesson ? "You have finished the reading tutorial $readingTutorial" : "You have reviewed the reading tutorial $readingTutorial")
+            ? (!reviewLesson ? "You have finished lesson $readingTutorial" : "You have reviewed lesson $readingTutorial")
             : "You have finished your training",
           style: const TextStyle(fontSize: 20.0),
           textAlign: TextAlign.center,
@@ -173,7 +173,7 @@ class CompletedLesson extends StatelessWidget {
             padding: const EdgeInsets.all(15.0),
           ),
           child: const Text(
-            ' Exit ',
+            'Done',
             style: TextStyle(
               fontSize: 22.0,
               fontWeight: FontWeight.bold,

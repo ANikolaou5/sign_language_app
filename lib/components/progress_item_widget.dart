@@ -31,7 +31,6 @@ class ProgressItem extends StatelessWidget {
               color: Colors.white,
               size: 60.0,
             ),
-            const SizedBox(height: 5.0),
           ],
           Text(
             num.toString(),
@@ -41,7 +40,6 @@ class ProgressItem extends StatelessWidget {
               color: Colors.white
             ),
           ),
-          const SizedBox(height: 3.0),
           Text(
             text,
             textAlign: TextAlign.center,

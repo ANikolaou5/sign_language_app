@@ -72,7 +72,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20.0),
                   gradient: LinearGradient(
-                    colors: [Colors.orange.shade100, Colors.white],
+                    colors: darkMode
+                        ? [Colors.grey.shade900, Colors.black]
+                        : [Colors.orange.shade100, Colors.white],
                   ),
                 ),
                 child: Column(
@@ -113,6 +115,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         ),
                         ElevatedButton(
                           style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.white,
                             foregroundColor: Colors.white,
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
                           ),

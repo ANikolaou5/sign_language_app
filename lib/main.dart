@@ -76,6 +76,7 @@ class _MyAppState extends State<MyApp> {
       theme: ThemeData(brightness: Brightness.light, fontFamily: 'SNPro',),
       darkTheme: ThemeData(brightness: Brightness.dark, fontFamily: 'SNPro'),
       themeMode: darkMode ? ThemeMode.dark : ThemeMode.light,
+      debugShowCheckedModeBanner: false,
       home: MainScreen(
         onThemeChange: (bool value) {
           setState(() {

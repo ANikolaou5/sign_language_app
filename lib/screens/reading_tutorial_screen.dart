@@ -152,6 +152,7 @@ class _ReadingTutorialScreenState extends State<ReadingTutorialScreen> {
     if (widget.username == null || widget.username!.isEmpty) {
       final prefs = await SharedPreferences.getInstance();
       List<String> guestCompletedLessons = prefs.getStringList('guestCompletedLessons') ?? [];
+      int guestLevels = prefs.getInt('guestLevels') ?? 0;
 
       if (guestCompletedLessons.contains(widget.readingTutorial.readingTutorial.toString())) {
         setState(() {
@@ -161,6 +162,25 @@ class _ReadingTutorialScreenState extends State<ReadingTutorialScreen> {
         if (!guestCompletedLessons.contains(widget.readingTutorial.readingTutorial.toString())) {
           guestCompletedLessons.add(widget.readingTutorial.readingTutorial.toString());
           await prefs.setStringList('guestCompletedLessons', guestCompletedLessons);
+        }
+
+        final badgesSnapshot = await FirebaseDatabase.instance.ref().child('badges').get();
+
+        if (badgesSnapshot.exists) {
+          final Map<dynamic, dynamic> badgesMap = badgesSnapshot.value as Map;
+
+          for (var entry in badgesMap.entries) {
+            final data = Map<String, dynamic>.from(entry.value as Map);
+
+            if (data['levelNum'] == widget.readingTutorial.levelNum && data['size'] == guestCompletedLessons.length) {
+              int badgeNum = data['badgeNum'] as int;
+
+              // To prevent incrementing the level when earning the badge for completing the 1st lesson.
+              if (badgeNum != 1) {
+                await prefs.setInt('guestLevels', guestLevels + 1);
+              }
+            }
+          }
         }
       }
 
@@ -196,7 +216,11 @@ class _ReadingTutorialScreenState extends State<ReadingTutorialScreen> {
 
           if (data['levelNum'] == widget.readingTutorial.levelNum && data['size'] == dbCompletedLessons.length) {
             int badgeNum = data['badgeNum'] as int;
-            levels += 1;
+
+            // To prevent incrementing the level when earning the badge for completing the 1st lesson.
+            if (badgeNum != 1) {
+              levels += 1;
+            }
 
             if (!dbBadges.contains(badgeNum)) {
               dbBadges.add(badgeNum);
@@ -300,7 +324,7 @@ class _ReadingTutorialScreenState extends State<ReadingTutorialScreen> {
           return;
         }
 
-        generalService.exitPrompt(context, 'reading tutorial');
+        generalService.exitPrompt(context, 'lesson');
       },
       child: Scaffold(
         appBar: AppBar(
@@ -317,7 +341,7 @@ class _ReadingTutorialScreenState extends State<ReadingTutorialScreen> {
             ),
           ),
           title: const Text(
-            "Reading Tutorials",
+            "Lesson",
             style: TextStyle(
               fontWeight: FontWeight.bold,
               color: Colors.white,

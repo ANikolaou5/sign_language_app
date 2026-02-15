@@ -57,12 +57,12 @@ class _AboutScreenState extends State<AboutScreen> {
                 const SizedBox(height: 30.0),
                 Image.asset(
                   "assets/logos/logo1.png",
-                  height: 180.0,
+                  height: 150.0,
                 ),
                 const Text(
                   "SiLAc",
                   style: TextStyle(
-                    fontSize: 42.0,
+                    fontSize: 35.0,
                     color: Colors.deepOrange,
                     fontWeight: FontWeight.bold,
                   ),
@@ -88,7 +88,7 @@ class _AboutScreenState extends State<AboutScreen> {
                     children: [
                       const Text(
                         "SiLAc is a mobile application for learning American Sign Language (ASL) using gamified, interactive activities that help users learn sign language through various features.",
-                        style: TextStyle(fontSize: 16.0,),
+                        style: TextStyle(fontSize: 14.0,),
                         textAlign: TextAlign.justify,
                       ),
                       const SizedBox(height: 10.0),
@@ -99,7 +99,7 @@ class _AboutScreenState extends State<AboutScreen> {
                       const SizedBox(height: 10.0),
                       const Text(
                         "By merging learning design principles and gamification, SiLAc intends to shape sign language learning into a productive and enjoyable practice, despite the person’s background or prior experience.",
-                        style: TextStyle(fontSize: 16.0,),
+                        style: TextStyle(fontSize: 14.0,),
                         textAlign: TextAlign.justify,
                       ),
                     ],
@@ -109,7 +109,7 @@ class _AboutScreenState extends State<AboutScreen> {
                 const Text(
                   "Why SiLAc?",
                   style: TextStyle(
-                    fontSize: 22.0,
+                    fontSize: 20.0,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -129,7 +129,10 @@ class _AboutScreenState extends State<AboutScreen> {
                       ),
                       child: Text(
                         "Gamified",
-                        style: TextStyle(fontSize: 16.0,),
+                        style: TextStyle(
+                          fontSize: 14.0,
+                          color: Colors.black,
+                        ),
                       ),
                     ),
                     const SizedBox(height: 10.0),
@@ -145,7 +148,10 @@ class _AboutScreenState extends State<AboutScreen> {
                       ),
                       child: Text(
                         "Interactive",
-                        style: TextStyle(fontSize: 16.0,),
+                        style: TextStyle(
+                          fontSize: 14.0,
+                          color: Colors.black,
+                        ),
                       ),
                     ),
                     const SizedBox(height: 10.0),
@@ -161,7 +167,10 @@ class _AboutScreenState extends State<AboutScreen> {
                       ),
                       child: Text(
                         "Inclusive",
-                        style: TextStyle(fontSize: 16.0,),
+                        style: TextStyle(
+                          fontSize: 14.0,
+                          color: Colors.black,
+                        ),
                       ),
                     ),
                     const SizedBox(height: 10.0),
@@ -177,7 +186,10 @@ class _AboutScreenState extends State<AboutScreen> {
                       ),
                       child: Text(
                         "Accessible",
-                        style: TextStyle(fontSize: 16.0,),
+                        style: TextStyle(
+                          fontSize: 14.0,
+                          color: Colors.black,
+                        ),
                       ),
                     ),
                   ],

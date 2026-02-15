@@ -28,7 +28,7 @@ class MultipleChoiceQuestionWordsToSign extends StatelessWidget {
           question.question,
           textAlign: TextAlign.center,
           style: TextStyle(
-            fontSize: 22.0,
+            fontSize: 18.0,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -37,14 +37,14 @@ class MultipleChoiceQuestionWordsToSign extends StatelessWidget {
         Text(
           "This question is worth $pointsMCQ points",
           style: TextStyle(
-            fontSize: 16.0,
+            fontSize: 14.0,
             color: Colors.grey.shade700,
           ),
         ),
-        const SizedBox(height: 20.0),
+        const SizedBox(height: 5.0),
 
         Container(
-          padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 10.0),
+          padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
           decoration: BoxDecoration(
             color: Colors.deepOrange,
             borderRadius: BorderRadius.circular(20.0),
@@ -53,21 +53,21 @@ class MultipleChoiceQuestionWordsToSign extends StatelessWidget {
             question.questionContent,
             textAlign: TextAlign.center,
             style: const TextStyle(
-              fontSize: 22.0,
+              fontSize: 18.0,
               fontWeight: FontWeight.bold,
               color: Colors.white,
             ),
           ),
         ),
 
-        SizedBox(height: 10,),
+        SizedBox(height: 5,),
 
         Column(
           children: List.generate(possibleAnswers.length, (index) {
             final selected = answerIndex == index;
 
             return Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: const EdgeInsets.all(4.0),
               child: InkWell(
                 onTap: check ? null : () => onTap(index),
                 child: AnimatedOpacity(
@@ -116,7 +116,7 @@ class MultipleChoiceQuestionWordsToSign extends StatelessWidget {
                         Expanded(
                           child: Image.asset(
                             possibleAnswers[index],
-                            height: 135,
+                            height: 110,
                             fit: BoxFit.contain,
                           ),
                         ),
@@ -146,7 +146,7 @@ class MultipleChoiceQuestionWordsToSign extends StatelessWidget {
             );
           }),
         ),
-        const SizedBox(height: 25.0),
+        const SizedBox(height: 10.0),
         NavigationButtons(answerIndex: check ? 1 : null, isCorrectAnswer: isCorrectAnswer, check: check, darkMode: darkMode, correctAnswer: '', questionPoints: pointsMCQ, next: next,),
       ],
     );

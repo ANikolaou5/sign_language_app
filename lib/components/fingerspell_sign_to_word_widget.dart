@@ -33,7 +33,7 @@ class FingerspellSignToWord extends StatelessWidget {
           question.question,
           textAlign: TextAlign.center,
           style: TextStyle(
-            fontSize: 22.0,
+            fontSize: 18.0,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -42,13 +42,13 @@ class FingerspellSignToWord extends StatelessWidget {
         Text(
           "This question is worth $questionPoints points",
           style: TextStyle(
-            fontSize: 16.0,
+            fontSize: 14.0,
             color: Colors.grey.shade700,
           ),
         ),
         const SizedBox(height: 30.0),
         Container(
-          padding: const EdgeInsets.all(12.0),
+          padding: const EdgeInsets.all(10.0),
           decoration: BoxDecoration(
             color: darkMode ? Colors.black : Colors.white,
             borderRadius: BorderRadius.circular(15.0),
@@ -63,7 +63,7 @@ class FingerspellSignToWord extends StatelessWidget {
             children: [
               Image.asset(
                 question.questionContent,
-                height: 300,
+                height: 250,
                 fit: BoxFit.contain,
               ),
               TextField(

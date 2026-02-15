@@ -46,6 +46,18 @@
             text-align: center;
             padding: 10px;
         }
+        .collection-item.flex-item {
+            display: flex;
+            align-items: flex-start;
+        }
+        .collection-item.flex-item i {
+            margin-right: 15px;
+            margin-top: 4px;
+            flex-shrink: 0;
+        }
+        .collection-item.flex-item .item-content {
+            flex-grow: 1;
+        }
     </style>
 </head>
 <body>
@@ -63,13 +75,17 @@
 
         <h2 class="section-title">Key Characteristics</h2>
         <ul class="collection">
-            <li class="collection-item">
-                <i class="material-icons orange-text text-darken-4 left">check_circle</i>
-                <strong>The Perfect Circle:</strong> All fingers curve down to meet the thumb, forming a clear "O" shape.
+            <li class="collection-item flex-item">
+                <i class="material-icons orange-text text-darken-4">check_circle</i>
+                <span class="item-content">
+                    <strong>The Perfect Circle:</strong> All fingers curve down to meet the thumb, forming a clear "O" shape.
+                </span>
             </li>
-            <li class="collection-item">
-                <i class="material-icons orange-text text-darken-4 left">check_circle</i>
-                <strong>Tip Contact:</strong> The fingertips should be touching or very close to the tip of the thumb, creating a hollow center.
+            <li class="collection-item flex-item">
+                <i class="material-icons orange-text text-darken-4">check_circle</i>
+                <span class="item-content">
+                    <strong>Tip Contact:</strong> The fingertips should be touching or very close to the tip of the thumb, creating a hollow center.
+                </span>
             </li>
         </ul>
 
