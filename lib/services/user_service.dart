@@ -27,6 +27,7 @@ class UserService {
       name: prefs.getString('name'),
       surname: prefs.getString('surname'),
       email: prefs.getString('email'),
+      avatar: prefs.getString('avatar') ?? 'Jonny',
       streakNum: prefs.getInt('streakNum') ?? 0,
       lastStreakDate: lastStreakDate,
       score: prefs.getInt('score') ?? 0,
@@ -58,6 +59,7 @@ class UserService {
     if (user.name != null) await prefs.setString('name', user.name!);
     if (user.surname != null) await prefs.setString('surname', user.surname!);
     if (user.email != null) await prefs.setString('email', user.email!);
+    await prefs.setString('avatar', user.avatar);
     await prefs.setInt('streakNum', user.streakNum);
     await prefs.setInt('score', user.score);
     await prefs.setInt('completedLevels', user.completedLevels);
@@ -187,6 +189,7 @@ class UserService {
     await userRef.update({
       'name': user.name,
       'surname': user.surname,
+      'avatar': user.avatar,
     });
 
     await saveUserLocalStorage(user);

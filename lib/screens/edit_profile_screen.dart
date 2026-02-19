@@ -1,3 +1,4 @@
+import 'package:avatar_plus/avatar_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sign_language_app/services/general_service.dart';
@@ -20,11 +21,27 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   late TextEditingController nameTextController;
   late TextEditingController surnameTextController;
   bool darkMode = true;
+  late String avatar;
+
+  final List<String> randomNames = [
+    "Jonny", "Oliver", "Sophie", "Jax", "Nova",
+    "Victoria", "Jane", "Cleo", "Zora", "Milo",
+    "Jude", "Talia", "Nico", "Ayla", "Otis",
+    "Willow", "Leo", "Zane", "Luna", "Arthur",
+    "Maya", "Felix", "Aria", "Kai", "Elena",
+  ];
+
+  void _editAvatar(String name) {
+    setState(() {
+      avatar = name;
+    });
+  }
 
   Future<void> _editProfile() async {
     UserClass newUser = widget.user;
     newUser.name = nameTextController.text.trim();
     newUser.surname = surnameTextController.text.trim();
+    newUser.avatar = avatar;
 
     await userService.editProfile(widget.user);
     await userService.refreshUserLocalStorage();
@@ -48,6 +65,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     _loadTheme();
     nameTextController = TextEditingController(text: widget.user.name);
     surnameTextController = TextEditingController(text: widget.user.surname);
+    avatar = widget.user.avatar;
   }
 
   @override
@@ -193,14 +211,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               width: 2.0,
                             ),
                           ),
-                          child: CircleAvatar(
-                            radius: 60.0,
-                            backgroundColor: Colors.deepOrange.shade700,
-                            child: Icon(
-                              Icons.person,
-                              size: 70.0,
-                              color: Colors.white,
-                            ),
+                          child: AvatarPlus(
+                            avatar,
+                            height: 120.0,
                           ),
                         ),
                         const SizedBox(height: 20.0),
@@ -257,6 +270,68 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           width: 2.0,
                         ),
                       ),
+                    ),
+                  ),
+                  const SizedBox(height: 10.0),
+                  Container(
+                    padding: const EdgeInsets.all(10.0),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(15.0),
+                      border: Border.all(
+                        color: Colors.deepOrange,
+                        width: 2.0,
+                      ),
+                    ),
+                    child: Column(
+                      children: [
+                        Text(
+                          "Choose an avatar:",
+                          style: TextStyle(
+                            fontSize: 18.0,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 10.0),
+                        SizedBox(
+                          height: 150,
+                          child: ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            itemCount: randomNames.length,
+                            itemBuilder: (context, index) {
+                              bool selected = avatar == randomNames[index];
+                              return GestureDetector(
+                                onTap: () => _editAvatar(randomNames[index]),
+                                child: AnimatedContainer(
+                                  duration: const Duration(milliseconds: 200),
+                                  padding: EdgeInsets.all(selected ? 4.0 : 2.0),
+                                  decoration: BoxDecoration(
+                                    color: selected ? Colors.deepOrange : Colors.transparent,
+                                    borderRadius: BorderRadius.circular(15.0),
+                                    border: Border.all(
+                                      color: selected ? Colors.deepOrange : Colors.transparent,
+                                      width: 3.0,
+                                    ),
+                                  ),
+                                  child: Column(
+                                    children: [
+                                      const SizedBox(height: 8.0),
+                                      CircleAvatar(
+                                        radius: 45.0,
+                                        child: AvatarPlus(
+                                          randomNames[index],
+                                          height: 90,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 10.0),
+                                      Text(randomNames[index]),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                   const SizedBox(height: 25.0),

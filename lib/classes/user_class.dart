@@ -4,6 +4,7 @@ class UserClass {
   String? name;
   String? surname;
   final String? email;
+  String avatar;
 
   final int streakNum;
   final DateTime? lastStreakDate;
@@ -34,6 +35,7 @@ class UserClass {
     this.name,
     this.surname,
     this.email,
+    required this.avatar,
     required this.streakNum,
     this.lastStreakDate,
     required this.score,
@@ -83,6 +85,7 @@ class UserClass {
       name: accountDetails['name'],
       surname: accountDetails['surname'],
       email: accountDetails['email'],
+      avatar: accountDetails['avatar'],
       streakNum: learningDetails['streakNum'] ?? 0,
       lastStreakDate: date,
       score: learningDetails['score'] ?? 0,

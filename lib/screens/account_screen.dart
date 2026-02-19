@@ -1,3 +1,4 @@
+import 'package:avatar_plus/avatar_plus.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
@@ -108,6 +109,7 @@ class _AccountScreenState extends State<AccountScreen> {
           'surname': inputSurname,
           'email': inputEmail,
           'username': inputUsername,
+          'avatar': 'Jonny',
         },
         'learningDetails' : {
           'streakNum' : 0,
@@ -141,6 +143,7 @@ class _AccountScreenState extends State<AccountScreen> {
         name: inputName,
         surname: inputSurname,
         email: inputEmail,
+        avatar: 'Jonny',
         username: inputUsername,
         streakNum: 0,
         score: 0,
@@ -553,18 +556,22 @@ class _AccountScreenState extends State<AccountScreen> {
                       padding: const EdgeInsets.all(10.0),
                       child: Column (
                         children: [
-                          CircleAvatar(
-                            radius: 40.0,
-                            backgroundColor: Colors.white,
-                            child: Icon(
-                              Icons.person,
-                              size: 50.0,
-                              color: Colors.deepOrange.shade800,
+                          Container(
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: Colors.white,
+                                width: 2.0,
+                              ),
+                            ),
+                            child: AvatarPlus(
+                              user!.avatar,
+                              height: 80.0,
                             ),
                           ),
                           const SizedBox(height: 10.0),
                           Text(
-                            '${user!.username}',
+                            user!.username,
                             style: const TextStyle(
                               fontSize: 24.0,
                               fontWeight: FontWeight.bold,
