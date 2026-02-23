@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sign_language_app/screens/appearance_screen.dart';
 import 'package:sign_language_app/screens/edit_profile_screen.dart';
+import 'package:sign_language_app/services/general_service.dart';
 
 import '../classes/user_class.dart';
 import '../components/progress_item_widget.dart';
@@ -33,6 +34,7 @@ class _AccountScreenState extends State<AccountScreen> {
   final DatabaseReference usersRef = FirebaseDatabase.instance.ref().child('users');
   final FirebaseAuth auth = FirebaseAuth.instance;
   final UserService userService = UserService();
+  final GeneralService generalService = GeneralService();
 
   String? errorMessage;
   UserClass? user;
@@ -41,7 +43,8 @@ class _AccountScreenState extends State<AccountScreen> {
   bool visible2 = false;
   bool signIn = true;
   bool loading = false;
-  bool darkMode = true;
+  bool darkMode = false;
+  bool verificationLoading = false;
 
   Future<void> _loadTheme() async {
     final prefs = await SharedPreferences.getInstance();
@@ -50,11 +53,231 @@ class _AccountScreenState extends State<AccountScreen> {
     });
   }
 
+  void _verificationDialog(UserCredential credential) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
+          child: Container(
+            padding: const EdgeInsets.all(20.0),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(25.0),
+              gradient: LinearGradient(
+                colors: [Colors.orange.shade100, Colors.white],
+              ),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.mark_email_unread_rounded,
+                      color: Colors.deepOrange.shade800,
+                      size: 40.0,
+                    ),
+                    const SizedBox(width: 10.0),
+                    const Text(
+                      "Verify Email",
+                      style: TextStyle(
+                        fontSize: 22.0,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 15.0),
+                const Text(
+                  "We sent a link to your email. Please verify to continue.",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 16.0),
+                ),
+                const SizedBox(height: 10.0),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
+                      ),
+                      onPressed: () {
+                        usernameTextController.clear();
+                        emailTextController.clear();
+                        nameTextController.clear();
+                        surnameTextController.clear();
+                        passwordTextController.clear();
+                        confirmPasswordTextController.clear();
+
+                        setState(() {
+                          verificationLoading = false;
+                          loading = false;
+                        });
+
+                        Navigator.pop(context);
+                        credential.user!.delete();
+                      },
+                      child: const Text(
+                        "Cancel",
+                        style: TextStyle(
+                          fontSize: 18.0,
+                          color: Colors.black,
+                        ),
+                      ),
+                    ),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.deepOrange,
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
+                      ),
+                      onPressed: () async {
+                        generalService.snackBar(context, "Verification email resent.", Colors.grey.shade600);
+                        await credential.user!.sendEmailVerification();
+                      },
+                      child: const Text(
+                        "Resend",
+                        style: TextStyle(
+                          fontSize: 18.0,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+
+    int checkCount = 0;
+    const int maxChecks = 40;
+
+    Future.doWhile(() async {
+      await Future.delayed(const Duration(seconds: 3));
+      checkCount++;
+
+      if (!verificationLoading) return false;
+
+      if (checkCount >= maxChecks) {
+        usernameTextController.clear();
+        emailTextController.clear();
+        nameTextController.clear();
+        surnameTextController.clear();
+        passwordTextController.clear();
+        confirmPasswordTextController.clear();
+
+        setState(() {
+          verificationLoading = false;
+          loading = false;
+        });
+
+        Navigator.pop(context);
+        credential.user!.delete();
+        generalService.snackBar(context, "Verification timed out. Please try again.", Colors.red.shade400);
+        return false;
+      }
+
+      await auth.currentUser?.reload();
+
+      if (auth.currentUser?.emailVerified ?? false) {
+        Navigator.pop(context);
+
+        String inputName = nameTextController.text.trim();
+        String inputSurname = surnameTextController.text.trim();
+        String inputEmail = emailTextController.text.trim();
+        String inputUsername = usernameTextController.text.trim();
+        final DatabaseReference userRef = usersRef.child(inputUsername);
+
+        // Saving user in database.
+        await userRef.set({
+          'accountDetails' : {
+            'uid': credential.user!.uid,
+            'name': inputName,
+            'surname': inputSurname,
+            'email': inputEmail,
+            'username': inputUsername,
+            'avatar': 'Jonny',
+          },
+          'learningDetails' : {
+            'streakNum' : 0,
+            'lastStreakDate': '',
+            'score' : 0,
+            'completedLevels' : 0,
+            'quizCounts' : {
+              "dragAndDropQCount": 0,
+              "imgToWordQCount": 0,
+              "readTheSignQCount": 0,
+              "signToWordsQCount": 0,
+              "wordsToSignQCount": 0,
+            },
+            'trainCounts' : {
+              "dragAndDropTCount": 0,
+              "imgToWordTCount": 0,
+              "readTheSignTCount": 0,
+              "signToWordsTCount": 0,
+              "wordsToSignTCount": 0,
+            }
+          },
+          'gameStats' : {
+            'draws' : 0,
+            'losses' : 0,
+            'wins' : 0,
+          }
+        });
+
+        final newUser = UserClass(
+          uid: credential.user!.uid,
+          name: inputName,
+          surname: inputSurname,
+          email: inputEmail,
+          avatar: 'Jonny',
+          username: inputUsername,
+          streakNum: 0,
+          score: 0,
+          completedLevels: 0,
+          draws: 0,
+          losses: 0,
+          wins: 0,
+          dragAndDropQCount: 0,
+          imgToWordQCount: 0,
+          readTheSignQCount: 0,
+          signToWordsQCount: 0,
+          wordsToSignQCount: 0,
+          dragAndDropTCount: 0,
+          imgToWordTCount: 0,
+          readTheSignTCount: 0,
+          signToWordsTCount: 0,
+          wordsToSignTCount: 0,
+          badges: [],
+          completedLessons: [],
+        );
+
+        // Saving user info to local storage.
+        await userService.saveUserLocalStorage(newUser);
+
+        setState(() {
+          user = newUser;
+          errorMessage = null;
+          loading = false;
+        });
+
+        return false;
+      }
+
+      return true;
+    });
+  }
+
   Future<void> _signUp() async {
     setState(() => loading = true);
 
-    String inputName = nameTextController.text.trim();
-    String inputSurname = surnameTextController.text.trim();
     String inputEmail = emailTextController.text.trim();
     String inputUsername = usernameTextController.text.trim();
     String inputPassword = passwordTextController.text.trim();
@@ -101,78 +324,9 @@ class _AccountScreenState extends State<AccountScreen> {
         password: passwordTextController.text.trim(),
       );
 
-      // Saving user in database.
-      await userRef.set({
-        'accountDetails' : {
-          'uid': credential.user!.uid,
-          'name': inputName,
-          'surname': inputSurname,
-          'email': inputEmail,
-          'username': inputUsername,
-          'avatar': 'Jonny',
-        },
-        'learningDetails' : {
-          'streakNum' : 0,
-          'lastStreakDate': '',
-          'score' : 0,
-          'completedLevels' : 0,
-          'quizCounts' : {
-            "dragAndDropQCount": 0,
-            "imgToWordQCount": 0,
-            "readTheSignQCount": 0,
-            "signToWordsQCount": 0,
-            "wordsToSignQCount": 0,
-          },
-          'trainCounts' : {
-            "dragAndDropTCount": 0,
-            "imgToWordTCount": 0,
-            "readTheSignTCount": 0,
-            "signToWordsTCount": 0,
-            "wordsToSignTCount": 0,
-          }
-        },
-        'gameStats' : {
-          'draws' : 0,
-          'losses' : 0,
-          'wins' : 0,
-        }
-      });
-
-      final newUser = UserClass(
-        uid: credential.user!.uid,
-        name: inputName,
-        surname: inputSurname,
-        email: inputEmail,
-        avatar: 'Jonny',
-        username: inputUsername,
-        streakNum: 0,
-        score: 0,
-        completedLevels: 0,
-        draws: 0,
-        losses: 0,
-        wins: 0,
-        dragAndDropQCount: 0,
-        imgToWordQCount: 0,
-        readTheSignQCount: 0,
-        signToWordsQCount: 0,
-        wordsToSignQCount: 0,
-        dragAndDropTCount: 0,
-        imgToWordTCount: 0,
-        readTheSignTCount: 0,
-        signToWordsTCount: 0,
-        wordsToSignTCount: 0,
-        badges: [],
-        completedLessons: [],
-      );
-
-      // Saving user info to local storage.
-      await userService.saveUserLocalStorage(newUser);
-
-      setState(() {
-        user = newUser;
-        errorMessage = null;
-        loading = false;
-      });
+      await credential.user!.sendEmailVerification();
+      setState(() => verificationLoading = true);
+      _verificationDialog(credential);
     } on FirebaseAuthException catch (e) {
       setState(() {
         errorMessage = e.message;
