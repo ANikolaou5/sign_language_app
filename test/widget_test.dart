@@ -1,30 +1,78 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import 'package:sign_language_app/main.dart';
+import 'package:sign_language_app/classes/question_class.dart';
+import 'package:sign_language_app/classes/user_class.dart';
+import 'package:sign_language_app/screens/account_screen.dart';
+import 'package:sign_language_app/screens/read_the_sign_screen.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  testWidgets('Clicking an MCQ option highlights the selection.', (WidgetTester tester) async {
+    final mockQuestions = [
+    Question(
+        answer: "No",
+        question: "Which word/phrase corresponds to this sign gesture? Tap the correct one.",
+        questionContent: "assets/symbols/no.png",
+        questionNum: 109,
+        questionType: QuestionType.multipleChoiceSignToWords,
+        levelNum: null,
+      ),
+    ];
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    await tester.pumpWidget(
+      MaterialApp(
+        home: ReadTheSignScreen(
+          title: "Read the Sign",
+          multipleChoiceQuestions: mockQuestions,
+          username: "test1",
+          quiz: false,
+          timer: false,
+          symbols: false,
+        ),
+      )
+    );
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
+    final optionFinder = find.text('No');
+    expect(optionFinder, findsOneWidget);
+    await tester.tap(optionFinder);
     await tester.pump();
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    expect(find.byIcon(Icons.check_circle), findsOneWidget);
+  });
+
+  testWidgets('Profile does not show empty name and surname.', (WidgetTester tester) async {
+    final emptyUser = UserClass(
+      uid: "1234567890",
+      username: "test1",
+      email: "test1@test.com",
+      name: "",
+      surname: "",
+      avatar: "Jonny",
+      streakNum: 0,
+      score: 0,
+      completedLevels: 0,
+      dragAndDropQCount: 0,
+      imgToWordQCount: 0,
+      readTheSignQCount: 0,
+      signToWordsQCount: 0,
+      wordsToSignQCount: 0,
+      dragAndDropTCount: 0,
+      imgToWordTCount: 0,
+      readTheSignTCount: 0,
+      signToWordsTCount: 0,
+      wordsToSignTCount: 0,
+    );
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: AccountScreen(
+          changeIndex: (index) {},
+          onThemeChange: (isDark) {},
+        ),
+      )
+    );
+
+    final nameTextFinder = find.byWidgetPredicate((widget) => widget is Text && widget.data != null && widget.data!.contains(' '),);
+
+    expect(nameTextFinder, findsNothing);
   });
 }
