@@ -155,25 +155,9 @@ class _GameLobbyScreenState extends State<GameLobbyScreen> {
         _currentGameId = gameId;
 
         // 1. SELECT QUESTIONS: Replace this placeholder with your actual question logic
-        // For example: List<Question> selected = QuestionData.allQuestions.take(5).toList();
-        List<Question> selectedQuestions = [
-          Question(
-            questionNum: 1,
-            levelNum: 1,
-            questionType: QuestionType.multipleChoice,
-            question: "Which letter does this symbol sign?",
-            questionContent: "assets/images/A.png",
-            answer: "A",
-          ),
-          Question(
-            questionNum: 2,
-            levelNum: 1,
-            questionType: QuestionType.multipleChoice,
-            question: "Which letter does this symbol sign?",
-            questionContent: "assets/images/B.png",
-            answer: "B",
-          ),
-        ];
+        List<Question> selectedQuestions = await generalService.loadSignToTextQuestions();
+        final shuffledQuestions = List<Question>.from(selectedQuestions)..shuffle();
+        selectedQuestions = shuffledQuestions.take(5).toList();
 
         // 2. CONVERT TO MAPS: Prepare for Firebase upload
         List<Map<String, dynamic>> questionsAsMaps =
