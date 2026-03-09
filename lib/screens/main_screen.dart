@@ -22,10 +22,10 @@ class _MainScreenState extends State<MainScreen> {
 
   final _titles = [
     'Home',
-    'Learning',
-    'Training',
+    'Learn',
+    'Train',
     'Play',
-    'Live test',
+    'Live Test',
     'Account',
   ];
 
@@ -117,7 +117,7 @@ class _MainScreenState extends State<MainScreen> {
           BottomNavigationBarItem(
             icon: Icon(Icons.quiz_outlined),
             activeIcon: Icon(Icons.quiz),
-            label: "Training",
+            label: "Train",
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.sports_esports_outlined),
@@ -127,7 +127,7 @@ class _MainScreenState extends State<MainScreen> {
           BottomNavigationBarItem(
             icon: Icon(Icons.video_camera_front_outlined),
             activeIcon: Icon(Icons.video_camera_front),
-            label: "Live test",
+            label: "Live Test",
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person_outline),
