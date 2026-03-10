@@ -73,9 +73,7 @@ flutter pub get
 
 ### Configuration
 
-```env
-Place google-services.json in android/app (It is already there)
-```
+Place google-services.json in android/app
 
 ---
 
