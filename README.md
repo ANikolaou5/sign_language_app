@@ -113,11 +113,11 @@ test/
 
 ## Roadmap
 
-[x] UI Navigation and Firebase integration.
-[x] Gamified activities.
-[x] Multiplayer mode implementation.
-[ ] Learning through video tutorials.
-[ ] Gesture recognition using the device camera.
+- [x] UI Navigation and Firebase integration.
+- [x] Gamified activities.
+- [x] Multiplayer mode implementation.
+- [ ] Learning through video tutorials.
+- [ ] Gesture recognition using the device camera.
 
 ---
 
