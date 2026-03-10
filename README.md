@@ -59,8 +59,8 @@ Instructions for setting up the project locally.
 ### Prerequisites
 
 ```sh
-flutter --version is 3.38.9
-dart --version is 3.10.8
+flutter --version # is 3.38.9
+dart --version # is 3.10.8
 ```
 
 ### Installation
