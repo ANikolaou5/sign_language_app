@@ -49,16 +49,16 @@ void main() {
 
   // Badges sorting logic.
   test('Badges earned sorted first.', () {
-    // Badge 1: isEarned = false
-    // Badge 2: isEarned = true
+    // Badge 1: earned = false
+    // Badge 2: earned = true
     List<Map<String, dynamic>> badges = [
       {'id': 1, 'earned': false},
       {'id': 2, 'earned': true},
     ];
 
     badges.sort((a, b) {
-      if (a['isEarned'] && !b['isEarned']) return -1;
-      if (!a['isEarned'] && b['isEarned']) return 1;
+      if (a['earned'] && !b['earned']) return -1;
+      if (!a['earned'] && b['earned']) return 1;
       return 0;
     });
 
