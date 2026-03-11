@@ -136,5 +136,5 @@ https://github.com/ANikolaou5
 
 ## Acknowledgments
 
-ASL Sign Images: https://deafservicesunlimited.com/lesson/basic-asl/
-Dr. Nicos Kasenides & Dr. Andriani Piki for their academic guidance and contribution to the project.
+- ASL Sign Images: https://deafservicesunlimited.com/lesson/basic-asl/
+- Dr. Nicos Kasenides & Dr. Andriani Piki for their academic guidance and contribution to the project.
