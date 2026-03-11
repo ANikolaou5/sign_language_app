@@ -57,6 +57,8 @@ Instructions for setting up the project locally.
 
 ### Prerequisites
 
+Android Studio for mobile emulation.
+
 ```sh
 flutter --version # is 3.38.9
 dart --version # is 3.10.8
