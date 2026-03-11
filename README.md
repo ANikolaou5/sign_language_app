@@ -24,7 +24,6 @@ Promoting sign language learning through a gamified multiplatform mobile experie
   - [Running Tests](#running-tests)
   - [Project Structure](#project-structure)
 - [Roadmap](#roadmap)
-- [Contributing](#contributing)
 - [License](#license)
 - [Contact](#contact)
 - [Acknowledgments](#acknowledgments)
@@ -121,16 +120,9 @@ test/
 
 ---
 
-## Contributing
-
-Contribution guidelines and workflow expectations.
-
----
-
 ## License
 
-License name and link to the LICENSE file.
-
+This project is licensed under the Apache License 2.0.
 ---
 
 ## Contact
@@ -143,4 +135,5 @@ https://github.com/ANikolaou5
 
 ## Acknowledgments
 
-Credits, references, and inspirations.
+ASL Sign Images: https://deafservicesunlimited.com/lesson/basic-asl/
+Dr. Nicos Kasenides & Dr. Andriani Piki for their academic guidance and contribution to the project.
