@@ -19,10 +19,10 @@ class TrainCategories extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Card(
-        elevation: 6.0, // Slightly higher elevation for better depth
+        elevation: 6.0,
         shadowColor: Colors.orange.withOpacity(0.2),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
-        clipBehavior: Clip.antiAlias, // Ensures InkWell splash stays inside corners
+        clipBehavior: Clip.antiAlias,
         child: InkWell(
           splashColor: Colors.orange.shade100,
           onTap: () {
@@ -41,7 +41,6 @@ class TrainCategories extends StatelessWidget {
             ),
             child: Row(
               children: [
-                // Icon inside a soft circular container
                 Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(

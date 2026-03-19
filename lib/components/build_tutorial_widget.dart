@@ -148,7 +148,6 @@ class _BuildTutorialState extends State<BuildTutorial> {
               darkMode: darkMode,
               onTap: widget.onTap,
               tips: widget.readingTutorial.webviewFile ?? '',
-              // 4. Pass null or a dummy check inside MultipleChoiceQuestion if needed
               controller: controller,
               webviewHeight: _webviewHeight,
             ),
@@ -160,7 +159,6 @@ class _BuildTutorialState extends State<BuildTutorial> {
     );
   }
 
-  // 5. Create a fallback widget for the Web
   Widget _buildWebFallback() {
     return Container(
       padding: const EdgeInsets.all(16),
@@ -179,7 +177,7 @@ class _BuildTutorialState extends State<BuildTutorial> {
     );
   }
 
-  // Helper function to calculate and update height
+  // This function helps to calculate and update the height.
   Future<void> _updateWebViewHeight() async {
     if (kIsWeb || controller == null) return;
     try {

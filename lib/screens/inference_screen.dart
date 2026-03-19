@@ -1,3 +1,4 @@
+/// Author: Nicos Kasenides
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:sign_language_app/services/inference_service.dart';

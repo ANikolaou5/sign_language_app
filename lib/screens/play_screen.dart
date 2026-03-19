@@ -163,7 +163,7 @@ class _PlayScreenState extends State<PlayScreen> {
                               shape: BoxShape.circle,
                             ),
                             child: Icon(
-                              Icons.public, // Icon for Play Online
+                              Icons.public,
                               size: 32,
                               color: Colors.deepOrange.shade700,
                             ),
@@ -186,8 +186,6 @@ class _PlayScreenState extends State<PlayScreen> {
                   ),
                 ),
               ),
-
-
             ],
           ),
         ),

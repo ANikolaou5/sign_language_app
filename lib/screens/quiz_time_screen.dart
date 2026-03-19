@@ -1,3 +1,4 @@
+/// Author: Nicos Kasenides
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sign_language_app/screens/fingerspell_sign_to_word_screen.dart';

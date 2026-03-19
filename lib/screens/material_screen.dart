@@ -169,8 +169,6 @@ class _MaterialScreenState extends State<MaterialScreen> {
 
               SizedBox(height: 10,),
 
-
-
               Expanded(
                 child: GridView.builder(
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
