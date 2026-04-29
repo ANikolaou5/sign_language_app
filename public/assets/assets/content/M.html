@@ -1,3 +1,4 @@
+<!-- Author: Nicos Kasenides -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -46,6 +47,18 @@
             text-align: center;
             padding: 10px;
         }
+        .collection-item.flex-item {
+            display: flex;
+            align-items: flex-start;
+        }
+        .collection-item.flex-item i {
+            margin-right: 15px;
+            margin-top: 4px;
+            flex-shrink: 0;
+        }
+        .collection-item.flex-item .item-content {
+            flex-grow: 1;
+        }
     </style>
 </head>
 <body>
@@ -63,13 +76,17 @@
 
         <h2 class="section-title">Key Characteristics</h2>
         <ul class="collection">
-            <li class="collection-item">
-                <i class="material-icons orange-text text-darken-4 left">check_circle</i>
-                <strong>Three-Finger Hump:</strong> The thumb is tucked under the <b>index, middle, and ring fingers</b>.
+            <li class="collection-item flex-item">
+                <i class="material-icons orange-text text-darken-4">check_circle</i>
+                <span class="item-content">
+                    <strong>Three-Finger Hump:</strong> The thumb is tucked under the <b>index, middle, and ring fingers</b>.
+                </span>
             </li>
-            <li class="collection-item">
-                <i class="material-icons orange-text text-darken-4 left">check_circle</i>
-                <strong>Thumb Peeking:</strong> The tip of the thumb should peek out between the ring finger and the pinky.
+            <li class="collection-item flex-item">
+                <i class="material-icons orange-text text-darken-4">check_circle</i>
+                <span class="item-content">
+                    <strong>Thumb Peeking:</strong> The tip of the thumb should peek out between the ring finger and the pinky.
+                </span>
             </li>
         </ul>
 

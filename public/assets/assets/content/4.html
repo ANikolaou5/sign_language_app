@@ -1,3 +1,4 @@
+<!-- Author: Nicos Kasenides -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -46,6 +47,18 @@
             text-align: center;
             padding: 10px;
         }
+        .collection-item.flex-item {
+            display: flex;
+            align-items: flex-start;
+        }
+        .collection-item.flex-item i {
+            margin-right: 15px;
+            margin-top: 4px;
+            flex-shrink: 0;
+        }
+        .collection-item.flex-item .item-content {
+            flex-grow: 1;
+        }
     </style>
 </head>
 <body>
@@ -63,17 +76,23 @@
 
         <h2 class="section-title">Key Characteristics</h2>
         <ul class="collection">
-            <li class="collection-item">
-                <i class="material-icons orange-text text-darken-4 left">check_circle</i>
-                <strong>Four-Finger Extension:</strong> Index, middle, ring, and pinky fingers are extended and <b>slightly spread</b>.
+            <li class="collection-item flex-item">
+                <i class="material-icons orange-text text-darken-4">check_circle</i>
+                <span class="item-content">
+                    <strong>Four-Finger Extension:</strong> Index, middle, ring, and pinky fingers are extended and <b>slightly spread</b>.
+                </span>
             </li>
-            <li class="collection-item">
-                <i class="material-icons orange-text text-darken-4 left">check_circle</i>
-                <strong>Thumb Tuck:</strong> The thumb is folded across the palm, tucked away from the other fingers.
+            <li class="collection-item flex-item">
+                <i class="material-icons orange-text text-darken-4">check_circle</i>
+                <span class="item-content">
+                    <strong>Thumb Tuck:</strong> The thumb is folded across the palm, tucked away from the other fingers.
+                </span>
             </li>
-            <li class="collection-item">
-                <i class="material-icons orange-text text-darken-4 left">check_circle</i>
-                <strong>Palm Orientation:</strong> For counting 1-5 in ASL, the <b>palm faces the signer</b> (palm-in).
+            <li class="collection-item flex-item">
+                <i class="material-icons orange-text text-darken-4">check_circle</i>
+                <span class="item-content">
+                    <strong>Palm Orientation:</strong> For counting 1-5 in ASL, the <b>palm faces the signer</b> (palm-in).
+                </span>
             </li>
         </ul>
 

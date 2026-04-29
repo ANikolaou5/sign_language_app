@@ -1,3 +1,4 @@
+<!-- Author: Nicos Kasenides -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -46,6 +47,18 @@
             text-align: center;
             padding: 10px;
         }
+        .collection-item.flex-item {
+            display: flex;
+            align-items: flex-start;
+        }
+        .collection-item.flex-item i {
+            margin-right: 15px;
+            margin-top: 4px;
+            flex-shrink: 0;
+        }
+        .collection-item.flex-item .item-content {
+            flex-grow: 1;
+        }
     </style>
 </head>
 <body>
@@ -63,17 +76,23 @@
 
         <h2 class="section-title">Key Characteristics</h2>
         <ul class="collection">
-            <li class="collection-item">
-                <i class="material-icons orange-text text-darken-4 left">check_circle</i>
-                <strong>Thumb Up:</strong> Make a fist with the <b>thumb pointing straight up</b> (similar to a "thumbs up" gesture).
+            <li class="collection-item flex-item">
+                <i class="material-icons orange-text text-darken-4">check_circle</i>
+                <span class="item-content">
+                    <strong>Thumb Up:</strong> Make a fist with the <b>thumb pointing straight up</b> (similar to a "thumbs up" gesture).
+                </span>
             </li>
-            <li class="collection-item">
-                <i class="material-icons orange-text text-darken-4 left">check_circle</i>
-                <strong>The Wiggle:</strong> The hand rotates slightly or the thumb <b>wiggles side-to-side</b> to indicate the number.
+            <li class="collection-item flex-item">
+                <i class="material-icons orange-text text-darken-4">check_circle</i>
+                <span class="item-content">
+                    <strong>The Wiggle:</strong> The hand rotates slightly or the thumb <b>wiggles side-to-side</b> to indicate the number.
+                </span>
             </li>
-            <li class="collection-item">
-                <i class="material-icons orange-text text-darken-4 left">check_circle</i>
-                <strong>Palm Orientation:</strong> Unlike counting 1-5, the <b>palm faces the viewer</b> (palm-out).
+            <li class="collection-item flex-item">
+                <i class="material-icons orange-text text-darken-4">check_circle</i>
+                <span class="item-content">
+                    <strong>Palm Orientation:</strong> Unlike counting 1-5, the <b>palm faces the viewer</b> (palm-out).
+                </span>
             </li>
         </ul>
 
