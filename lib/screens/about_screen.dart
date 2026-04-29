@@ -68,7 +68,7 @@ class _AboutScreenState extends State<AboutScreen> {
                   ),
                 ),
                 const Text(
-                  "Version 1.0.0",
+                  "Version 1.0.1",
                   style: TextStyle(
                     color: Colors.grey,
                     fontWeight: FontWeight.bold,
